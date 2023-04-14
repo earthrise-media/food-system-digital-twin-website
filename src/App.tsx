@@ -26,14 +26,6 @@ export default function App() {
       });
   }, []);
 
-  // fetch("./synthetic_kcal_state_crop_1_results_pivoted.csv")
-  //   .then((response) => response.text())
-  //   .then((data) => {
-  //     const rows = papa.parse(data, { header: true }).data;
-  //     console.log(rows[0].Supply);
-  //     root.render(<App data={features} counties={counties.features as any} />);
-  //     // console.log(data)
-  //   });
 
   return <MapWrapper data={data} counties={counties.features as any} links={links as any} />;
 }
