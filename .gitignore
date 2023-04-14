@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+in
+public/synthetic_kcal_state_crop_1_results*.csv
