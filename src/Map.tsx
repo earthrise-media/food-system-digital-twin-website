@@ -2,14 +2,22 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Map } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import DeckGL from "@deck.gl/react/typed";
-import { GeoJsonLayer, ArcLayer } from "@deck.gl/layers/typed";
+import { GeoJsonLayer, ArcLayer, LineLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
 import { scaleQuantile, scaleSequential, scaleLinear } from "d3-scale";
 import { interpolateSpectral } from "d3-scale-chromatic";
 import { max } from "d3-array";
-import { rgb } from "d3-color";
-import { centroid } from "@turf/turf";
+import { color, rgb } from "d3-color";
+import {
+  bezierSpline,
+  centroid,
+  featureCollection,
+  lineString,
+  distance,
+  point
+} from "@turf/turf";
 import useAnimationFrame from "./useAnimationFrame";
+import { arch } from "os";
 
 const TRIPS_TEST_DATA: [number, number][] = [
   [-122.3907988, 37.7664413],
@@ -52,7 +60,7 @@ function calculateArcs2(
     ([k, v]) => (v as number) > 0
   );
 
-   let arcs = targetsGeoIds.flatMap(([k, v]) => {
+  let arcs = targetsGeoIds.flatMap(([k, v]) => {
     const target = counties.find((c: any) => c.properties.GEOID === k);
     if (!target || !target.geometry) return [];
 
@@ -73,7 +81,7 @@ function calculateArcs2(
 
   arcs = arcs.map((a: any) => {
     const rgbColor = rgb(scaleColor(a.value)).rgb();
-    const deckColor = [rgbColor.r, rgbColor.g, rgbColor.b, 255];
+    const deckColor = [rgbColor.r, rgbColor.g, rgbColor.b];
     return {
       ...a,
       width: scale(a.value),
@@ -82,11 +90,13 @@ function calculateArcs2(
   });
 
   if (useSample) {
-    const num = 10;
-    const randomIndex = Math.floor(Math.random() * (arcs.length - 10));
-    arcs = arcs.slice(randomIndex, randomIndex + num);
+    let sample: any[] = [];
+    for (let index = 0; index < 10; index++) {
+      const randomIndex = Math.floor(Math.random() * arcs.length);
+      sample = [...sample, arcs[randomIndex]];
+    }
+    return sample;
   }
-
 
   return arcs as Arc[];
 }
@@ -131,12 +141,69 @@ const getTrip = (
 
 const getTripsFromArcs = (arcs: Arc[]) => {
   const trips = arcs.map((arc) => {
-    return getTrip(arc.source, arc.target, { numParticles: 100}, arc);
+    return getTrip(arc.source, arc.target, { numParticles: 100 }, arc);
   });
   return trips.flat();
 };
 
-// const TRIPS = getTrip(TRIPS_TEST_DATA[0], TRIPS_TEST_DATA[1]);
+const getWavyLines = (
+  arc: Arc,
+  {
+    numLines = 100,
+    minWaypointsPer1000km = 0,
+    maxWaypointsPer1000km = 8,
+    minDeviationDegrees = 0,
+    maxDeviationDegrees = .5,
+    smooth = true,
+  } = {}
+) => {
+  const [startX, startY] = arc.source;
+  const [endX, endY] = arc.target;
+  const dist = distance(point(arc.source), point(arc.target));
+  const minWaypoints = Math.round((dist / 1000) * minWaypointsPer1000km);
+  const maxWaypoints = Math.round((dist / 1000) * maxWaypointsPer1000km);
+  // console.log("getWavyLines",  dist, minWaypoints, maxWaypoints)
+  const lines = []
+  for (let lineIndex = 0; lineIndex < numLines; lineIndex++) {
+    const numWaypoints =
+      Math.floor(Math.random() * (1 + maxWaypoints - minWaypoints)) +
+      minWaypoints;
+    const waypoints = [];
+    for (let waypointIndex = 0; waypointIndex < numWaypoints; waypointIndex++) {
+      const waypointRatio = (1 / (numWaypoints + 1)) * (waypointIndex + 1);
+      const deviationSign = (waypointIndex % 2) === 0 ? 1 : -1;
+      // alternativaly deviate left and right
+      let deviation = deviationSign * Math.random() * (maxDeviationDegrees - minDeviationDegrees) + minDeviationDegrees;
+      const midpoint = [
+        startX + (endX - startX) * waypointRatio,
+        startY + (endY - startY) * waypointRatio,
+      ];
+      const [midX, midY] = midpoint;
+      const angle = Math.atan2(endY - startY, endX - startX);
+      const waypoint = [
+        deviation * Math.cos(angle) + midX,
+        -deviation * Math.sin(angle) + midY,
+      ];
+
+      waypoints.push(waypoint);
+    }
+    let feature = lineString([arc.source, ...waypoints, arc.target]);
+
+    if (smooth) {
+      feature = bezierSpline(feature);
+    }
+    feature.properties = {
+      color: lineIndex === 0 ? arc.color : [...arc.color, 100],
+      width: lineIndex === 0 ? 2 : .5
+    }
+    lines.push(feature);
+    
+
+  }
+  return lines
+
+};
+
 
 function getTooltip({ object }: any) {
   return object && object.properties.name;
@@ -154,7 +221,7 @@ export default function MapWrapper({
     setLayerType(e.target.value);
   };
 
-  const [useSample, setUseSample] = useState(false);
+  const [useSample, setUseSample] = useState(true);
   const [selectedCounty2, selectCounty2] = useState();
 
   const arcs2 = useMemo(
@@ -169,6 +236,32 @@ export default function MapWrapper({
     return trips;
   }, [arcs2]);
 
+  const lines = useMemo(() => {
+    if (!arcs2) return [];
+    const lines = arcs2.map((arc) => {
+      return {
+        ...arc,
+        path: [arc.source, arc.target],
+      };
+    });
+    return lines;
+  }, [arcs2]);
+
+  const wavyLinesFeatures = useMemo(() => {
+    if (!lines) return [];
+    return lines
+      .map((l) => {
+        return getWavyLines(l);
+      })
+      .flat();
+  }, [lines]);
+
+  const linesGeoJSON = useMemo(() => {
+    if (!wavyLinesFeatures) return [];
+    const geoJSON = featureCollection(wavyLinesFeatures);
+    return geoJSON;
+  }, [wavyLinesFeatures]);
+
   const [currentTime, setCurrentTime] = useState(0);
   useAnimationFrame((e: any) => setCurrentTime(e.time));
   const animationSpeed = 2;
@@ -178,8 +271,6 @@ export default function MapWrapper({
     return (currentTime * animationSpeed) % loopLength;
   }, [currentTime]);
 
-
-
   const layers = useMemo(() => {
     let layers = [
       new GeoJsonLayer({
@@ -188,7 +279,7 @@ export default function MapWrapper({
         stroked: true,
         filled: true,
         getFillColor: [0, 0, 0, 255],
-        getLineColor: [255, 255, 2550, 50],
+        getLineColor: [255, 255, 255, 50],
         lineWidthMinPixels: 1,
         onClick: ({ object }) => selectCounty2(object),
         pickable: true,
@@ -205,10 +296,10 @@ export default function MapWrapper({
           getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
           getColor: (d) => d.color,
           opacity: 0.8,
-          widthMinPixels: .5,
+          widthMinPixels: 0.5,
           getWidth: (d) => {
             // console.log(d.width)
-            return d.width * 1500
+            return d.width * 1500;
           },
           rounded: true,
           fadeTrail: true,
@@ -216,7 +307,7 @@ export default function MapWrapper({
           currentTime: currentFrame,
         }),
       ];
-    } else {
+    } else if (layerType === "arcs") {
       layers = [
         ...(layers as any),
         new ArcLayer({
@@ -229,6 +320,18 @@ export default function MapWrapper({
           getWidth: (d) => d.width,
           getSourceColor: (d) => d.color,
           getTargetColor: (d) => d.color,
+        }),
+      ];
+    } else {
+      layers = [
+        ...(layers as any),
+        new GeoJsonLayer({
+          id: "lines",
+          data: linesGeoJSON,
+          stroked: true,
+          getLineColor: (d: any) => d.properties.color,
+          lineWidthUnits: "pixels",
+          getLineWidth: (d: any) => d.properties.width,
         }),
       ];
     }
@@ -253,8 +356,22 @@ export default function MapWrapper({
             checked={layerType === "trips"}
           />{" "}
           trips
+          <input
+            type="radio"
+            value="wavyLines"
+            name="gender"
+            checked={layerType === "wavyLines"}
+          />{" "}
+          wavy lines
         </div>
-        <div><input type="checkbox" checked={useSample} onChange={(e) => setUseSample(!useSample)} />sample</div>
+        <div>
+          <input
+            type="checkbox"
+            checked={useSample}
+            onChange={(e) => setUseSample(!useSample)}
+          />
+          sample
+        </div>
         {currentFrame}
       </div>
       <DeckGL
