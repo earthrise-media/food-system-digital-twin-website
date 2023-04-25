@@ -21,5 +21,8 @@
     "react-dom": "18.2.0",
     "react-map-gl": "^7.0.23",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.10"
   }
 }

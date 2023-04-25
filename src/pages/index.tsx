@@ -1,11 +1,16 @@
 import Head from 'next/head'
-// import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-import MapWrapper from './_map'
+// import MapWrapper from './_map'
+import { FeatureCollection } from 'geojson'
+import { getLocalData } from './getLocalData';
+import dynamic from 'next/dynamic';
 
-// const inter = Inter({ subsets: ['latin'] })
+// https://github.com/visgl/deck.gl/issues/7735
+const DeckMap = dynamic(() => import('./_map'), {
+  ssr: false
+});
 
-export default function Home() {
+export default function Home({ counties }: { counties: FeatureCollection }) {
   return (
     <>
       <Head>
@@ -15,8 +20,17 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <MapWrapper></MapWrapper>
+        <DeckMap counties={counties as any} />
       </main>
     </>
   )
+}
+
+export async function getStaticProps() {
+  const counties = await getLocalData()
+  return {
+    props: {
+      counties,
+    },
+  };
 }
