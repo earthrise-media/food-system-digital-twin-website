@@ -6,7 +6,14 @@ import {
   lineString,
   bezierSpline,
 } from "@turf/turf";
-import { County, Link, LinkWithPaths } from "@/types";
+import {
+  County,
+  Link,
+  LinkWithPaths,
+  LinkWithTrips,
+  Path,
+  Trip,
+} from "@/types";
 import { useMemo } from "react";
 
 export default function useLinks(
@@ -61,7 +68,7 @@ const getCurvedPaths = (
     maxDeviationDegrees = 0.5,
     smooth = true,
   } = {}
-): Position[][] => {
+): Path[] => {
   const [startX, startY] = link.source;
   const [endX, endY] = link.target;
   const dist = distance(point(link.source), point(link.target));
@@ -99,13 +106,13 @@ const getCurvedPaths = (
     let feature = lineString([link.source, ...waypoints, link.target]);
 
     if (smooth) {
-      feature = bezierSpline(feature);
+      feature = bezierSpline(feature, { resolution: 1000 });
     }
     // feature.properties = {
     //   color: lineIndex === 0 ? arc.color : [...arc.color, 100],
     //   width: lineIndex === 0 ? 2 : .5
     // }
-    paths.push(feature.geometry.coordinates);
+    paths.push({ coordinates: feature.geometry.coordinates });
   }
   return paths;
 };
@@ -115,6 +122,65 @@ export function useLinksWithCurvedPaths(links: Link[]): LinkWithPaths[] {
     return links.map((l) => {
       const paths = getCurvedPaths(l);
       return { ...l, paths };
+    });
+  }, [links]);
+}
+
+const getPathTrips = (
+  path: Path,
+  {
+    numParticles = 20,
+    fromTimestamp = 0,
+    toTimeStamp = 100,
+    intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
+    duration = 10,
+    durationHumanize = 0.5, // Randomize particles trajectory duration (0: stable duration, 1: can be 0 or 2x the duration)
+  } = {}
+): Trip[] => {
+  const d = toTimeStamp - fromTimestamp;
+  const interval = d / numParticles;
+
+  const trips = [];
+  for (let i = 0; i < numParticles; i++) {
+    const humanizeInterval =
+      (Math.random() - 0.5) * 2 * interval * intervalHumanize;
+    const timestampStart = fromTimestamp + i * interval + humanizeInterval;
+    const humanizeDuration =
+      (Math.random() - 0.5) * 2 * duration * durationHumanize;
+    const timestampEnd = timestampStart + duration + humanizeDuration;
+
+    const timestampDelta = timestampEnd - timestampStart;
+    const waypoints = path.coordinates.map((c, i) => {
+      const timestamp = timestampStart + (i / (path.coordinates.length - 1)) * timestampDelta;
+      return { coordinates: c, timestamp: timestamp };
+    });
+
+    trips.push({
+      waypoints,
+      color: [255, 0, 0, 255]
+    });
+
+    // waypoints.push({
+    //   ...copyProps,
+    //   waypoints: [
+    //     { coordinates: from, timestamp: timestampStart },
+    //     { coordinates: to, timestamp: timestampEnd },
+    //   ],
+    // });
+  }
+  return trips;
+};
+
+export function useLinksWithTrips(links: LinkWithPaths[]): LinkWithTrips[] {
+  return useMemo(() => {
+    return links.map((l) => {
+      const trips = l.paths
+        .map((p) => {
+          return getPathTrips(p);
+        })
+        .flat();
+
+      return { ...l, trips };
     });
   }, [links]);
 }

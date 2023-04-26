@@ -10,6 +10,26 @@ export type Link = {
   target: Position;
   value: number;
 }
-export type LinkWithPaths = Link & {
-  paths: Position[][];
+
+export type Path = {
+  coordinates: Position[]
 }
+
+export type LinkWithPaths = Link & {
+  paths: Path[];
+}
+
+export type Waypoint = {
+  coordinates: Position;
+  timestamp: number;
+}
+
+export type Trip = {
+  waypoints: Waypoint[]
+  color: number[]
+}
+
+export type LinkWithTrips = LinkWithPaths & {
+  trips: Trip[];
+}
+

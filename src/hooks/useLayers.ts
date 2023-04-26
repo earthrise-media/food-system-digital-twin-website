@@ -1,30 +1,53 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
+import { TripsLayer } from "@deck.gl/geo-layers/typed";
 import { FeatureCollection, Geometry, Feature } from "geojson";
-import { County, LinkWithPaths } from "@/types";
+import { County, LinkWithPaths, LinkWithTrips } from "@/types";
 import { feature, featureCollection } from "@turf/turf";
+import useAnimationFrame from "@/hooks/useAnimationFrame";
 
 export default function useLayers(
   counties: FeatureCollection<Geometry, County>,
   selectedCounty: Feature<Geometry, County> | null,
-  links: LinkWithPaths[],
+  links: LinkWithTrips[],
   selectCurrentCountyId: (geoid: string | null) => void
 ) {
   const linksAsGeoJSON = useMemo(() => {
     if (!links.length) return null;
-    const features = links.map((l) => {
-      return l.paths.map((coordinates) => feature({
-        type: "LineString",
-        coordinates
-      }))
-    }).flat()
-    
+    const features = links
+      .map((l) => {
+        return l.paths.map(({ coordinates }) =>
+          feature({
+            type: "LineString",
+            coordinates,
+          })
+        );
+      })
+      .flat();
+
     return featureCollection(features);
-  }, [links])
-  console.log(JSON.stringify(linksAsGeoJSON))
+  }, [links]);
+
+
+  const allTrips = useMemo(() => {
+    if (!links.length) return [];
+    return links.flatMap((l) => l.trips);
+  }, [links]);
+
+
+  const [currentTime, setCurrentTime] = useState(0);
+  useAnimationFrame((e: any) => setCurrentTime(e.time));
+  const animationSpeed = 2;
+  const loopLength = 100;
+
+  const currentFrame = useMemo(() => {
+    return (currentTime * animationSpeed) % loopLength;
+  }, [currentTime]);
+
+  console.log(allTrips, currentFrame)
 
   const layers = useMemo(() => {
-    const layers: GeoJsonLayer[] = [
+    const layers: (GeoJsonLayer | TripsLayer)[] = [
       new GeoJsonLayer({
         id: "counties",
         data: counties,
@@ -49,6 +72,23 @@ export default function useLayers(
         lineWidthMinPixels: 1,
         getLineWidth: 1,
       }),
+      new TripsLayer({
+        id: "trips-layer",
+        data: allTrips,
+        getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
+        getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
+        getColor: (d) => d.color,
+        opacity: 0.8,
+        widthMinPixels: 3,
+        getWidth: (d) => {
+          // console.log(d.width)
+          return 5000;
+        },
+        capRounded: true,
+        fadeTrail: true,
+        trailLength: 0.2,
+        currentTime: currentFrame,
+      }),
     ];
     if (linksAsGeoJSON) {
       layers.push(
@@ -57,14 +97,21 @@ export default function useLayers(
           data: linksAsGeoJSON,
           stroked: true,
           lineWidthUnits: "pixels",
-          getLineWidth: 2,
-          getLineCOlor: [255, 0, 0, 255],
+          getLineWidth: .5,
+          getLineColor: [255, 0, 255, 50],
           // getLineColor: (d: any) => d.properties.color,
           // getLineWidth: (d: any) => d.properties.width,
         })
       );
     }
     return layers;
-  }, [counties, selectedCounty, selectCurrentCountyId, linksAsGeoJSON])
+  }, [
+    counties,
+    selectedCounty,
+    selectCurrentCountyId,
+    linksAsGeoJSON,
+    allTrips,
+    currentFrame,
+  ]);
   return layers;
 }
