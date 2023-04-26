@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from "react";
 import DeckGL from "@deck.gl/react/typed";
 import { Map } from "react-map-gl";
-import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
+import useLayers from "@/hooks/useLayers";
+import { County } from "@/types";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -12,12 +13,6 @@ const INITIAL_VIEW_STATE = {
   pitch: 30,
   bearing: 0,
 };
-
-type County = {
-  geoid: string;
-  name: string;
-};
-
 type MapWrapperProps = {
   counties: FeatureCollection<Geometry, County>;
   links: Record<string, number>[];
@@ -27,44 +22,16 @@ function MapWrapper({
   counties,
   links,
 }: MapWrapperProps) {
-  const [currentCountyId, selectCurrentCountyId] = useState(null);
+  const [currentCountyId, selectCurrentCountyId] = useState<string | null>(null);
 
   const selectedCounty = useMemo(() => {
     if (!currentCountyId) return null;
     return counties.features.find(
       (county) => county.properties.geoid === currentCountyId
-    );
+    ) || null;
   }, [currentCountyId, counties]);
 
-  const layers = useMemo(() => {
-    const layers: GeoJsonLayer[] = [
-      new GeoJsonLayer({
-        id: "counties",
-        data: counties,
-        stroked: true,
-        filled: true,
-        getFillColor: [0, 0, 0, 0],
-        getLineColor: [246, 243, 239, 255],
-        lineWidthScale: 5000,
-        lineWidthMinPixels: 1,
-        getLineWidth: 1,
-        onClick: ({ object }) => selectCurrentCountyId(object.properties.geoid),
-        pickable: true,
-      }),
-      new GeoJsonLayer({
-        id: "counties-selected",
-        data: [selectedCounty],
-        stroked: true,
-        filled: true,
-        getFillColor: [0, 0, 0, 122],
-        getLineColor: [0, 0, 0, 255],
-        lineWidthScale: 5000,
-        lineWidthMinPixels: 1,
-        getLineWidth: 1,
-      }),
-    ];
-    return layers;
-  }, [counties, selectedCounty]);
+  const layers = useLayers(counties, selectedCounty, links, selectCurrentCountyId)
 
   return (
     <DeckGL
