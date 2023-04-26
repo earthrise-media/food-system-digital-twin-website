@@ -5,7 +5,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
 import useLayers from "@/hooks/useLayers";
 import { County } from "@/types";
-import useLinks from "@/hooks/useLinks";
+import useLinks, { useLinksWithCurvedPaths } from "@/hooks/useLinks";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -33,15 +33,18 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
     );
   }, [currentCountyId, counties]);
 
+
+  const selectedLinks = useLinks(selectedCounty, counties, links)
+
+  const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks)
+
+
   const layers = useLayers(
     counties,
     selectedCounty,
-    links,
+    linksWithCurvedPaths,
     selectCurrentCountyId
   );
-
-  const selectedLinks = useLinks(selectedCounty, counties, links)
-  console.log(selectedLinks)
 
   return (
     <DeckGL

@@ -10,3 +10,6 @@ export type Link = {
   target: Position;
   value: number;
 }
+export type LinkWithPaths = Link & {
+  paths: Position[][];
+}

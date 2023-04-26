@@ -1,14 +1,28 @@
 import { useMemo } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { FeatureCollection, Geometry, Feature } from "geojson";
-import { County } from "@/types";
+import { County, LinkWithPaths } from "@/types";
+import { feature, featureCollection } from "@turf/turf";
 
 export default function useLayers(
-  counties:FeatureCollection<Geometry, County>,
+  counties: FeatureCollection<Geometry, County>,
   selectedCounty: Feature<Geometry, County> | null,
-  links: any,
+  links: LinkWithPaths[],
   selectCurrentCountyId: (geoid: string | null) => void
 ) {
+  const linksAsGeoJSON = useMemo(() => {
+    if (!links.length) return null;
+    const features = links.map((l) => {
+      return l.paths.map((coordinates) => feature({
+        type: "LineString",
+        coordinates
+      }))
+    }).flat()
+    
+    return featureCollection(features);
+  }, [links])
+  console.log(JSON.stringify(linksAsGeoJSON))
+
   const layers = useMemo(() => {
     const layers: GeoJsonLayer[] = [
       new GeoJsonLayer({
@@ -36,7 +50,21 @@ export default function useLayers(
         getLineWidth: 1,
       }),
     ];
+    if (linksAsGeoJSON) {
+      layers.push(
+        new GeoJsonLayer({
+          id: "lines",
+          data: linksAsGeoJSON,
+          stroked: true,
+          lineWidthUnits: "pixels",
+          getLineWidth: 2,
+          getLineCOlor: [255, 0, 0, 255],
+          // getLineColor: (d: any) => d.properties.color,
+          // getLineWidth: (d: any) => d.properties.width,
+        })
+      );
+    }
     return layers;
-  }, [counties, selectedCounty, selectCurrentCountyId]);
+  }, [counties, selectedCounty, selectCurrentCountyId, linksAsGeoJSON])
   return layers;
 }
