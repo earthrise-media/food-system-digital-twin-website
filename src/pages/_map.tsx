@@ -5,6 +5,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
 import useLayers from "@/hooks/useLayers";
 import { County } from "@/types";
+import useLinks from "@/hooks/useLinks";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -16,22 +17,31 @@ const INITIAL_VIEW_STATE = {
 type MapWrapperProps = {
   counties: FeatureCollection<Geometry, County>;
   links: Record<string, number>[];
-}
+};
 
-function MapWrapper({
-  counties,
-  links,
-}: MapWrapperProps) {
-  const [currentCountyId, selectCurrentCountyId] = useState<string | null>(null);
+function MapWrapper({ counties, links }: MapWrapperProps) {
+  const [currentCountyId, selectCurrentCountyId] = useState<string | null>(
+    null
+  );
 
   const selectedCounty = useMemo(() => {
     if (!currentCountyId) return null;
-    return counties.features.find(
-      (county) => county.properties.geoid === currentCountyId
-    ) || null;
+    return (
+      counties.features.find(
+        (county) => county.properties.geoid === currentCountyId
+      ) || null
+    );
   }, [currentCountyId, counties]);
 
-  const layers = useLayers(counties, selectedCounty, links, selectCurrentCountyId)
+  const layers = useLayers(
+    counties,
+    selectedCounty,
+    links,
+    selectCurrentCountyId
+  );
+
+  const selectedLinks = useLinks(selectedCounty, counties, links)
+  console.log(selectedLinks)
 
   return (
     <DeckGL
