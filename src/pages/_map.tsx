@@ -18,11 +18,15 @@ type County = {
   name: string;
 };
 
+type MapWrapperProps = {
+  counties: FeatureCollection<Geometry, County>;
+  links: Record<string, number>[];
+}
+
 function MapWrapper({
   counties,
-}: {
-  counties: FeatureCollection<Geometry, County>;
-}) {
+  links,
+}: MapWrapperProps) {
   const [currentCountyId, selectCurrentCountyId] = useState(null);
 
   const selectedCounty = useMemo(() => {
