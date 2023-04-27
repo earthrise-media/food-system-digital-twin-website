@@ -1,5 +1,5 @@
 
-# # Food System Digital Twin Website
+# Food System Digital Twin Website
 
 ## Installation and Usage
 
