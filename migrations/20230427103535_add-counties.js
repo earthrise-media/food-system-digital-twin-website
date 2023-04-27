@@ -16,7 +16,7 @@ const COUNTIES_GEOJSON_PATH = path.join(
  */
 exports.up = async function (knex) {
   await knex.schema.createTable("counties", (table) => {
-    table.integer("id").primary();
+    table.string("id").primary();
     table.jsonb("meta");
     table.geography("geom", "4326");
   });
