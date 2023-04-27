@@ -112,7 +112,7 @@ export default function useLayers(
           stroked: true,
           lineWidthUnits: "pixels",
           getLineWidth: 0.5,
-          getLineColor: [255, 0, 255, 50],
+          getLineColor: [255, 0, 255, 0],
           // getLineColor: (d: any) => d.properties.color,
           // getLineWidth: (d: any) => d.properties.width,
         })

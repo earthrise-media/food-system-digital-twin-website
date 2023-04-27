@@ -65,7 +65,7 @@ export default function useLinks(
 const getCurvedPaths = (
   link: Link,
   {
-    numLinesPerLink = 1,
+    numLinesPerLink = 10,
     minWaypointsPer1000km = 4,
     maxWaypointsPer1000km = 8,
     minDeviationDegrees = 0,
@@ -163,9 +163,9 @@ const getPathTrips = (
     // numParticlesPer1000K = 100,
     fromTimestamp = 0,
     toTimeStamp = 100,
-    intervalHumanize = 0, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
+    intervalHumanize = .5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     speedKps = 100, // Speed in km per second
-    speedKpsHumanize = 0, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
+    speedKpsHumanize = .5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
   } = {}
 ): Trip[] => {
   const d = toTimeStamp - fromTimestamp;
