@@ -15,6 +15,8 @@ import {
   Trip,
 } from "@/types";
 import { useMemo } from "react";
+import { CATEGORY_COLORS } from "@/constants";
+import { hexToRgb } from "@/utils";
 
 export default function useLinks(
   selectedCounty: Feature<Geometry, County> | null,
@@ -151,13 +153,20 @@ const getPathTrips = (
 
     const timestampDelta = timestampEnd - timestampStart;
     const waypoints = path.coordinates.map((c, i) => {
-      const timestamp = timestampStart + (i / (path.coordinates.length - 1)) * timestampDelta;
+      const timestamp =
+        timestampStart + (i / (path.coordinates.length - 1)) * timestampDelta;
       return { coordinates: c, timestamp: timestamp };
     });
 
+    const hexColor =
+      Object.values(CATEGORY_COLORS)[
+        Math.floor(Math.random() * Object.values(CATEGORY_COLORS).length)
+      ];
+    const color = hexToRgb(hexColor);
+
     trips.push({
       waypoints,
-      color: [255, 0, 0, 255]
+      color: [...color, 255],
     });
 
     // waypoints.push({

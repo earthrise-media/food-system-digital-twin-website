@@ -28,12 +28,10 @@ export default function useLayers(
     return featureCollection(features);
   }, [links]);
 
-
   const allTrips = useMemo(() => {
     if (!links.length) return [];
     return links.flatMap((l) => l.trips);
   }, [links]);
-
 
   const [currentTime, setCurrentTime] = useState(0);
   useAnimationFrame((e: any) => setCurrentTime(e.time));
@@ -44,7 +42,7 @@ export default function useLayers(
     return (currentTime * animationSpeed) % loopLength;
   }, [currentTime]);
 
-  console.log(allTrips, currentFrame)
+  console.log(allTrips, currentFrame);
 
   const layers = useMemo(() => {
     const layers: (GeoJsonLayer | TripsLayer)[] = [
@@ -85,6 +83,7 @@ export default function useLayers(
           return 5000;
         },
         capRounded: true,
+        jointRounded: true,
         fadeTrail: true,
         trailLength: 0.2,
         currentTime: currentFrame,
@@ -97,7 +96,7 @@ export default function useLayers(
           data: linksAsGeoJSON,
           stroked: true,
           lineWidthUnits: "pixels",
-          getLineWidth: .5,
+          getLineWidth: 0.5,
           getLineColor: [255, 0, 255, 50],
           // getLineColor: (d: any) => d.properties.color,
           // getLineWidth: (d: any) => d.properties.width,
