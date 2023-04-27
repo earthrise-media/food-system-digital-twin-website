@@ -45,6 +45,7 @@ export default function useLinks(
           // TODO precompute centroid
           source: centroid(selectedCounty as any).geometry.coordinates,
           target: centroid(target as any).geometry.coordinates,
+          targetId: target.properties.geoid,
           value: v,
         },
       ];
@@ -63,11 +64,11 @@ export default function useLinks(
 const getCurvedPaths = (
   link: Link,
   {
-    numLines = 10,
-    minWaypointsPer1000km = 0,
+    numLines = 1,
+    minWaypointsPer1000km = 8,
     maxWaypointsPer1000km = 8,
     minDeviationDegrees = 0,
-    maxDeviationDegrees = 0.5,
+    maxDeviationDegrees = .3,
     smooth = true,
   } = {}
 ): Path[] => {
@@ -76,17 +77,20 @@ const getCurvedPaths = (
   const dist = distance(point(link.source), point(link.target));
   const minWaypoints = Math.round((dist / 1000) * minWaypointsPer1000km);
   const maxWaypoints = Math.round((dist / 1000) * maxWaypointsPer1000km);
+  console.log(minWaypoints, maxWaypoints)
 
   const paths = [];
   for (let lineIndex = 0; lineIndex < numLines; lineIndex++) {
     const numWaypoints =
       Math.floor(Math.random() * (1 + maxWaypoints - minWaypoints)) +
       minWaypoints;
+    console.log(numWaypoints)
     const waypoints = [];
     for (let waypointIndex = 0; waypointIndex < numWaypoints; waypointIndex++) {
       const waypointRatio = (1 / (numWaypoints + 1)) * (waypointIndex + 1);
-      const deviationSign = waypointIndex % 2 === 0 ? 1 : -1;
+      console.log(waypointRatio)
       // alternativaly deviate left and right
+      const deviationSign = waypointIndex % 2 === 0 ? 1 : -1;
       let deviation =
         deviationSign *
           Math.random() *
@@ -96,6 +100,7 @@ const getCurvedPaths = (
         startX + (endX - startX) * waypointRatio,
         startY + (endY - startY) * waypointRatio,
       ];
+      console.log(midpoint)
       const [midX, midY] = midpoint;
       const angle = Math.atan2(endY - startY, endX - startX);
       const waypoint = [
@@ -108,7 +113,7 @@ const getCurvedPaths = (
     let feature = lineString([link.source, ...waypoints, link.target]);
 
     if (smooth) {
-      feature = bezierSpline(feature, { resolution: 1000 });
+      feature = bezierSpline(feature, { resolution: 200 });
     }
     // feature.properties = {
     //   color: lineIndex === 0 ? arc.color : [...arc.color, 100],
@@ -131,17 +136,17 @@ export function useLinksWithCurvedPaths(links: Link[]): LinkWithPaths[] {
 const getPathTrips = (
   path: Path,
   {
-    numParticles = 20,
+    numParticles = 1,
     fromTimestamp = 0,
     toTimeStamp = 100,
-    intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
+    intervalHumanize = 0, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     duration = 10,
-    durationHumanize = 0.5, // Randomize particles trajectory duration (0: stable duration, 1: can be 0 or 2x the duration)
+    durationHumanize = 0, // Randomize particles trajectory duration (0: stable duration, 1: can be 0 or 2x the duration)
   } = {}
 ): Trip[] => {
   const d = toTimeStamp - fromTimestamp;
   const interval = d / numParticles;
-
+  console.log(path)
   const trips = [];
   for (let i = 0; i < numParticles; i++) {
     const humanizeInterval =

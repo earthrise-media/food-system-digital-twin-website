@@ -9,6 +9,7 @@ import useAnimationFrame from "@/hooks/useAnimationFrame";
 export default function useLayers(
   counties: FeatureCollection<Geometry, County>,
   selectedCounty: Feature<Geometry, County> | null,
+  targetCounties: Feature<Geometry, County>[],
   links: LinkWithTrips[],
   selectCurrentCountyId: (geoid: string | null) => void
 ) {
@@ -42,10 +43,8 @@ export default function useLayers(
     return (currentTime * animationSpeed) % loopLength;
   }, [currentTime]);
 
-  console.log(allTrips, currentFrame);
-
   const layers = useMemo(() => {
-    const layers: (GeoJsonLayer | TripsLayer)[] = [
+    let layers: (GeoJsonLayer | TripsLayer)[] = [
       new GeoJsonLayer({
         id: "counties",
         data: counties,
@@ -59,36 +58,52 @@ export default function useLayers(
         onClick: ({ object }) => selectCurrentCountyId(object.properties.geoid),
         pickable: true,
       }),
-      new GeoJsonLayer({
-        id: "counties-selected",
-        data: [selectedCounty],
-        stroked: true,
-        filled: true,
-        getFillColor: [0, 0, 0, 122],
-        getLineColor: [0, 0, 0, 255],
-        lineWidthScale: 5000,
-        lineWidthMinPixels: 1,
-        getLineWidth: 1,
-      }),
-      new TripsLayer({
-        id: "trips-layer",
-        data: allTrips,
-        getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
-        getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
-        getColor: (d) => d.color,
-        opacity: 0.8,
-        widthMinPixels: 3,
-        getWidth: (d) => {
-          // console.log(d.width)
-          return 5000;
-        },
-        capRounded: true,
-        jointRounded: true,
-        fadeTrail: true,
-        trailLength: 0.2,
-        currentTime: currentFrame,
-      }),
     ];
+    if (selectedCounty) {
+      layers = [
+        ...layers,
+        new GeoJsonLayer({
+          id: "counties-selected",
+          data: [selectedCounty],
+          stroked: true,
+          filled: true,
+          getFillColor: [0, 0, 0, 122],
+          getLineColor: [0, 0, 0, 255],
+          lineWidthScale: 5000,
+          lineWidthMinPixels: 1,
+          getLineWidth: 1,
+        }),
+        new GeoJsonLayer({
+          id: "counties-targets",
+          data: targetCounties,
+          stroked: true,
+          filled: true,
+          getFillColor: [0, 0, 0, 50],
+          getLineColor: [0, 0, 0, 150],
+          lineWidthScale: 5000,
+          lineWidthMinPixels: .5,
+          getLineWidth: 0.1,
+        }),
+        new TripsLayer({
+          id: "trips-layer",
+          data: allTrips,
+          getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
+          getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
+          getColor: (d) => d.color,
+          opacity: 0.8,
+          widthMinPixels: 3,
+          getWidth: (d) => {
+            // console.log(d.width)
+            return 5000;
+          },
+          capRounded: true,
+          jointRounded: true,
+          fadeTrail: true,
+          trailLength: 0.2,
+          currentTime: currentFrame,
+        }),
+      ];
+    }
     if (linksAsGeoJSON) {
       layers.push(
         new GeoJsonLayer({
@@ -107,6 +122,7 @@ export default function useLayers(
   }, [
     counties,
     selectedCounty,
+    targetCounties,
     selectCurrentCountyId,
     linksAsGeoJSON,
     allTrips,

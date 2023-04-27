@@ -15,6 +15,7 @@ export type Category =
 export type Link = {
   source: Position;
   target: Position;
+  targetId: string;
   value: number;
 };
 

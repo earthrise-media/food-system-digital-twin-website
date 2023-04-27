@@ -5,7 +5,10 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
 import useLayers from "@/hooks/useLayers";
 import { County } from "@/types";
-import useLinks, { useLinksWithCurvedPaths, useLinksWithTrips } from "@/hooks/useLinks";
+import useLinks, {
+  useLinksWithCurvedPaths,
+  useLinksWithTrips,
+} from "@/hooks/useLinks";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -33,16 +36,23 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
     );
   }, [currentCountyId, counties]);
 
+  const selectedLinks = useLinks(selectedCounty, counties, links);
 
-  const selectedLinks = useLinks(selectedCounty, counties, links)
+  const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
 
-  const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks)
+  const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
 
-  const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths)
+  const targetCounties = linksWithTrips.flatMap((l) => {
+    const target = counties.features.find(
+      (county) => county.properties.geoid === l.targetId
+    );
+    return target ? [target] : []
+  });
 
   const layers = useLayers(
     counties,
     selectedCounty,
+    targetCounties,
     linksWithTrips,
     selectCurrentCountyId
   );
