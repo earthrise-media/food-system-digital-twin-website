@@ -21,6 +21,8 @@ export type Link = {
 
 export type Path = {
   coordinates: Position[];
+  distances: number[];
+  totalDistance: number
 };
 
 export type LinkWithPaths = Link & {

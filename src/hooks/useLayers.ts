@@ -36,7 +36,7 @@ export default function useLayers(
 
   const [currentTime, setCurrentTime] = useState(0);
   useAnimationFrame((e: any) => setCurrentTime(e.time));
-  const animationSpeed = 2;
+  const animationSpeed = 1;
   const loopLength = 100;
 
   const currentFrame = useMemo(() => {
