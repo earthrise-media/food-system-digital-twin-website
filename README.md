@@ -33,6 +33,12 @@ Start development database with Docker:
 docker-compose up
 ```
 
+Migrate the database:
+
+```sh
+yarn migrate
+```
+
 Start development server:
 
 ```sh
