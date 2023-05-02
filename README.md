@@ -1,5 +1,5 @@
 
-# Food Twin
+# Food System Digital Twin Website
 
 ## Installation and Usage
 
@@ -11,6 +11,7 @@ To set up the development environment for this website, you'll need to install t
 
 - [Node](http://nodejs.org/) (see [.nvmrc](./.nvmrc)) (To manage multiple node versions we recommend [nvm](https://github.com/creationix/nvm))
 - [Yarn](https://yarnpkg.com/) package manager
+- [Docker](https://www.docker.com)
 
 ### Install Application Dependencies
 
@@ -26,13 +27,25 @@ Install Node modules:
 yarn install
 ```
 
-#### Starting the app
+Start development database with Docker:
 
-```bash
+```sh
+docker-compose up
+```
+
+Migrate the database:
+
+```sh
+yarn migrate
+```
+
+Start development server:
+
+```sh
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to visit the app.
+✨ You can now login to the app at [http://localhost:3000](http://localhost:3000)
 
 ## License
 

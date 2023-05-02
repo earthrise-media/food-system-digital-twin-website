@@ -27,7 +27,6 @@ yarn-error.log*
 # local env files
 .env*.local
 
-
 # vercel
 .vercel
 
@@ -35,5 +34,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-in
 public/synthetic_kcal_state_crop_1_results_pivoted.csv
+app-data/
