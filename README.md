@@ -47,6 +47,16 @@ yarn dev
 
 ✨ You can now login to the app at [http://localhost:3000](http://localhost:3000)
 
+### API Docs
+
+This app uses [Swagger](https://swagger.io/) to generate API docs. To access it, run the server and visit:
+
+- [http://localhost:3000/docs/api](http://localhost:3000/docs/api)
+
+The API docs page should be updated automatically after adding Swagger configuration as JSDoc in route files, as described in [next-swagger-doc documentation](https://www.npmjs.com/package/next-swagger-doc).
+
+To validate the documentation, please run `yarn swagger:validate`, which will check for errors and add the application version found in package.json.
+
 ## License
 
 [MIT](LICENSE)

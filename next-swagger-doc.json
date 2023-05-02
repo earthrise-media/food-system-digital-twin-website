@@ -1,0 +1,13 @@
+{
+  "apiFolder": "src",
+  "schemaFolders": [
+    "src"
+  ],
+  "definition": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Food Twin API Docs",
+      "version": "0.1.0"
+    }
+  }
+}
