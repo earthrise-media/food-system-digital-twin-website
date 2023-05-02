@@ -36,3 +36,6 @@ yarn-error.log*
 next-env.d.ts
 
 in
+
+app-data
+public/synthetic_kcal_state_crop_1_results_pivoted.csv
