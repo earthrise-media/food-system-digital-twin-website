@@ -1,13 +1,12 @@
-import Head from 'next/head'
-import styles from '@/styles/Home.module.css'
-// import MapWrapper from './_map'
-import { FeatureCollection } from 'geojson'
-import { getLocalData } from './getLocalData';
-import dynamic from 'next/dynamic';
+import Head from "next/head";
+import styles from "@/styles/Home.module.css";
+import { FeatureCollection } from "geojson";
+import dynamic from "next/dynamic";
+import db from "../helpers/db";
 
 // https://github.com/visgl/deck.gl/issues/7735
-const DeckMap = dynamic(() => import('./_map'), {
-  ssr: false
+const DeckMap = dynamic(() => import("./_map"), {
+  ssr: false,
 });
 
 export default function Home({ counties }: { counties: FeatureCollection }) {
@@ -23,14 +22,32 @@ export default function Home({ counties }: { counties: FeatureCollection }) {
         <DeckMap counties={counties as any} />
       </main>
     </>
-  )
+  );
 }
 
+type CountyRecord = {
+  geoid: string;
+  geom: string;
+};
+
 export async function getStaticProps() {
-  const counties = await getLocalData()
+  const allCounties: CountyRecord[] = await db<CountyRecord>("counties").select(
+    db.raw("meta->'geoid' as geoid"),
+    db.raw(`ST_AsGeoJSON(geom) as geom`)
+  );
+
+  const geojson = {
+    type: "FeatureCollection",
+    features: allCounties.map(({ geom, geoid }) => ({
+      type: "Feature",
+      geometry: JSON.parse(geom),
+      properties: { geoid },
+    })),
+  };
+
   return {
     props: {
-      counties,
+      counties: geojson,
     },
   };
 }
