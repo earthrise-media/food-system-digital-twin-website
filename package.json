@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@turf/turf": "^6.5.0",
     "@types/node": "18.15.13",
     "@types/react": "18.0.37",
     "@types/react-dom": "18.0.11",
@@ -21,6 +22,7 @@
     "knex-postgis": "^0.14.3",
     "mapbox-gl": "^2.14.1",
     "next": "13.3.0",
+    "papaparse": "^5.4.1",
     "pg": "^8.10.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -28,6 +30,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "@types/geojson": "^7946.0.10"
+    "@types/geojson": "^7946.0.10",
+    "@types/papaparse": "^5.3.7"
   }
 }
