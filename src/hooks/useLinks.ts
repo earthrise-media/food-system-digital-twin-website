@@ -1,10 +1,5 @@
 import { FeatureCollection, Geometry, Feature, Position } from "geojson";
-import {
-  centroid,
-  distance,
-  point,
-  lineString
-} from "@turf/turf";
+import { centroid, distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import {
   County,
@@ -17,13 +12,15 @@ import {
 import { useMemo } from "react";
 import { CATEGORY_COLORS } from "@/constants";
 import { hexToRgb } from "@/utils";
+import { useControls } from "leva";
 
 export default function useLinks(
   counties: FeatureCollection<Geometry, County>,
   // TODO This will need to be fetched from the APIs depending on the target or source county
   links: Record<string, number>[],
-  selectedCounty?: Feature<Geometry, County> | null,
+  selectedCounty?: Feature<Geometry, County> | null
 ): Link[] {
+  const { numFlows } = useControls("flows", { numFlows: 10 });
   return useMemo(() => {
     if (!selectedCounty) return [];
     const selectedCountyLinks = links.find(
@@ -54,12 +51,12 @@ export default function useLinks(
 
     // TODO Use top 10 instead of random ones
     let sample: Link[] = [];
-    for (let index = 0; index < 10; index++) {
+    for (let index = 0; index < numFlows; index++) {
       const randomIndex = Math.floor(Math.random() * selectedLinks.length);
       sample = [...sample, selectedLinks[randomIndex]];
     }
     return sample;
-  }, [counties, links, selectedCounty]);
+  }, [counties, links, selectedCounty, numFlows]);
 }
 
 const getCurvedPaths = (
@@ -142,12 +139,20 @@ const getCurvedPaths = (
 };
 
 export function useLinksWithCurvedPaths(links: Link[]): LinkWithPaths[] {
+  const params = useControls("paths", {
+    numLinesPerLink: 10,
+    minWaypointsPer1000km: 4,
+    maxWaypointsPer1000km: 8,
+    minDeviationDegrees: 0,
+    maxDeviationDegrees: 0.6,
+    smooth: false,
+  });
   return useMemo(() => {
     return links.map((l) => {
-      const paths = getCurvedPaths(l);
+      const paths = getCurvedPaths(l, params);
       return { ...l, paths };
     });
-  }, [links]);
+  }, [links, params]);
 }
 
 const getPathTrips = (
@@ -157,9 +162,9 @@ const getPathTrips = (
     // numParticlesPer1000K = 100,
     fromTimestamp = 0,
     toTimeStamp = 100,
-    intervalHumanize = .5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
+    intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     speedKps = 100, // Speed in km per second
-    speedKpsHumanize = .5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
+    speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
   } = {}
 ): Trip[] => {
   const d = toTimeStamp - fromTimestamp;
@@ -204,15 +209,23 @@ const getPathTrips = (
 };
 
 export function useLinksWithTrips(links: LinkWithPaths[]): LinkWithTrips[] {
+  const params = useControls("trips", {
+    numParticles: 100,
+    fromTimestamp: 0,
+    toTimeStamp: 100,
+    intervalHumanize: 0.5,
+    speedKps: 100,
+    speedKpsHumanize: 0.5,
+  });
   return useMemo(() => {
     return links.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p);
+          return getPathTrips(p, params);
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [links]);
+  }, [links, params]);
 }

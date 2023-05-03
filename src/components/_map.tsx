@@ -12,6 +12,7 @@ import useLinks, {
   useLinksWithCurvedPaths,
   useLinksWithTrips,
 } from "@/hooks/useLinks";
+import { Leva } from "leva";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -44,7 +45,6 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
     );
   }, [currentCountyId, counties]);
 
-
   const selectedLinks = useLinks(counties, links, selectedCounty);
 
   const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
@@ -55,7 +55,7 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
     const target = counties.features.find(
       (county) => county.properties.geoid === l.targetId
     );
-    return target ? [target] : []
+    return target ? [target] : [];
   });
 
   const layers = useLayers(
@@ -87,6 +87,7 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
       {searching && (
         <Search counties={counties} onSelectCounty={onSearchCounty} />
       )}
+      <Leva oneLineLabels={true} />
     </>
   );
 }
