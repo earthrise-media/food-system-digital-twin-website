@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import DeckGL from "@deck.gl/react/typed";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, useControl } from "react-map-gl";
@@ -6,6 +6,7 @@ import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
 import Popup from "@/pages/_popup";
+import Search from "./_search";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -32,7 +33,9 @@ function MapWrapper({
 }: {
   counties: FeatureCollection<Geometry, County>;
 }) {
-  const [currentCountyId, selectCurrentCountyId] = useState(null);
+  const [currentCountyId, setCurrentCountryId] = useState<string | null>(null);
+
+  const [searching, setSearching] = useState(false);
 
   const selectedCounty = useMemo(() => {
     if (!currentCountyId) return;
@@ -53,7 +56,7 @@ function MapWrapper({
         lineWidthScale: 5000,
         lineWidthMinPixels: 1,
         getLineWidth: 1,
-        onClick: ({ object }) => selectCurrentCountyId(object.properties.geoid),
+        onClick: ({ object }) => setCurrentCountryId(object.properties.geoid),
         pickable: true,
       }),
       new GeoJsonLayer({
@@ -71,15 +74,28 @@ function MapWrapper({
     return layers;
   }, [counties, selectedCounty]);
 
+  const onSearchCounty = useCallback((geoid: string) => {
+    setCurrentCountryId(geoid);
+    setSearching(false);
+  }, []);
+
   return (
-    <Map
-      mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-      mapStyle="mapbox://styles/fausto-perez/clgnkv1d000dl01qucf7wc8zc"
-      initialViewState={INITIAL_VIEW_STATE}
-    >
-      <DeckGLOverlay layers={layers} />
-      <Popup selectedCounty={selectedCounty} />
-    </Map>
+    <>
+      <Map
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+        mapStyle="mapbox://styles/fausto-perez/clgnkv1d000dl01qucf7wc8zc"
+        initialViewState={INITIAL_VIEW_STATE}
+      >
+        <DeckGLOverlay layers={layers} />
+        <Popup selectedCounty={selectedCounty} />
+      </Map>
+      <div style={{ position: "absolute" }}>
+        <button onClick={() => setSearching(!searching)}>Search county</button>
+      </div>
+      {searching && (
+        <Search counties={counties} onSelectCounty={onSearchCounty} />
+      )}
+    </>
   );
 }
 
