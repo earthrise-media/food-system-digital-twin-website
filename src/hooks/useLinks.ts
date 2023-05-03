@@ -78,19 +78,17 @@ const getCurvedPaths = (
   const dist = distance(point(link.source), point(link.target));
   const minWaypoints = Math.round((dist / 1000) * minWaypointsPer1000km);
   const maxWaypoints = Math.round((dist / 1000) * maxWaypointsPer1000km);
-  // console.log('for link:', link)
-  // console.log('min/max wp:', minWaypoints, maxWaypoints)
-  //
+
   const paths = [];
   for (let lineIndex = 0; lineIndex < numLinesPerLink; lineIndex++) {
     const numWaypoints =
       Math.floor(Math.random() * (1 + maxWaypoints - minWaypoints)) +
       minWaypoints;
-    // console.log('numWaypoints', numWaypoints)
+
     const waypoints = [];
     for (let waypointIndex = 0; waypointIndex < numWaypoints; waypointIndex++) {
       const waypointRatio = (1 / (numWaypoints + 1)) * (waypointIndex + 1);
-      // console.log(waypointRatio)
+
       // alternativaly deviate left and right
       const deviationSign = waypointIndex % 2 === 0 ? 1 : -1;
       let deviation =
@@ -102,7 +100,7 @@ const getCurvedPaths = (
         startX + (endX - startX) * waypointRatio,
         startY + (endY - startY) * waypointRatio,
       ];
-      // console.log(midpoint)
+
       const [midX, midY] = midpoint;
       const angle = Math.atan2(endY - startY, endX - startX);
       const waypoint = [
@@ -112,9 +110,8 @@ const getCurvedPaths = (
 
       waypoints.push(waypoint);
     }
-    // console.log('waypoints', waypoints)
+
     const allWaypoints = [link.source, ...waypoints, link.target];
-    // console.log('allWaypoints', allWaypoints)
 
     const distances = [];
     for (
@@ -134,10 +131,7 @@ const getCurvedPaths = (
     if (smooth) {
       feature = bezierSpline(feature, { resolution: 200 });
     }
-    // feature.properties = {
-    //   color: lineIndex === 0 ? arc.color : [...arc.color, 100],
-    //   width: lineIndex === 0 ? 2 : .5
-    // }
+
     paths.push({
       coordinates: feature.geometry.coordinates,
       distances,
@@ -170,7 +164,6 @@ const getPathTrips = (
 ): Trip[] => {
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
-  console.log(numParticles)
   const interval = d / numParticles;
 
   const trips = [];
@@ -206,16 +199,7 @@ const getPathTrips = (
       waypoints,
       color: [...color, 255],
     });
-
-    // waypoints.push({
-    //   ...copyProps,
-    //   waypoints: [
-    //     { coordinates: from, timestamp: timestampStart },
-    //     { coordinates: to, timestamp: timestampEnd },
-    //   ],
-    // });
   }
-  console.log(trips);
   return trips;
 };
 
