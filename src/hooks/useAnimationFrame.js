@@ -4,10 +4,6 @@ import { useLayoutEffect, useRef } from "react";
 
 // Reusable component that also takes dependencies
 export default function useAnimationFrame(cb) {
-  if (typeof performance === "undefined" || typeof window === "undefined") {
-    return;
-  }
-
   const cbRef = useRef();
   const frame = useRef();
   const init = useRef(performance.now());

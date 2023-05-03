@@ -3,7 +3,7 @@ import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, useControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
-import Popup from "@/pages/_popup";
+import Popup from "./_popup";
 import Search from "./_search";
 import "mapbox-gl/dist/mapbox-gl.css";
 import useLayers from "@/hooks/useLayers";

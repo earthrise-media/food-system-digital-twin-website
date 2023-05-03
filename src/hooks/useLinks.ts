@@ -3,9 +3,9 @@ import {
   centroid,
   distance,
   point,
-  lineString,
-  bezierSpline,
+  lineString
 } from "@turf/turf";
+import bezierSpline from "@turf/bezier-spline";
 import {
   County,
   Link,

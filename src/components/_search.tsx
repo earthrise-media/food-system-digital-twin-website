@@ -1,6 +1,6 @@
 import { Feature, FeatureCollection, Geometry } from "geojson";
 import { useCallback, useMemo } from "react";
-import { County } from "./_map";
+import { County } from "@/types";
 import Select from "react-select";
 
 function Search({

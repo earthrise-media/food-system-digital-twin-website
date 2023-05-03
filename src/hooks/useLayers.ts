@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
 import { FeatureCollection, Geometry, Feature } from "geojson";
-import { County, LinkWithPaths, LinkWithTrips } from "@/types";
+import { County, LinkWithTrips } from "@/types";
 import { feature, featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
 
@@ -17,12 +17,13 @@ export default function useLayers(
     if (!links.length) return null;
     const features = links
       .map((l) => {
-        return l.paths.map(({ coordinates }) =>
-          feature({
+        return l.paths.map(({ coordinates }) => ({
+          type: "Feature",
+          geometry: {
             type: "LineString",
             coordinates,
-          })
-        );
+          },
+        } as Feature));
       })
       .flat();
 
@@ -47,7 +48,7 @@ export default function useLayers(
     let layers: (GeoJsonLayer | TripsLayer)[] = [
       new GeoJsonLayer({
         id: "counties",
-        data: counties,
+        data: counties as any,
         stroked: true,
         filled: true,
         getFillColor: [0, 0, 0, 0],
@@ -81,7 +82,7 @@ export default function useLayers(
           getFillColor: [0, 0, 0, 50],
           getLineColor: [0, 0, 0, 150],
           lineWidthScale: 5000,
-          lineWidthMinPixels: .5,
+          lineWidthMinPixels: 0.5,
           getLineWidth: 0.1,
         }),
         new TripsLayer({
@@ -93,7 +94,6 @@ export default function useLayers(
           opacity: 0.8,
           widthMinPixels: 3,
           getWidth: (d) => {
-            // console.log(d.width)
             return 5000;
           },
           capRounded: true,
@@ -108,7 +108,7 @@ export default function useLayers(
       layers.push(
         new GeoJsonLayer({
           id: "lines",
-          data: linksAsGeoJSON,
+          data: linksAsGeoJSON as any,
           stroked: true,
           lineWidthUnits: "pixels",
           getLineWidth: 0.5,

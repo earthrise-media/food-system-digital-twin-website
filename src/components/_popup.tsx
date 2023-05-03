@@ -1,7 +1,7 @@
 import { Feature, Geometry } from "geojson";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { useMap } from "react-map-gl";
-import { County } from "./_map";
+import { County } from "@/types";
 import { Popup as MapboxPopup } from "mapbox-gl";
 import { centroid } from "turf";
 
