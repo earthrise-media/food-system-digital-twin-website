@@ -1,12 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import DeckGL from "@deck.gl/react/typed";
+import React, { useCallback, useMemo, useState } from "react";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, useControl } from "react-map-gl";
-import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
 import Popup from "@/pages/_popup";
 import Search from "./_search";
+import "mapbox-gl/dist/mapbox-gl.css";
+import useLayers from "@/hooks/useLayers";
+import { County } from "@/types";
+import useLinks, {
+  useLinksWithCurvedPaths,
+  useLinksWithTrips,
+} from "@/hooks/useLinks";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -16,24 +21,19 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-export type County = {
-  geoid: string;
-  name: string;
-  stusps: string;
-};
-
 function DeckGLOverlay(props: MapboxOverlayProps) {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
   overlay.setProps(props);
   return null;
 }
 
-function MapWrapper({
-  counties,
-}: {
+type MapWrapperProps = {
   counties: FeatureCollection<Geometry, County>;
-}) {
-  const [currentCountyId, setCurrentCountryId] = useState<string | null>(null);
+  links: Record<string, number>[];
+};
+
+function MapWrapper({ counties, links }: MapWrapperProps) {
+  const [currentCountyId, setCurrentCountyId] = useState<string | null>(null);
 
   const [searching, setSearching] = useState(false);
 
@@ -44,38 +44,30 @@ function MapWrapper({
     );
   }, [currentCountyId, counties]);
 
-  const layers = useMemo(() => {
-    const layers: GeoJsonLayer[] = [
-      new GeoJsonLayer({
-        id: "counties",
-        data: counties,
-        stroked: true,
-        filled: true,
-        getFillColor: [0, 0, 0, 0],
-        getLineColor: [246, 243, 239, 255],
-        lineWidthScale: 5000,
-        lineWidthMinPixels: 1,
-        getLineWidth: 1,
-        onClick: ({ object }) => setCurrentCountryId(object.properties.geoid),
-        pickable: true,
-      }),
-      new GeoJsonLayer({
-        id: "counties-selected",
-        data: [selectedCounty],
-        stroked: true,
-        filled: true,
-        getFillColor: [0, 0, 0, 122],
-        getLineColor: [0, 0, 0, 255],
-        lineWidthScale: 5000,
-        lineWidthMinPixels: 1,
-        getLineWidth: 1,
-      }),
-    ];
-    return layers;
-  }, [counties, selectedCounty]);
+
+  const selectedLinks = useLinks(counties, links, selectedCounty);
+
+  const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
+
+  const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
+
+  const targetCounties = linksWithTrips.flatMap((l) => {
+    const target = counties.features.find(
+      (county) => county.properties.geoid === l.targetId
+    );
+    return target ? [target] : []
+  });
+
+  const layers = useLayers(
+    counties,
+    selectedCounty,
+    targetCounties,
+    linksWithTrips,
+    setCurrentCountyId
+  );
 
   const onSearchCounty = useCallback((geoid: string) => {
-    setCurrentCountryId(geoid);
+    setCurrentCountyId(geoid);
     setSearching(false);
   }, []);
 
