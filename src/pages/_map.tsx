@@ -36,7 +36,7 @@ function MapWrapper({
     const layers: GeoJsonLayer[] = [
       new GeoJsonLayer({
         id: "counties",
-        data: counties,
+        data: counties as any,
         stroked: true,
         filled: true,
         getFillColor: [0, 0, 0, 0],

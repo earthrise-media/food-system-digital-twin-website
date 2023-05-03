@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import db from "../helpers/db";
 
 // https://github.com/visgl/deck.gl/issues/7735
+// Build is still failing with this fix, had to downgrade deck.gl to 8.8.*
 const DeckMap = dynamic(() => import("./_map"), {
   ssr: false,
 });
