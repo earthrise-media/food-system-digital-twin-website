@@ -3,9 +3,9 @@ import {
   centroid,
   distance,
   point,
-  lineString,
-  bezierSpline,
+  lineString
 } from "@turf/turf";
+import bezierSpline from "@turf/bezier-spline";
 import {
   County,
   Link,
@@ -19,10 +19,10 @@ import { CATEGORY_COLORS } from "@/constants";
 import { hexToRgb } from "@/utils";
 
 export default function useLinks(
-  selectedCounty: Feature<Geometry, County> | null,
   counties: FeatureCollection<Geometry, County>,
   // TODO This will need to be fetched from the APIs depending on the target or source county
-  links: Record<string, number>[]
+  links: Record<string, number>[],
+  selectedCounty?: Feature<Geometry, County> | null,
 ): Link[] {
   return useMemo(() => {
     if (!selectedCounty) return [];

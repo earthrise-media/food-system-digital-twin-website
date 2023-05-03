@@ -1,14 +1,13 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-// import MapWrapper from './_map'
 import { FeatureCollection } from "geojson";
-import { getLocalData } from "./getLocalData";
+import { getLocalData } from "../lib/getLocalData";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import papa from "papaparse";
 
 // https://github.com/visgl/deck.gl/issues/7735
-const DeckMap = dynamic(() => import("./_map"), {
+const DeckMap = dynamic(() => import("@/components/_map"), {
   ssr: false,
 });
 

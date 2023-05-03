@@ -3,6 +3,7 @@ import { Position } from "geojson";
 export type County = {
   geoid: string;
   name: string;
+  stusps: string
 };
 
 export type Category =
