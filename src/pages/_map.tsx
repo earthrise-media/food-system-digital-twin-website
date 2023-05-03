@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DeckGL from "@deck.gl/react/typed";
-import { Map } from "react-map-gl";
+import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import { Map, useControl } from "react-map-gl";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection, Geometry } from "geojson";
+import Popup from "@/pages/_popup";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -13,10 +15,17 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-type County = {
+export type County = {
   geoid: string;
   name: string;
+  stusps: string;
 };
+
+function DeckGLOverlay(props: MapboxOverlayProps) {
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  overlay.setProps(props);
+  return null;
+}
 
 function MapWrapper({
   counties,
@@ -26,7 +35,7 @@ function MapWrapper({
   const [currentCountyId, selectCurrentCountyId] = useState(null);
 
   const selectedCounty = useMemo(() => {
-    if (!currentCountyId) return null;
+    if (!currentCountyId) return;
     return counties.features.find(
       (county) => county.properties.geoid === currentCountyId
     );
@@ -63,16 +72,14 @@ function MapWrapper({
   }, [counties, selectedCounty]);
 
   return (
-    <DeckGL
+    <Map
+      mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+      mapStyle="mapbox://styles/fausto-perez/clgnkv1d000dl01qucf7wc8zc"
       initialViewState={INITIAL_VIEW_STATE}
-      controller={true}
-      layers={layers}
     >
-      <Map
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-        mapStyle="mapbox://styles/fausto-perez/clgnkv1d000dl01qucf7wc8zc"
-      />
-    </DeckGL>
+      <DeckGLOverlay layers={layers} />
+      <Popup selectedCounty={selectedCounty} />
+    </Map>
   );
 }
 

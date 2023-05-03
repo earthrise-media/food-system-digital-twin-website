@@ -25,6 +25,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "@types/geojson": "^7946.0.10"
+    "@types/geojson": "^7946.0.10",
+    "@types/turf": "^3.5.32"
   }
 }
