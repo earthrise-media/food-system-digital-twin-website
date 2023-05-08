@@ -22,9 +22,9 @@ export default async function handler(req, res) {
 
   // Query county
   const county = await db("counties")
-    .select("id", "meta")
+    .select("id", "properties")
     .where("id", countyId)
     .first();
 
-  return res.status(200).json({ county: { id: county.id, ...county.meta } });
+  return res.status(200).json({ ...county });
 }
