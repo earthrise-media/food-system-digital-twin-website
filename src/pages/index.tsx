@@ -5,13 +5,14 @@ import { getLocalData } from "../lib/getLocalData";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import papa from "papaparse";
+import { Style } from "mapbox-gl";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
   ssr: false,
 });
 
-export default function Home({ counties }: { counties: FeatureCollection }) {
+export default function Home({ counties, mapStyle }: { counties: FeatureCollection, mapStyle: Style }) {
   const [links, setLinks] = useState<Record<string, number>[]>();
   useEffect(() => {
     fetch("/synthetic_kcal_state_crop_1_results_pivoted.csv")
@@ -31,17 +32,18 @@ export default function Home({ counties }: { counties: FeatureCollection }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        {links && <DeckMap counties={counties as any} links={links} />}
+        {links && <DeckMap counties={counties as any} mapStyle={mapStyle} links={links} />}
       </main>
     </>
   );
 }
 
 export async function getStaticProps() {
-  const counties = await getLocalData();
+  const { counties, mapStyle } = await getLocalData();
   return {
     props: {
       counties,
+      mapStyle
     },
   };
 }
