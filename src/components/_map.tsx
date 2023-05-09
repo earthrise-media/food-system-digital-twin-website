@@ -13,6 +13,7 @@ import useLinks, {
   useLinksWithTrips,
 } from "@/hooks/useLinks";
 import { Leva } from "leva";
+import useKeyPress from "@/hooks/useKeyPress";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -71,6 +72,12 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
     setSearching(false);
   }, []);
 
+  const [uiVisible, setUiVisible] = useState(false);
+  const toggleUI = useCallback(() => {
+    setUiVisible((v) => !v);
+  }, [setUiVisible]);
+  useKeyPress("u", toggleUI);
+
   return (
     <>
       <Map
@@ -87,7 +94,7 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
       {searching && (
         <Search counties={counties} onSelectCounty={onSearchCounty} />
       )}
-      <Leva oneLineLabels={true} />
+      <Leva oneLineLabels={true} hidden={!uiVisible} />
     </>
   );
 }
