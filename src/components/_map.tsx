@@ -14,6 +14,7 @@ import useLinks, {
 } from "@/hooks/useLinks";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
+import { Style } from "mapbox-gl";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -32,9 +33,10 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
 type MapWrapperProps = {
   counties: FeatureCollection<Geometry, County>;
   links: Record<string, number>[];
+  mapStyle: Style;
 };
 
-function MapWrapper({ counties, links }: MapWrapperProps) {
+function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
   const [currentCountyId, setCurrentCountyId] = useState<string | null>(null);
 
   const [searching, setSearching] = useState(false);
@@ -82,7 +84,7 @@ function MapWrapper({ counties, links }: MapWrapperProps) {
     <>
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-        mapStyle="mapbox://styles/fausto-perez/clgnkv1d000dl01qucf7wc8zc"
+        mapStyle={mapStyle}
         initialViewState={INITIAL_VIEW_STATE}
       >
         <DeckGLOverlay layers={layers} />
