@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import papa from "papaparse";
 import { Style } from "mapbox-gl";
+import FlowInfo from "@/components/_flowInfo";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
@@ -33,6 +34,7 @@ export default function Home({ counties, mapStyle }: { counties: FeatureCollecti
       </Head>
       <main className={styles.main}>
         {links && <DeckMap counties={counties as any} mapStyle={mapStyle} links={links} />}
+        <FlowInfo />
       </main>
     </>
   );
