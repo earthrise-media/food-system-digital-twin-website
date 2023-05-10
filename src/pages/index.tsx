@@ -7,11 +7,17 @@ import { useEffect, useState } from "react";
 import papa from "papaparse";
 import { Style } from "mapbox-gl";
 import FlowInfo from "@/components/_flowInfo";
+import cx from "classnames";
+import { Kumbh_Sans } from 'next/font/google';
+
+
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
   ssr: false,
 });
+
+const kumbhSans = Kumbh_Sans({ subsets: ['latin'] });
 
 export default function Home({ counties, mapStyle }: { counties: FeatureCollection, mapStyle: Style }) {
   const [links, setLinks] = useState<Record<string, number>[]>();
@@ -32,7 +38,7 @@ export default function Home({ counties, mapStyle }: { counties: FeatureCollecti
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
+      <main className={cx(styles.main, kumbhSans.className)}>
         {links && <DeckMap counties={counties as any} mapStyle={mapStyle} links={links} />}
         <FlowInfo />
       </main>

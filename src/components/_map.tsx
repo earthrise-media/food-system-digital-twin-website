@@ -83,7 +83,7 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         <Popup selectedCounty={selectedCounty} />
       </Map>
-      <div style={{ position: "absolute" }}>
+      <div style={{ position: "absolute", top: 0 }}>
         <button onClick={() => setSearching(!searching)}>Search county</button>
       </div>
       {searching && (
