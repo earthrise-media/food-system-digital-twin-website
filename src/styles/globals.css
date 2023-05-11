@@ -12,7 +12,8 @@
   --foreground-50: rgba(var(--foreground-rgb), 0.5);
   --foreground-10: rgba(var(--foreground-rgb), 0.1);
   --background: rgb(var(--background-rgb));
-  --flows-info-background: rgba(var(--background-rgb), 0.85);
+  --background-50: rgba(var(--background-rgb), 0.5);
+  --background-80: rgba(var(--background-rgb), 0.85);
   --background-2: rgb(var(--background-2-rgb));
 
   --font-weight-normal: 500;
@@ -70,6 +71,8 @@ button {
 
   /* Corrects inability to style clickable `input` types in iOS */
   -webkit-appearance: none;
+
+  cursor: pointer;
 }
 
 ul {

@@ -22,7 +22,7 @@
 }
 
 .content {
-  background: var(--flows-info-background);
+  background: var(--background-80);
   border-radius: 0 0 var(--border-radius) var(--border-radius);
   padding-top: 30px;
 }
