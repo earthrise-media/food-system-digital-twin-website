@@ -1,18 +1,26 @@
 import React from "react";
 import styles from "@/styles/FlowInfo.module.css";
 import { CATEGORY_COLORS } from "@/constants";
+import cx from "classnames";
+import Logo from "./_logo";
 
 type FlowInfoProps = {};
 
 function FlowInfo({}: FlowInfoProps) {
   return (
     <div className={styles.flowInfo}>
+      <div className={styles.logoWrapper}>
+        <Logo />
+      </div>
+
       <nav>
         <button>Search county</button>
-        <h1>New York City, NY</h1>
+        <h2>New York City, NY</h2>
         <div className={styles.tabBar}>
-          <button className={styles.selected}>Consumer</button>
-          <button>Producer</button>
+          <button className={cx(styles.consumer, styles.selected)}>
+            Consumer
+          </button>
+          <button className={cx(styles.producer)}>Producer</button>
         </div>
       </nav>
       <div className={styles.content}>
@@ -31,7 +39,7 @@ function FlowInfo({}: FlowInfoProps) {
           </dl>
         </div>
         <div className={styles.stats}>
-          <h2>Main crops consumed:</h2>
+          <h3>Main crops consumed:</h3>
           <ul className={styles.crops}>
             <li
               style={

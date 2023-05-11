@@ -1,9 +1,13 @@
 .flowInfo {
   position: absolute;
   z-index: 3;
-  top: 40px;
+  top: 10px;
   left: 40px;
   filter: drop-shadow(0px 0px 25px rgba(41, 41, 41, 0.1));
+}
+
+.logoWrapper {
+  transform: scale(0.5) translateX(-50%);
 }
 
 .flowInfo > * {
@@ -25,10 +29,13 @@
 
 .flowInfo > nav > button {
   font-size: var(--font-size-caption);
-  color: var(--background-50);
+  opacity: 0.5;
+  background: url("/icons/search.svg");
+  background-repeat: no-repeat;
+  padding: 2px 0 5px 20px;
 }
 
-.flowInfo > nav > h1 {
+.flowInfo > nav > h2 {
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
   margin-bottom: 20px;
@@ -36,14 +43,23 @@
 
 .tabBar > button {
   margin-right: 20px;
-  color: var(--background-50);
-  padding: 4px;
+  color: var(--background);
+  padding: 5px 0 5px 25px;
   font-weight: var(--font-weight-bold);
+  background-repeat: no-repeat;
+  opacity: 0.5;
 }
 
 .tabBar > button.selected {
-  color: var(--background);
+  opacity: 1;
   border-bottom: 2px solid var(--background);
+}
+
+.consumer {
+  background: url("/icons/consumer.svg");
+}
+.producer {
+  background: url("/icons/producer.svg");
 }
 
 .summary {
@@ -76,7 +92,7 @@
   padding-top: 15px;
 }
 
-.stats > h2 {
+.stats > h3 {
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-normal);
   margin-bottom: 10px;
