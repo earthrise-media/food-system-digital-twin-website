@@ -1,5 +1,6 @@
 :root {
   --border-radius: 16px;
+  --border-radius-small: 4px;
   --padding: 24px;
   --font: "Kumbh Sans", sans-serif;
 
@@ -79,4 +80,24 @@ ul {
 
 .mapboxgl-popup {
   z-index: 2;
+}
+.mapboxgl-popup-content {
+  padding: 0 !important;
+  font-family: var(--font);
+  font-size: var(--font-size-body);
+}
+.mapboxgl-popup-content > dl > dt {
+  padding: 5px 10px;
+  border-radius: var(--border-radius-small) var(--border-radius-small) 0 0;
+  background: var(--foreground);
+  color: var(--background);
+  font-weight: var(--font-weight-bold);
+}
+.mapboxgl-popup-content > dl > dd {
+  padding: 5px 10px 5px 35px;
+  border-radius: 0 0 var(--border-radius-small) var(--border-radius-small);
+  color: var(--foreground);
+  background: url("/icons/consumer-dark.svg");
+  background-repeat: no-repeat;
+  background-position: 10px 4px;
 }

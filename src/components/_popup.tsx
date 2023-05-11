@@ -16,14 +16,16 @@ function Popup({
     if (!map || !selectedCounty) return;
 
     const { name, stusps } = selectedCounty.properties;
-    const popup = new MapboxPopup({ closeOnClick: false })
+    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false })
       .setLngLat(centroid(selectedCounty).geometry.coordinates as any)
-      .setHTML(`${name}, ${stusps}`)
+      .setHTML(
+        `<dl><dt>${name}, ${stusps}</dt><dd><b>~323,234 Kcal</b> consumed</dd></dl>`
+      )
       .addTo(map.getMap());
 
-      return () => {
-        popup.remove();
-      }
+    return () => {
+      popup.remove();
+    };
   }, [map, selectedCounty]);
 
   return null;
