@@ -1,29 +1,36 @@
 import { useMemo, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
 import { FeatureCollection, Geometry, Feature } from "geojson";
 import { County, LinkWithTrips } from "@/types";
-import { feature, featureCollection } from "@turf/turf";
+import { featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
+import { countiesAtom, countyAtom } from "@/atoms";
+import useSelectedCounty from "./useSelectedCounty";
 
 export default function useLayers(
-  counties: FeatureCollection<Geometry, County>,
-  selectedCounty: Feature<Geometry, County> | undefined,
   targetCounties: Feature<Geometry, County>[],
-  links: LinkWithTrips[],
-  selectCurrentCountyId: (geoid: string | null) => void
+  links: LinkWithTrips[]
 ) {
+  const setSelectedCountId = useSetAtom(countyAtom);
+  const counties = useAtomValue(countiesAtom);
+  const selectedCounty = useSelectedCounty();
+
   const linksAsGeoJSON = useMemo(() => {
     if (!links.length) return null;
     const features = links
       .map((l) => {
-        return l.paths.map(({ coordinates }) => ({
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates,
-          },
-        } as Feature));
+        return l.paths.map(
+          ({ coordinates }) =>
+            ({
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates,
+              },
+            } as Feature)
+        );
       })
       .flat();
 
@@ -57,7 +64,7 @@ export default function useLayers(
         lineWidthScale: 5000,
         lineWidthMinPixels: 1,
         getLineWidth: 1,
-        onClick: ({ object }) => selectCurrentCountyId(object.properties.geoid),
+        onClick: ({ object }) => setSelectedCountId(object.properties.geoid),
         pickable: true,
       }),
     ];
@@ -124,10 +131,10 @@ export default function useLayers(
     counties,
     selectedCounty,
     targetCounties,
-    selectCurrentCountyId,
     linksAsGeoJSON,
     allTrips,
     currentFrame,
+    setSelectedCountId,
   ]);
   return layers;
 }

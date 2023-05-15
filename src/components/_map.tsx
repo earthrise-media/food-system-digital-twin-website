@@ -1,18 +1,18 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, useControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { FeatureCollection, Geometry } from "geojson";
+import { useAtomValue } from "jotai";
 import Popup from "./_popup";
-import Search from "./_search";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Style } from "mapbox-gl";
 import useLayers from "@/hooks/useLayers";
-import { County } from "@/types";
 import useLinks, {
   useLinksWithCurvedPaths,
   useLinksWithTrips,
 } from "@/hooks/useLinks";
-import { Style } from "mapbox-gl";
+import useSelectedCounty from "@/hooks/useSelectedCounty";
+import { countiesAtom } from "@/atoms";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -29,47 +29,28 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
 }
 
 type MapWrapperProps = {
-  counties: FeatureCollection<Geometry, County>;
   links: Record<string, number>[];
   mapStyle: Style;
 };
 
-function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
-  const [currentCountyId, setCurrentCountyId] = useState<string | null>(null);
-
-  const selectedCounty = useMemo(() => {
-    if (!currentCountyId) return;
-    return counties.features.find(
-      (county) => county.properties.geoid === currentCountyId
-    );
-  }, [currentCountyId, counties]);
-
-
-  const selectedLinks = useLinks(counties, links, selectedCounty);
-
+function MapWrapper({ links, mapStyle }: MapWrapperProps) {
+  const counties = useAtomValue(countiesAtom);
+  const selectedCounty = useSelectedCounty();
+  const selectedLinks = useLinks(links);
   const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
-
   const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
 
-  const targetCounties = linksWithTrips.flatMap((l) => {
-    const target = counties.features.find(
-      (county) => county.properties.geoid === l.targetId
-    );
-    return target ? [target] : []
-  });
+  const targetCounties = useMemo(() => {
+    if (!counties) return [];
+    return linksWithTrips.flatMap((l) => {
+      const target = counties.features.find(
+        (county) => county.properties.geoid === l.targetId
+      );
+      return target ? [target] : [];
+    });
+  }, [counties, linksWithTrips]);
 
-  const layers = useLayers(
-    counties,
-    selectedCounty,
-    targetCounties,
-    linksWithTrips,
-    setCurrentCountyId
-  );
-
-  // const onSearchCounty = useCallback((geoid: string) => {
-  //   setCurrentCountyId(geoid);
-  //   setSearching(false);
-  // }, []);
+  const layers = useLayers(targetCounties, linksWithTrips);
 
   return (
     <>

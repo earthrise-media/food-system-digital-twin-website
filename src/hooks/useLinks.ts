@@ -1,10 +1,5 @@
 import { FeatureCollection, Geometry, Feature, Position } from "geojson";
-import {
-  centroid,
-  distance,
-  point,
-  lineString
-} from "@turf/turf";
+import { centroid, distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import {
   County,
@@ -14,18 +9,21 @@ import {
   Path,
   Trip,
 } from "@/types";
+import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORY_COLORS } from "@/constants";
 import { hexToRgb } from "@/utils";
+import { countiesAtom } from "@/atoms";
+import useSelectedCounty from "./useSelectedCounty";
 
 export default function useLinks(
-  counties: FeatureCollection<Geometry, County>,
   // TODO This will need to be fetched from the APIs depending on the target or source county
-  links: Record<string, number>[],
-  selectedCounty?: Feature<Geometry, County> | null,
+  links: Record<string, number>[]
 ): Link[] {
+  const counties = useAtomValue(countiesAtom);
+  const selectedCounty = useSelectedCounty();
   return useMemo(() => {
-    if (!selectedCounty) return [];
+    if (!selectedCounty || !counties) return [];
     const selectedCountyLinks = links.find(
       (l) => l.Supply?.toString() === selectedCounty?.properties.geoid
     );
@@ -157,9 +155,9 @@ const getPathTrips = (
     // numParticlesPer1000K = 100,
     fromTimestamp = 0,
     toTimeStamp = 100,
-    intervalHumanize = .5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
+    intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     speedKps = 100, // Speed in km per second
-    speedKpsHumanize = .5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
+    speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
   } = {}
 ): Trip[] => {
   const d = toTimeStamp - fromTimestamp;

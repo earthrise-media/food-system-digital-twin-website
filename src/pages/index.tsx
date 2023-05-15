@@ -1,15 +1,19 @@
-import Head from "next/head";
-import styles from "@/styles/Home.module.css";
-import { FeatureCollection } from "geojson";
-import { getLocalData } from "../lib/getLocalData";
 import dynamic from "next/dynamic";
+import Head from "next/head";
+import cx from "classnames";
 import { useEffect, useState } from "react";
+import { FeatureCollection, Geometry } from "geojson";
 import papa from "papaparse";
 import { Style } from "mapbox-gl";
+import { useSetAtom } from "jotai";
+
+import styles from "@/styles/Home.module.css";
+import { getLocalData } from "../lib/getLocalData";
 import FlowInfo from "@/components/_flowInfo";
-import cx from "classnames";
 import { Kumbh_Sans } from "next/font/google";
 import Search from "@/components/_search";
+import { countiesAtom } from "@/atoms";
+import { County } from "@/types";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
@@ -26,6 +30,7 @@ export default function Home({
   mapStyle: Style;
 }) {
   const [links, setLinks] = useState<Record<string, number>[]>();
+  const setCounties = useSetAtom(countiesAtom);
   useEffect(() => {
     fetch("/synthetic_kcal_state_crop_1_results_pivoted.csv")
       .then((response) => response.text())
@@ -37,6 +42,10 @@ export default function Home({
         setLinks(rows as Record<string, number>[]);
       });
   }, []);
+
+  useEffect(() => {
+    setCounties(counties as FeatureCollection<Geometry, County>);
+  }, [setCounties, counties]);
 
   // TODO handle app state
   const searching = false;
