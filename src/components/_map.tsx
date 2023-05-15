@@ -35,7 +35,6 @@ type MapWrapperProps = {
 
 function MapWrapper({ links, mapStyle }: MapWrapperProps) {
   const counties = useAtomValue(countiesAtom);
-  const selectedCounty = useSelectedCounty();
   const selectedLinks = useLinks(links);
   const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
   const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
@@ -60,7 +59,7 @@ function MapWrapper({ links, mapStyle }: MapWrapperProps) {
         initialViewState={INITIAL_VIEW_STATE}
       >
         <DeckGLOverlay layers={layers} />
-        <Popup selectedCounty={selectedCounty} />
+        <Popup />
       </Map>
     </>
   );

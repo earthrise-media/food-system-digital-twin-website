@@ -3,10 +3,12 @@ import styles from "@/styles/FlowInfo.module.css";
 import { CATEGORY_COLORS } from "@/constants";
 import cx from "classnames";
 import Logo from "./_logo";
+import useSelectedCounty from "@/hooks/useSelectedCounty";
 
 type FlowInfoProps = {};
 
 function FlowInfo({}: FlowInfoProps) {
+  const selectedCounty = useSelectedCounty();
   return (
     <div className={styles.flowInfo}>
       <div className={styles.logoWrapper}>
@@ -15,7 +17,7 @@ function FlowInfo({}: FlowInfoProps) {
 
       <nav>
         <button>Search county</button>
-        <h2>New York City, NY</h2>
+        <h2>{selectedCounty?.properties.name}, {selectedCounty?.properties.stusps}</h2>
         <div className={styles.tabBar}>
           <button className={cx(styles.consumer, styles.selected)}>
             Consumer

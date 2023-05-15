@@ -4,13 +4,11 @@ import { useMap } from "react-map-gl";
 import { County } from "@/types";
 import { Popup as MapboxPopup } from "mapbox-gl";
 import { centroid } from "turf";
+import useSelectedCounty from "@/hooks/useSelectedCounty";
 
-function Popup({
-  selectedCounty,
-}: {
-  selectedCounty?: Feature<Geometry, County>;
-}) {
+function Popup() {
   const { current: map } = useMap();
+  const selectedCounty = useSelectedCounty();
 
   useEffect(() => {
     if (!map || !selectedCounty) return;
