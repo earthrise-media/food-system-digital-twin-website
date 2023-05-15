@@ -43,3 +43,5 @@ export type Trip = {
 export type LinkWithTrips = LinkWithPaths & {
   trips: Trip[];
 };
+
+export type FlowType = 'producer' | 'consumer';

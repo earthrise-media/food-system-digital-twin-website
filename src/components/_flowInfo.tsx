@@ -2,16 +2,17 @@ import React, { use } from "react";
 import styles from "@/styles/FlowInfo.module.css";
 import { CATEGORY_COLORS } from "@/constants";
 import cx from "classnames";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import Logo from "./_logo";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
-import { searchAtom } from "@/atoms";
+import { flowTypeAtom, searchAtom } from "@/atoms";
 
 type FlowInfoProps = {};
 
 function FlowInfo({}: FlowInfoProps) {
   const selectedCounty = useSelectedCounty();
   const setSearch = useSetAtom(searchAtom);
+  const [flowType, setFlowType] = useAtom(flowTypeAtom);
   return (
     <div className={styles.flowInfo}>
       <div className={styles.logoWrapper}>
@@ -24,10 +25,22 @@ function FlowInfo({}: FlowInfoProps) {
           {selectedCounty?.properties.name}, {selectedCounty?.properties.stusps}
         </h2>
         <div className={styles.tabBar}>
-          <button className={cx(styles.consumer, styles.selected)}>
+          <button
+            onClick={() => setFlowType("consumer")}
+            className={cx(styles.consumer, {
+              [styles.selected]: flowType === "consumer",
+            })}
+          >
             Consumer
           </button>
-          <button className={cx(styles.producer)}>Producer</button>
+          <button
+            onClick={() => setFlowType("producer")}
+            className={cx(styles.producer, {
+              [styles.selected]: flowType === "producer",
+            })}
+          >
+            Producer
+          </button>
         </div>
       </nav>
       <div className={styles.content}>
