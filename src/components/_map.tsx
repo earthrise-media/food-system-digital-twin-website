@@ -11,7 +11,6 @@ import useLinks, {
   useLinksWithCurvedPaths,
   useLinksWithTrips,
 } from "@/hooks/useLinks";
-import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { countiesAtom } from "@/atoms";
 
 const INITIAL_VIEW_STATE = {

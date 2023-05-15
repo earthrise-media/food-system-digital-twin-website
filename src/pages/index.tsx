@@ -61,7 +61,6 @@ export default function Home({
       <main className={cx(styles.main, kumbhSans.className)}>
         {links && (
           <DeckMap
-            counties={counties as any}
             mapStyle={mapStyle}
             links={links}
           />
