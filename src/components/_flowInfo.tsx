@@ -1,14 +1,17 @@
-import React from "react";
+import React, { use } from "react";
 import styles from "@/styles/FlowInfo.module.css";
 import { CATEGORY_COLORS } from "@/constants";
 import cx from "classnames";
+import { useSetAtom } from "jotai";
 import Logo from "./_logo";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
+import { searchAtom } from "@/atoms";
 
 type FlowInfoProps = {};
 
 function FlowInfo({}: FlowInfoProps) {
   const selectedCounty = useSelectedCounty();
+  const setSearch = useSetAtom(searchAtom);
   return (
     <div className={styles.flowInfo}>
       <div className={styles.logoWrapper}>
@@ -16,8 +19,10 @@ function FlowInfo({}: FlowInfoProps) {
       </div>
 
       <nav>
-        <button>Search county</button>
-        <h2>{selectedCounty?.properties.name}, {selectedCounty?.properties.stusps}</h2>
+        <button onClick={() => setSearch(true)}>Search county</button>
+        <h2>
+          {selectedCounty?.properties.name}, {selectedCounty?.properties.stusps}
+        </h2>
         <div className={styles.tabBar}>
           <button className={cx(styles.consumer, styles.selected)}>
             Consumer

@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import { FeatureCollection, Geometry } from "geojson";
 import papa from "papaparse";
 import { Style } from "mapbox-gl";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 
 import styles from "@/styles/Home.module.css";
 import { getLocalData } from "../lib/getLocalData";
 import FlowInfo from "@/components/_flowInfo";
 import { Kumbh_Sans } from "next/font/google";
 import Search from "@/components/_search";
-import { countiesAtom } from "@/atoms";
+import { countiesAtom, searchAtom } from "@/atoms";
 import { County } from "@/types";
 
 // https://github.com/visgl/deck.gl/issues/7735
@@ -31,6 +31,8 @@ export default function Home({
 }) {
   const [links, setLinks] = useState<Record<string, number>[]>();
   const setCounties = useSetAtom(countiesAtom);
+  const search = useAtomValue(searchAtom);
+
   useEffect(() => {
     fetch("/synthetic_kcal_state_crop_1_results_pivoted.csv")
       .then((response) => response.text())
@@ -47,9 +49,6 @@ export default function Home({
     setCounties(counties as FeatureCollection<Geometry, County>);
   }, [setCounties, counties]);
 
-  // TODO handle app state
-  const searching = false;
-
   return (
     <>
       <Head>
@@ -59,14 +58,9 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={cx(styles.main, kumbhSans.className)}>
-        {links && (
-          <DeckMap
-            mapStyle={mapStyle}
-            links={links}
-          />
-        )}
+        {links && <DeckMap mapStyle={mapStyle} links={links} />}
         <FlowInfo />
-        {searching && <Search counties={counties as any} />}
+        {search && <Search counties={counties as any} />}
       </main>
     </>
   );

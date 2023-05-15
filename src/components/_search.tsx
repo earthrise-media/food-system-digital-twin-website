@@ -2,7 +2,9 @@ import { Feature, FeatureCollection, Geometry } from "geojson";
 import { useCallback, useMemo } from "react";
 import { County } from "@/types";
 import Select from "react-select";
+import { useSetAtom } from "jotai";
 import styles from "@/styles/Search.module.css";
+import { searchAtom } from "@/atoms";
 
 function Search({
   counties,
@@ -11,6 +13,7 @@ function Search({
   counties: FeatureCollection<Geometry, County>;
   onSelectCounty?: (geoid: string) => void;
 }) {
+  const setSearch = useSetAtom(searchAtom);
   const options = useMemo(() => {
     return counties.features.map((county) => {
       const { name, stusps } = county.properties;
@@ -30,7 +33,7 @@ function Search({
 
   return (
     <div className={styles.wrapper}>
-      <button className={styles.close} />
+      <button className={styles.close} onClick={() => setSearch(false)} />
 
       <Select
         options={options}
