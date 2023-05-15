@@ -33,6 +33,8 @@
   background: url("/icons/search.svg");
   background-repeat: no-repeat;
   padding: 2px 0 5px 20px;
+  width: 100%;
+  text-align: left;
 }
 
 .flowInfo > nav > h2 {

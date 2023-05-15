@@ -60,7 +60,7 @@ export default function Home({
       <main className={cx(styles.main, kumbhSans.className)}>
         {links && <DeckMap mapStyle={mapStyle} links={links} />}
         <FlowInfo />
-        {search && <Search counties={counties as any} />}
+        {search && <Search />}
       </main>
     </>
   );
