@@ -24,6 +24,7 @@
     "fs-extra": "^11.1.1",
     "knex": "^2.4.2",
     "knex-postgis": "^0.14.3",
+    "leva": "^0.9.34",
     "mapbox-gl": "^2.14.1",
     "next": "13.3.0",
     "next-swagger-doc": "^0.3.6",
