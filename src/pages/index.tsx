@@ -12,14 +12,42 @@ const DeckMap = dynamic(() => import("@/components/_map"), {
   ssr: false,
 });
 
-export default function Home({ counties, mapStyle }: { counties: FeatureCollection, mapStyle: Style }) {
+export default function Home({
+  counties,
+  mapStyle,
+}: {
+  counties: FeatureCollection;
+  mapStyle: Style;
+}) {
   const [links, setLinks] = useState<Record<string, number>[]>();
   useEffect(() => {
     fetch("/synthetic_kcal_state_crop_1_results_pivoted.csv")
-      .then((response) => response.text())
+      .then((response) => {
+        if (!response.ok) {
+          return null;
+        }
+        return response.text();
+      })
       .then((data) => {
-        const rows = papa.parse(data, { header: true, dynamicTyping: true }).data;
-        setLinks(rows as Record<string, number>[]);
+        if (data) {
+          const rows = papa.parse(data, {
+            header: true,
+            dynamicTyping: true,
+          }).data;
+          console.log(rows);
+          setLinks(rows as Record<string, number>[]);
+        } else {
+          const links = counties.features.map((county) => {
+            const link: Record<string, number> = {
+              Supply: county?.properties?.geoid,
+            }
+            counties.features.forEach((target) => {
+              link[target?.properties?.geoid] = 15000 * Math.random();
+            });
+            return link
+          })
+          setLinks(links);
+        };
       });
   }, []);
 
@@ -32,7 +60,13 @@ export default function Home({ counties, mapStyle }: { counties: FeatureCollecti
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        {links && <DeckMap counties={counties as any} mapStyle={mapStyle} links={links} />}
+        {links && (
+          <DeckMap
+            counties={counties as any}
+            mapStyle={mapStyle}
+            links={links}
+          />
+        )}
       </main>
     </>
   );
@@ -43,7 +77,7 @@ export async function getStaticProps() {
   return {
     props: {
       counties,
-      mapStyle
+      mapStyle,
     },
   };
 }
