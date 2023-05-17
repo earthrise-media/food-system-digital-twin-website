@@ -12,6 +12,8 @@ import useLinks, {
   useLinksWithCurvedPaths,
   useLinksWithTrips,
 } from "@/hooks/useLinks";
+import { Leva } from "leva";
+import useKeyPress from "@/hooks/useKeyPress";
 import { Style } from "mapbox-gl";
 
 const INITIAL_VIEW_STATE = {
@@ -46,7 +48,6 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
     );
   }, [currentCountyId, counties]);
 
-
   const selectedLinks = useLinks(counties, links, selectedCounty);
 
   const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
@@ -57,7 +58,7 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
     const target = counties.features.find(
       (county) => county.properties.geoid === l.targetId
     );
-    return target ? [target] : []
+    return target ? [target] : [];
   });
 
   const layers = useLayers(
@@ -72,6 +73,12 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
     setCurrentCountyId(geoid);
     setSearching(false);
   }, []);
+
+  const [uiVisible, setUiVisible] = useState(false);
+  const toggleUI = useCallback(() => {
+    setUiVisible((v) => !v);
+  }, [setUiVisible]);
+  useKeyPress("u", toggleUI);
 
   return (
     <>
@@ -89,6 +96,7 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
       {searching && (
         <Search counties={counties} onSelectCounty={onSearchCounty} />
       )}
+      <Leva oneLineLabels={true} hidden={!uiVisible} />
     </>
   );
 }
