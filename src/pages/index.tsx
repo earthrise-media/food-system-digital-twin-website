@@ -35,13 +35,31 @@ export default function Home({
 
   useEffect(() => {
     fetch("/synthetic_kcal_state_crop_1_results_pivoted.csv")
-      .then((response) => response.text())
+      .then((response) => {
+        if (!response.ok) {
+          return null;
+        }
+        return response.text();
+      })
       .then((data) => {
-        const rows = papa.parse(data, {
-          header: true,
-          dynamicTyping: true,
-        }).data;
-        setLinks(rows as Record<string, number>[]);
+        if (data) {
+          const rows = papa.parse(data, {
+            header: true,
+            dynamicTyping: true,
+          }).data;
+          setLinks(rows as Record<string, number>[]);
+        } else {
+          const links = counties.features.map((county) => {
+            const link: Record<string, number> = {
+              Supply: county?.properties?.geoid,
+            }
+            counties.features.forEach((target) => {
+              link[target?.properties?.geoid] = Math.floor(15000 * Math.random());
+            });
+            return link
+          })
+          setLinks(links);
+        };
       });
   }, []);
 

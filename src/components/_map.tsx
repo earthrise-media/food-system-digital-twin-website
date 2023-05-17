@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, useControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -12,6 +12,8 @@ import useLinks, {
   useLinksWithTrips,
 } from "@/hooks/useLinks";
 import { countiesAtom } from "@/atoms";
+import { Leva } from "leva";
+import useKeyPress from "@/hooks/useKeyPress";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -34,6 +36,7 @@ type MapWrapperProps = {
 
 function MapWrapper({ links, mapStyle }: MapWrapperProps) {
   const counties = useAtomValue(countiesAtom);
+  console.log(links)
   const selectedLinks = useLinks(links);
   const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
   const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
@@ -50,6 +53,12 @@ function MapWrapper({ links, mapStyle }: MapWrapperProps) {
 
   const layers = useLayers(targetCounties, linksWithTrips);
 
+  const [uiVisible, setUiVisible] = useState(false);
+  const toggleUI = useCallback(() => {
+    setUiVisible((v) => !v);
+  }, [setUiVisible]);
+  useKeyPress("u", toggleUI);
+
   return (
     <>
       <Map
@@ -60,6 +69,7 @@ function MapWrapper({ links, mapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         <Popup />
       </Map>
+      <Leva oneLineLabels={true} hidden={!uiVisible} />
     </>
   );
 }

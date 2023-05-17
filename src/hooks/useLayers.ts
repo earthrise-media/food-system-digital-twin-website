@@ -8,6 +8,7 @@ import { featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
 import { countiesAtom, countyAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
+import { useControls } from "leva";
 
 export default function useLayers(
   targetCounties: Feature<Geometry, County>[],
@@ -16,6 +17,10 @@ export default function useLayers(
   const setSelectedCountId = useSetAtom(countyAtom);
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useSelectedCounty();
+  const { linesColor, animationSpeed } = useControls("layers", {
+    linesColor: { r: 200, b: 125, g: 106, a: 0.2 },
+    animationSpeed: 1,
+  });
 
   const linksAsGeoJSON = useMemo(() => {
     if (!links.length) return null;
@@ -44,12 +49,12 @@ export default function useLayers(
 
   const [currentTime, setCurrentTime] = useState(0);
   useAnimationFrame((e: any) => setCurrentTime(e.time));
-  const animationSpeed = 1;
+
   const loopLength = 100;
 
   const currentFrame = useMemo(() => {
     return (currentTime * animationSpeed) % loopLength;
-  }, [currentTime]);
+  }, [currentTime, animationSpeed]);
 
   const layers = useMemo(() => {
     let layers: (GeoJsonLayer | TripsLayer)[] = [
@@ -120,7 +125,12 @@ export default function useLayers(
           stroked: true,
           lineWidthUnits: "pixels",
           getLineWidth: 0.5,
-          getLineColor: [255, 0, 255, 0],
+          getLineColor: [
+            linesColor.r,
+            linesColor.g,
+            linesColor.b,
+            linesColor.a * 255,
+          ],
           // getLineColor: (d: any) => d.properties.color,
           // getLineWidth: (d: any) => d.properties.width,
         })
@@ -135,6 +145,7 @@ export default function useLayers(
     allTrips,
     currentFrame,
     setSelectedCountId,
+    linesColor,
   ]);
   return layers;
 }

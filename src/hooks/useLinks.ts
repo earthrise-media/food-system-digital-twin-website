@@ -15,11 +15,13 @@ import { CATEGORY_COLORS } from "@/constants";
 import { hexToRgb } from "@/utils";
 import { countiesAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
+import { useControls } from "leva";
 
 export default function useLinks(
   // TODO This will need to be fetched from the APIs depending on the target or source county
   links: Record<string, number>[]
 ): Link[] {
+  const { numFlows } = useControls("flows", { numFlows: 10 });
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useSelectedCounty();
   return useMemo(() => {
@@ -52,12 +54,12 @@ export default function useLinks(
 
     // TODO Use top 10 instead of random ones
     let sample: Link[] = [];
-    for (let index = 0; index < 10; index++) {
+    for (let index = 0; index < numFlows; index++) {
       const randomIndex = Math.floor(Math.random() * selectedLinks.length);
       sample = [...sample, selectedLinks[randomIndex]];
     }
     return sample;
-  }, [counties, links, selectedCounty]);
+  }, [counties, links, selectedCounty, numFlows]);
 }
 
 const getCurvedPaths = (
@@ -140,12 +142,20 @@ const getCurvedPaths = (
 };
 
 export function useLinksWithCurvedPaths(links: Link[]): LinkWithPaths[] {
+  const params = useControls("paths", {
+    numLinesPerLink: 10,
+    minWaypointsPer1000km: 4,
+    maxWaypointsPer1000km: 8,
+    minDeviationDegrees: 0,
+    maxDeviationDegrees: 0.6,
+    smooth: false,
+  });
   return useMemo(() => {
     return links.map((l) => {
-      const paths = getCurvedPaths(l);
+      const paths = getCurvedPaths(l, params);
       return { ...l, paths };
     });
-  }, [links]);
+  }, [links, params]);
 }
 
 const getPathTrips = (
@@ -202,15 +212,23 @@ const getPathTrips = (
 };
 
 export function useLinksWithTrips(links: LinkWithPaths[]): LinkWithTrips[] {
+  const params = useControls("trips", {
+    numParticles: 100,
+    fromTimestamp: 0,
+    toTimeStamp: 100,
+    intervalHumanize: 0.5,
+    speedKps: 100,
+    speedKpsHumanize: 0.5,
+  });
   return useMemo(() => {
     return links.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p);
+          return getPathTrips(p, params);
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [links]);
+  }, [links, params]);
 }
