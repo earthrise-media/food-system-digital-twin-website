@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
-import { Map, useControl } from "react-map-gl";
+import { Map, MapRef, useControl, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useAtomValue } from "jotai";
 import Popup from "./_popup";
@@ -14,6 +14,8 @@ import useLinks, {
 import { countiesAtom } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
+import useSelectedCounty from "@/hooks/useSelectedCounty";
+import { centroid } from "turf";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -36,7 +38,6 @@ type MapWrapperProps = {
 
 function MapWrapper({ links, mapStyle }: MapWrapperProps) {
   const counties = useAtomValue(countiesAtom);
-  console.log(links)
   const selectedLinks = useLinks(links);
   const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
   const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
@@ -59,9 +60,21 @@ function MapWrapper({ links, mapStyle }: MapWrapperProps) {
   }, [setUiVisible]);
   useKeyPress("u", toggleUI);
 
+  const mapRef = useRef<MapRef>(null);
+  const selectedCounty = useSelectedCounty();
+  useEffect(() => {
+    if (!selectedCounty)  return;
+    console.log(mapRef.current);
+    mapRef.current?.flyTo({
+      center: centroid(selectedCounty).geometry.coordinates as any,
+      padding: { left: 200, top: 0, right: 0, bottom: 0},
+    });
+  }, [selectedCounty]);
+
   return (
     <>
       <Map
+      ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}
         initialViewState={INITIAL_VIEW_STATE}
