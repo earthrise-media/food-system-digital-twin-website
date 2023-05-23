@@ -5,6 +5,7 @@ import { centroid } from "turf";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { useAtomValue } from "jotai";
 import { flowTypeAtom } from "@/atoms";
+import { kumbhSans } from "@/pages";
 
 function Popup() {
   const { current: map } = useMap();
@@ -18,7 +19,9 @@ function Popup() {
     const popup = new MapboxPopup({ closeOnClick: false, closeButton: false })
       .setLngLat(centroid(selectedCounty).geometry.coordinates as any)
       .setHTML(
-        `<dl><dt>${name}, ${stusps}</dt><dd class=${flowType}><b>~323,234 Kcal</b> ${
+        `<dl class=${
+          kumbhSans.className
+        }><dt>${name}, ${stusps}</dt><dd class=${flowType}><b>~323,234 Kcal</b> ${
           flowType === "consumer" ? "consumed" : "produced"
         } </dd></dl>`
       )

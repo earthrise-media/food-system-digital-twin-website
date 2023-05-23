@@ -12,7 +12,8 @@ import { useControls } from "leva";
 
 export default function useLayers(
   targetCounties: Feature<Geometry, County>[],
-  links: LinkWithTrips[]
+  links: LinkWithTrips[],
+  showAnimatedLayers = true
 ) {
   const setSelectedCountId = useSetAtom(countyAtom);
   const counties = useAtomValue(countiesAtom);
@@ -73,7 +74,7 @@ export default function useLayers(
         pickable: true,
       }),
     ];
-    if (selectedCounty) {
+    if (selectedCounty && showAnimatedLayers) {
       layers = [
         ...layers,
         new GeoJsonLayer({
@@ -117,7 +118,7 @@ export default function useLayers(
         }),
       ];
     }
-    if (linksAsGeoJSON) {
+    if (linksAsGeoJSON && showAnimatedLayers) {
       layers.push(
         new GeoJsonLayer({
           id: "lines",

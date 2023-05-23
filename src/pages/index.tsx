@@ -20,7 +20,7 @@ const DeckMap = dynamic(() => import("@/components/_map"), {
   ssr: false,
 });
 
-const kumbhSans = Kumbh_Sans({ subsets: ["latin"] });
+export const kumbhSans = Kumbh_Sans({ subsets: ["latin"] });
 
 export default function Home({
   counties,
@@ -34,7 +34,7 @@ export default function Home({
   const search = useAtomValue(searchAtom);
 
   useEffect(() => {
-    fetch("/synthetic_kcal_state_crop_1_results_pivoted.csv")
+    fetch("/_synthetic_kcal_state_crop_1_results_pivoted.csv")
       .then((response) => {
         if (!response.ok) {
           return null;
@@ -52,14 +52,16 @@ export default function Home({
           const links = counties.features.map((county) => {
             const link: Record<string, number> = {
               Supply: county?.properties?.geoid,
-            }
+            };
             counties.features.forEach((target) => {
-              link[target?.properties?.geoid] = Math.floor(15000 * Math.random());
+              link[target?.properties?.geoid] = Math.floor(
+                15000 * Math.random()
+              );
             });
-            return link
-          })
+            return link;
+          });
           setLinks(links);
-        };
+        }
       });
   }, []);
 

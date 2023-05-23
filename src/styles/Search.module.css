@@ -2,7 +2,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: var(--background-80);
+  /* background: var(--background-80); */
   width: 100%;
   height: 100%;
   z-index: 4;
@@ -21,7 +21,7 @@
 
 .search {
   position: absolute;
-  top: 30vh;
+  top: 15vh;
   max-width: 800px;
   margin: auto;
   color: var(--foreground);
@@ -53,6 +53,8 @@
 }
 
 .menu {
+  /* height: 80vh;
+  max-height: 80vh; */
   font-size: var(--font-size-subtitle);
 }
 

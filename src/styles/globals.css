@@ -2,7 +2,6 @@
   --border-radius: 16px;
   --border-radius-small: 4px;
   --padding: 24px;
-  --font: "Kumbh Sans", sans-serif;
 
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 246, 243, 238;
@@ -16,11 +15,13 @@
   --background-80: rgba(var(--background-rgb), 0.85);
   --background-2: rgb(var(--background-2-rgb));
 
-  --font-weight-normal: 500;
-  --font-weight-bold: 700;
-  --font-size-caption: 11px;
-  --font-size-body: 12px;
+  --font-weight-normal: 400;
+  --font-weight-bold: 600;
+
+  --font-size-caption: 12px;
+  --font-size-body: 13px;
   --font-size-subtitle: 20px;
+  --font-size-logo: 28px;
   --font-size-title: 36px;
 }
 
@@ -32,7 +33,6 @@
 
 html,
 body {
-  font-family: var(--font);
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-normal);
   max-width: 100vw;
@@ -86,7 +86,6 @@ ul {
 }
 .mapboxgl-popup-content {
   padding: 0 !important;
-  font-family: var(--font);
   font-size: var(--font-size-body);
 }
 .mapboxgl-popup-content > dl > dt {
