@@ -10,6 +10,15 @@ import { countiesAtom, countyAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
 
+const BASE_LINE_LAYERS_OPTIONS = {
+  stroked: true,
+  filled: true,
+  lineCapRounded: true,
+  lineJointRounded: true,
+  lineWidthScale: 5000,
+  getLineWidth: 1,
+}
+
 export default function useLayers(
   targetCounties: Feature<Geometry, County>[],
   links: LinkWithTrips[],
@@ -62,14 +71,12 @@ export default function useLayers(
       new GeoJsonLayer({
         id: "counties",
         data: counties as any,
-        stroked: true,
-        filled: true,
+        ...BASE_LINE_LAYERS_OPTIONS,
         getFillColor: [0, 0, 0, 0],
         // TODO use values from Glbal CSS
         getLineColor: [246, 243, 239, 255],
-        lineWidthScale: 5000,
         lineWidthMinPixels: 1,
-        getLineWidth: 1,
+        lineWidthMaxPixels: 5,
         onClick: ({ object }) => setSelectedCountId(object.properties.geoid),
         pickable: true,
       }),
@@ -80,23 +87,20 @@ export default function useLayers(
         new GeoJsonLayer({
           id: "counties-selected",
           data: [selectedCounty],
-          stroked: true,
-          filled: true,
+          ...BASE_LINE_LAYERS_OPTIONS,
           getFillColor: [0, 0, 0, 122],
           getLineColor: [0, 0, 0, 255],
-          lineWidthScale: 5000,
           lineWidthMinPixels: 1,
-          getLineWidth: 1,
+          lineWidthMaxPixels: 10,
         }),
         new GeoJsonLayer({
           id: "counties-targets",
           data: targetCounties,
-          stroked: true,
-          filled: true,
+          ...BASE_LINE_LAYERS_OPTIONS,
           getFillColor: [0, 0, 0, 50],
           getLineColor: [0, 0, 0, 150],
-          lineWidthScale: 5000,
           lineWidthMinPixels: 0.5,
+          lineWidthMaxPixels: 5,
           getLineWidth: 0.1,
         }),
         new TripsLayer({
