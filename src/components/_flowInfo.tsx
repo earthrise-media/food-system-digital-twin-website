@@ -103,7 +103,7 @@ function FlowInfo({}: FlowInfoProps) {
             <li
               style={
                 {
-                  "--color": CATEGORY_COLORS.fruit,
+                  "--color": CATEGORY_COLORS.fruits,
                   "--width": "12.3%",
                 } as React.CSSProperties
               }
@@ -142,7 +142,7 @@ function FlowInfo({}: FlowInfoProps) {
             <li
               style={
                 {
-                  "--color": CATEGORY_COLORS["roots-and-tubers"],
+                  "--color": CATEGORY_COLORS.tubbers,
                   "--width": "5.9%",
                 } as React.CSSProperties
               }
