@@ -13,7 +13,7 @@ import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORY_COLORS } from "@/constants";
 import { fetcher, hexToRgb } from "@/utils";
-import { countiesAtom } from "@/atoms";
+import { countiesAtom, flowTypeAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
 import useSWR from "swr";
@@ -21,6 +21,8 @@ import useSWR from "swr";
 export default function useFlows(): Link[] {
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useSelectedCounty();
+  const flowType = useAtomValue(flowTypeAtom);
+
   const {
     data: flowsData,
     error,
@@ -42,17 +44,25 @@ export default function useFlows(): Link[] {
         );
 
         return {
-          source: county.centroid.coordinates,
-          target: centroid.coordinates,
-          sourceId: county.id.toString(),
-          targetId: id.toString(),
+          source:
+            flowType === "consumer"
+              ? centroid.coordinates
+              : county.centroid.coordinates,
+          target:
+            flowType === "consumer"
+              ? county.centroid.coordinates
+              : centroid.coordinates,
+          sourceId:
+            flowType === "consumer" ? id.toString() : county.id.toString(),
+          targetId:
+            flowType === "consumer" ? county.id.toString() : id.toString(),
           value,
         };
       }
     );
 
     return selectedLinks;
-  }, [counties, flowsData, selectedCounty]);
+  }, [counties, flowsData, selectedCounty, flowType]);
 }
 
 const getCurvedPaths = (
