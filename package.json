@@ -37,7 +37,8 @@
     "swagger-ui-react": "^4.18.3",
     "topojson-client": "^3.1.0",
     "turf": "^3.0.14",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "yup": "^1.1.1"
   },
   "devDependencies": {
     "@apidevtools/swagger-cli": "^4.0.4",

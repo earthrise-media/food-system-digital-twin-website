@@ -1,0 +1,24 @@
+{
+  "flowTypes": [
+    {
+      "id": "grain",
+      "name": "Grain"
+    },
+    {
+      "id": "nuts",
+      "name": "Nuts"
+    },
+    {
+      "id": "vegetables",
+      "name": "Vegetables"
+    },
+    {
+      "id": "fruits",
+      "name": "Fruits"
+    },
+    {
+      "id": "tubbers",
+      "name": "Tubers"
+    }
+  ]
+}
