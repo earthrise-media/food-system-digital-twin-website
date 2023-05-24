@@ -39,8 +39,6 @@ type MapWrapperProps = {
 function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
   const [currentCountyId, setCurrentCountyId] = useState<string | null>(null);
 
-  const [searching, setSearching] = useState(false);
-
   const selectedCounty = useMemo(() => {
     if (!currentCountyId) return;
     return counties.features.find(
@@ -69,10 +67,10 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
     setCurrentCountyId
   );
 
-  const onSearchCounty = useCallback((geoid: string) => {
-    setCurrentCountyId(geoid);
-    setSearching(false);
-  }, []);
+  // const onSearchCounty = useCallback((geoid: string) => {
+  //   setCurrentCountyId(geoid);
+  //   setSearching(false);
+  // }, []);
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {
@@ -90,12 +88,6 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         <Popup selectedCounty={selectedCounty} />
       </Map>
-      <div style={{ position: "absolute" }}>
-        <button onClick={() => setSearching(!searching)}>Search county</button>
-      </div>
-      {searching && (
-        <Search counties={counties} onSelectCounty={onSearchCounty} />
-      )}
       <Leva oneLineLabels={true} hidden={!uiVisible} />
     </>
   );

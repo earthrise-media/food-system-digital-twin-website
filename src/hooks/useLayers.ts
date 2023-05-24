@@ -61,6 +61,7 @@ export default function useLayers(
         stroked: true,
         filled: true,
         getFillColor: [0, 0, 0, 0],
+        // TODO use values from Glbal CSS
         getLineColor: [246, 243, 239, 255],
         lineWidthScale: 5000,
         lineWidthMinPixels: 1,

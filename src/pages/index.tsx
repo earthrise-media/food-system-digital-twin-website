@@ -6,11 +6,17 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import papa from "papaparse";
 import { Style } from "mapbox-gl";
+import FlowInfo from "@/components/_flowInfo";
+import cx from "classnames";
+import { Kumbh_Sans } from "next/font/google";
+import Search from "@/components/_search";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
   ssr: false,
 });
+
+const kumbhSans = Kumbh_Sans({ subsets: ["latin"] });
 
 export default function Home({
   counties,
@@ -51,6 +57,9 @@ export default function Home({
       });
   }, []);
 
+  // TODO handle app state
+  const searching = false;
+
   return (
     <>
       <Head>
@@ -59,7 +68,7 @@ export default function Home({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
+      <main className={cx(styles.main, kumbhSans.className)}>
         {links && (
           <DeckMap
             counties={counties as any}
@@ -67,6 +76,8 @@ export default function Home({
             links={links}
           />
         )}
+        <FlowInfo />
+        {searching && <Search counties={counties as any} />}
       </main>
     </>
   );

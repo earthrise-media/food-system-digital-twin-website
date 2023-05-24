@@ -1,0 +1,168 @@
+.flowInfo {
+  position: absolute;
+  z-index: 3;
+  top: 10px;
+  left: 40px;
+  filter: drop-shadow(0px 0px 25px rgba(41, 41, 41, 0.1));
+}
+
+.logoWrapper {
+  transform: scale(0.5) translateX(-50%);
+}
+
+.flowInfo > * {
+  padding: var(--padding);
+}
+
+.flowInfo > nav {
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  background: var(--foreground);
+  color: var(--background);
+  padding-bottom: 0;
+}
+
+.content {
+  background: var(--background-80);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  padding-top: 30px;
+}
+
+.flowInfo > nav > button {
+  font-size: var(--font-size-caption);
+  opacity: 0.5;
+  background: url("/icons/search.svg");
+  background-repeat: no-repeat;
+  padding: 2px 0 5px 20px;
+}
+
+.flowInfo > nav > h2 {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 20px;
+}
+
+.tabBar > button {
+  margin-right: 20px;
+  color: var(--background);
+  padding: 5px 0 5px 25px;
+  font-weight: var(--font-weight-bold);
+  background-repeat: no-repeat;
+  opacity: 0.5;
+}
+
+.tabBar > button.selected {
+  opacity: 1;
+  border-bottom: 2px solid var(--background);
+}
+
+.consumer {
+  background: url("/icons/consumer.svg");
+}
+.producer {
+  background: url("/icons/producer.svg");
+}
+
+.summary {
+  display: flex;
+  border-bottom: 1px solid var(--foreground-10);
+  padding-bottom: 15px;
+}
+
+.summary > dl {
+  flex: 1;
+}
+
+.summary dt {
+  font-size: var(--font-size-caption);
+  color: var(--foreground-50);
+  margin-bottom: 5px;
+}
+
+.summary b {
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-weight-bold);
+}
+
+.summary > dl:first-child {
+  margin-right: 15px;
+  border-right: 1px solid var(--foreground-10);
+}
+
+.stats {
+  padding-top: 15px;
+}
+
+.stats > h3 {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-normal);
+  margin-bottom: 10px;
+  color: var(--foreground-50);
+}
+
+.crops > li {
+  margin-bottom: 30px;
+}
+
+.crops dl {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.crops > li > dl > dt,
+.crops > li > dl > dd {
+  font-weight: var(--font-weight-bold);
+}
+
+.crops > li > dl::before,
+.crops > li > dl > dt::before,
+.crops > li > dl > dd::before {
+  height: 5px;
+  content: " ";
+  border-radius: 99px;
+}
+
+.crops > li > dl::before,
+.crops > li > dl > dd::before {
+  position: absolute;
+  display: block;
+  left: 0;
+  top: 20px;
+}
+
+.crops > li > dl::before {
+  width: 100%;
+  background: var(--background-2);
+}
+
+.crops > li > dl > dt::before {
+  display: inline-block;
+  width: 5px;
+  background: var(--color);
+  margin-right: 5px;
+}
+
+.crops > li > dl > dd::before {
+  width: var(--width);
+  background: var(--color);
+}
+
+.detail {
+  margin-left: 30px;
+  margin-top: 25px;
+}
+
+.detail > li {
+  margin-bottom: 10px;
+}
+
+.detail dt::before {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  content: " ";
+  border-radius: 99px;
+  background: var(--color);
+  margin-right: 5px;
+  vertical-align: middle;
+}
