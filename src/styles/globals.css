@@ -108,3 +108,19 @@ ul {
 .mapboxgl-popup-content .consumer {
   background-image: url("/icons/consumer-dark.svg");
 }
+
+.mapboxgl-popup-content > dl.compact {
+  font-size: var(--font-size-caption);
+}
+
+.mapboxgl-popup-content > dl.compact > dd {
+  padding: 2px 4px;
+  color: var(--foreground-50)
+}
+
+.selectedPopup {
+  z-index: 98;
+}
+.highlightedPopup {
+  z-index: 99;
+}

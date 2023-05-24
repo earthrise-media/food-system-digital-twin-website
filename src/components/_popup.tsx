@@ -16,7 +16,7 @@ function Popup() {
     if (!map || !selectedCounty) return;
 
     const { name, stusps } = selectedCounty.properties;
-    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false })
+    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false, className: "selectedPopup" })
       .setLngLat(centroid(selectedCounty).geometry.coordinates as any)
       .setHTML(
         `<dl class=${

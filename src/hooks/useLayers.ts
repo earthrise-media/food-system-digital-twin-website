@@ -174,7 +174,7 @@ export default function useLayers(
     currentFrame,
     setCounty,
     setCountyHighlighted,
-    countyHiglighted,
+    targetCountyHiglighted,
     linesColor,
     showAnimatedLayers,
   ]);

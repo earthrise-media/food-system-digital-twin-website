@@ -22,6 +22,8 @@ import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { centroid } from "turf";
+import HighlightPopup from "./_highlightPopup";
+import LinkedPopup from "./_linkedPopup";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -86,7 +88,15 @@ function MapWrapper({ links, mapStyle }: MapWrapperProps) {
         initialViewState={INITIAL_VIEW_STATE}
       >
         <DeckGLOverlay layers={layers} />
-        {!search && <Popup />}
+        {!search && (
+          <>
+            {targetCounties.map((county) => {
+              return <LinkedPopup key={county.properties.geoid} county={county} />;
+            })}
+            <Popup />
+            <HighlightPopup />
+          </>
+        )}
       </Map>
       <Leva oneLineLabels={true} hidden={!uiVisible} />
     </>
