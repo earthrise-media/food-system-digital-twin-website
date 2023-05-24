@@ -71,7 +71,6 @@ function MapWrapper({ links, mapStyle }: MapWrapperProps) {
   const selectedCounty = useSelectedCounty();
   useEffect(() => {
     if (!selectedCounty) return;
-    console.log(mapRef.current);
     mapRef.current?.flyTo({
       center: centroid(selectedCounty).geometry.coordinates as any,
       padding: { left: 200, top: 0, right: 0, bottom: 0 },

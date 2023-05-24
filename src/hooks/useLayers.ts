@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
-import { FeatureCollection, Geometry, Feature } from "geojson";
+import { Geometry, Feature } from "geojson";
 import { County, LinkWithTrips } from "@/types";
 import { featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
-import { countiesAtom, countyAtom } from "@/atoms";
+import { countiesAtom, countyAtom, countyHighlightedAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
 
@@ -17,14 +17,17 @@ const BASE_LINE_LAYERS_OPTIONS = {
   lineJointRounded: true,
   lineWidthScale: 5000,
   getLineWidth: 1,
-}
+};
 
 export default function useLayers(
   targetCounties: Feature<Geometry, County>[],
   links: LinkWithTrips[],
   showAnimatedLayers = true
 ) {
-  const setSelectedCountId = useSetAtom(countyAtom);
+  const setCounty = useSetAtom(countyAtom);
+  const [countyHiglighted, setCountyHighlighted] = useAtom(
+    countyHighlightedAtom
+  );
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useSelectedCounty();
   const { linesColor, animationSpeed } = useControls("layers", {
@@ -54,8 +57,19 @@ export default function useLayers(
 
   const allTrips = useMemo(() => {
     if (!links.length) return [];
-    return links.flatMap((l) => l.trips);
+    return links.flatMap((l) =>
+      l.trips.map((t) => {
+        return { ...t, sourceId: l.sourceId, targetId: l.targetId };
+      })
+    );
   }, [links]);
+
+  const targetCountyHiglighted = useMemo(() => {
+    if (!countyHiglighted) return null;
+    const targetCountiesIds = targetCounties.map((c) => c.properties.geoid);
+    return targetCountiesIds.find((id) => id === countyHiglighted);
+  }, [countyHiglighted, targetCounties]);
+
 
   const [currentTime, setCurrentTime] = useState(0);
   useAnimationFrame((e: any) => setCurrentTime(e.time));
@@ -77,7 +91,9 @@ export default function useLayers(
         getLineColor: [246, 243, 239, 255],
         lineWidthMinPixels: 1,
         lineWidthMaxPixels: 5,
-        onClick: ({ object }) => setSelectedCountId(object.properties.geoid),
+        onClick: ({ object }) => setCounty(object.properties.geoid),
+        onHover: ({ object }) =>
+          setCountyHighlighted(object?.properties?.geoid ?? null),
         pickable: true,
       }),
     ];
@@ -108,8 +124,15 @@ export default function useLayers(
           data: allTrips,
           getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
           getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
-          getColor: (d) => d.color,
-          opacity: 0.8,
+          getColor: (d) => {
+            if (!targetCountyHiglighted || targetCountyHiglighted === d.targetId) {
+              return d.color;
+            }
+            return [...d.color.slice(0, 3), 50];
+          },
+          updateTriggers: {
+            getColor: [targetCountyHiglighted],
+          },
           widthMinPixels: 3,
           getWidth: (d) => {
             return 5000;
@@ -149,8 +172,11 @@ export default function useLayers(
     linksAsGeoJSON,
     allTrips,
     currentFrame,
-    setSelectedCountId,
+    setCounty,
+    setCountyHighlighted,
+    countyHiglighted,
     linesColor,
+    showAnimatedLayers,
   ]);
   return layers;
 }
