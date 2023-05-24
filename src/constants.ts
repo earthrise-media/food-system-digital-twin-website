@@ -4,6 +4,6 @@ export const CATEGORY_COLORS: Record<Category, string> = {
   "vegetables": "#0FB5AE",
   "nuts": "#4046CA",
   "grain": "#F68511",
-  "fruit": "#DE3D82",
-  "roots-and-tubers": "#7E84FA",
+  "fruits": "#DE3D82",
+  "tubbers": "#7E84FA",
 }

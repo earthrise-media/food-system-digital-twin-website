@@ -16,8 +16,8 @@ const COUNTIES_GEOJSON_PATH = path.join(
  */
 exports.up = async function (knex) {
   await knex.schema.createTable("counties", (table) => {
-    table.string("id").primary();
-    table.jsonb("meta");
+    table.integer("id").primary();
+    table.jsonb("properties");
     table.geography("geom", "4326");
   });
 
@@ -28,7 +28,7 @@ exports.up = async function (knex) {
   await knex("counties").insert(
     counties.map((county) => ({
       id: county.properties.geoid,
-      meta: county.properties,
+      properties: county.properties,
       geom: postgis(knex).geomFromGeoJSON(county.geometry),
     }))
   );

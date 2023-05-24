@@ -1,17 +1,31 @@
+import { Point } from "geojson";
+import { Geometry } from "geojson";
 import { Position } from "geojson";
 
 export type County = {
   geoid: string;
   name: string;
-  stusps: string
+  stusps: string;
 };
 
-export type Category =
-  | "vegetables"
-  | "nuts"
-  | "grain"
-  | "fruit"
-  | "roots-and-tubers";
+export type Category = "vegetables" | "nuts" | "grain" | "fruits" | "tubbers";
+
+export type RawCounty = {
+  id: number;
+  name: string;
+  centroid: Geometry<Point>;
+};
+
+export type RawCountyWithFlows = RawCounty & {
+  flows: Record<Category, number>;
+};
+
+export type RawFlows = {
+  flows: {
+    county: RawCounty;
+    inbound: RawCountyWithFlows[];
+  };
+};
 
 export type Link = {
   source: Position;
@@ -24,7 +38,7 @@ export type Link = {
 export type Path = {
   coordinates: Position[];
   distances: number[];
-  totalDistance: number
+  totalDistance: number;
 };
 
 export type LinkWithPaths = Link & {
@@ -47,4 +61,4 @@ export type LinkWithTrips = LinkWithPaths & {
   trips: Trip[];
 };
 
-export type FlowType = 'producer' | 'consumer';
+export type FlowType = "producer" | "consumer";

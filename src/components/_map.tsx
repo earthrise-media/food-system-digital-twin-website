@@ -13,10 +13,10 @@ import Popup from "./_popup";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Style } from "mapbox-gl";
 import useLayers from "@/hooks/useLayers";
-import useLinks, {
-  useLinksWithCurvedPaths,
-  useLinksWithTrips,
-} from "@/hooks/useLinks";
+import useFlows, {
+  useFlowsWithCurvedPaths,
+  useFlowsWithTrips,
+} from "@/hooks/useFlows";
 import { countiesAtom, searchAtom } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
@@ -40,15 +40,14 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
 }
 
 type MapWrapperProps = {
-  links: Record<string, number>[];
   mapStyle: Style;
 };
 
-function MapWrapper({ links, mapStyle }: MapWrapperProps) {
+function MapWrapper({ mapStyle }: MapWrapperProps) {
   const counties = useAtomValue(countiesAtom);
-  const selectedLinks = useLinks(links);
-  const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
-  const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
+  const selectedLinks = useFlows();
+  const linksWithCurvedPaths = useFlowsWithCurvedPaths(selectedLinks);
+  const linksWithTrips = useFlowsWithTrips(linksWithCurvedPaths);
   const search = useAtomValue(searchAtom);
 
   const targetCounties = useMemo(() => {

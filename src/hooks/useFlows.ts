@@ -1,65 +1,68 @@
-import { FeatureCollection, Geometry, Feature, Position } from "geojson";
-import { centroid, distance, point, lineString } from "@turf/turf";
+import { distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import {
-  County,
   Link,
   LinkWithPaths,
   LinkWithTrips,
   Path,
+  RawCountyWithFlows,
+  RawFlows,
   Trip,
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORY_COLORS } from "@/constants";
-import { hexToRgb } from "@/utils";
-import { countiesAtom } from "@/atoms";
+import { fetcher, hexToRgb } from "@/utils";
+import { countiesAtom, flowTypeAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
+import useSWR from "swr";
 
-export default function useLinks(
-  // TODO This will need to be fetched from the APIs depending on the target or source county
-  links: Record<string, number>[]
-): Link[] {
-  const { numFlows } = useControls("flows", { numFlows: 10 });
+export default function useFlows(): Link[] {
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useSelectedCounty();
+  const flowType = useAtomValue(flowTypeAtom);
+
+  const {
+    data: flowsData,
+    error,
+    isLoading,
+  } = useSWR<RawFlows>(
+    `/api/county/${selectedCounty?.properties.geoid}/inbound`,
+    fetcher
+  );
+
   return useMemo(() => {
-    if (!selectedCounty || !counties) return [];
-    const selectedCountyLinks = links.find(
-      (l) => l.Supply?.toString() === selectedCounty?.properties.geoid
+    if (!selectedCounty || !counties || !flowsData) return [];
+    const { inbound, county } = flowsData.flows;
+
+    let selectedLinks: Link[] = inbound.map(
+      ({ id, centroid, flows }: RawCountyWithFlows) => {
+        const value = Object.values(flows).reduce(
+          (partialSum, a) => partialSum + a,
+          0
+        );
+
+        return {
+          source:
+            flowType === "consumer"
+              ? centroid.coordinates
+              : county.centroid.coordinates,
+          target:
+            flowType === "consumer"
+              ? county.centroid.coordinates
+              : centroid.coordinates,
+          sourceId:
+            flowType === "consumer" ? id.toString() : county.id.toString(),
+          targetId:
+            flowType === "consumer" ? county.id.toString() : id.toString(),
+          value,
+        };
+      }
     );
 
-    if (!selectedCountyLinks) return [];
-
-    let targetsGeoIds = Object.entries(selectedCountyLinks).filter(
-      ([k, v]) => v > 0
-    );
-
-    let selectedLinks: Link[] = targetsGeoIds.flatMap(([k, v]) => {
-      const target = counties.features.find((c) => c.properties.geoid === k);
-      if (!target || !target.geometry) return [];
-
-      return [
-        {
-          // TODO precompute centroid
-          source: centroid(selectedCounty as any).geometry.coordinates,
-          target: centroid(target as any).geometry.coordinates,
-          sourceId: selectedCounty.properties.geoid,
-          targetId: target.properties.geoid,
-          value: v,
-        },
-      ];
-    });
-
-    // TODO Use top 10 instead of random ones
-    let sample: Link[] = [];
-    for (let index = 0; index < numFlows; index++) {
-      const randomIndex = Math.floor(Math.random() * selectedLinks.length);
-      sample = [...sample, selectedLinks[randomIndex]];
-    }
-    return sample;
-  }, [counties, links, selectedCounty, numFlows]);
+    return selectedLinks;
+  }, [counties, flowsData, selectedCounty, flowType]);
 }
 
 const getCurvedPaths = (
@@ -141,7 +144,7 @@ const getCurvedPaths = (
   return paths;
 };
 
-export function useLinksWithCurvedPaths(links: Link[]): LinkWithPaths[] {
+export function useFlowsWithCurvedPaths(links: Link[]): LinkWithPaths[] {
   const params = useControls("paths", {
     numLinesPerLink: 10,
     minWaypointsPer1000km: 4,
@@ -211,7 +214,7 @@ const getPathTrips = (
   return trips;
 };
 
-export function useLinksWithTrips(links: LinkWithPaths[]): LinkWithTrips[] {
+export function useFlowsWithTrips(links: LinkWithPaths[]): LinkWithTrips[] {
   const params = useControls("trips", {
     numParticles: 100,
     fromTimestamp: 0,
