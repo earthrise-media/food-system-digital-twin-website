@@ -88,7 +88,7 @@ export default function useLayers(
         ...BASE_LINE_LAYERS_OPTIONS,
         getFillColor: [0, 0, 0, 0],
         // TODO use values from Glbal CSS
-        getLineColor: [246, 243, 239, 255],
+        getLineColor: [0, 0, 0, 0],
         lineWidthMinPixels: 1,
         lineWidthMaxPixels: 5,
         onClick: ({ object }) => setCounty(object.properties.geoid),
