@@ -17,7 +17,7 @@ import useFlows, {
   useFlowsWithCurvedPaths,
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
-import { countiesAtom, searchAtom } from "@/atoms";
+import { countiesAtom, flowTypeAtom, searchAtom } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
@@ -49,16 +49,19 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
   const linksWithCurvedPaths = useFlowsWithCurvedPaths(selectedLinks);
   const linksWithTrips = useFlowsWithTrips(linksWithCurvedPaths);
   const search = useAtomValue(searchAtom);
+  const flowType = useAtomValue(flowTypeAtom);
 
   const targetCounties = useMemo(() => {
     if (!counties) return [];
     return linksWithTrips.flatMap((l) => {
+      const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId; 
       const target = counties.features.find(
-        (county) => county.properties.geoid === l.targetId
+        (county) => county.properties.geoid === idToLinkTo
       );
       return target ? [target] : [];
     });
-  }, [counties, linksWithTrips]);
+  }, [counties, linksWithTrips, flowType]);
+  console.log(targetCounties, linksWithTrips, selectedLinks)
 
   const layers = useLayers(targetCounties, linksWithTrips, !search);
 
