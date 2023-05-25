@@ -5,7 +5,7 @@ export default function Logo() {
     <a className={styles.logo} href="https://theplotline.org/">
       Food Twin
       <br />
-      by The <b>Plotline</b>
+      by <b>The Plotline</b>
     </a>
   );
 }

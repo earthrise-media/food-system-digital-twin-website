@@ -61,7 +61,6 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
       return target ? [target] : [];
     });
   }, [counties, linksWithTrips, flowType]);
-  console.log(targetCounties, linksWithTrips, selectedLinks)
 
   const layers = useLayers(targetCounties, linksWithTrips, !search);
 

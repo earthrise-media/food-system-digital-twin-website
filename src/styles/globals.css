@@ -1,5 +1,5 @@
 :root {
-  --border-radius: 16px;
+  --border-radius: 8px;
   --border-radius-small: 4px;
   --padding: 24px;
 
@@ -23,6 +23,12 @@
   --font-size-subtitle: 20px;
   --font-size-logo: 28px;
   --font-size-title: 36px;
+
+  --z-popup: 2;
+  --z-popup-selected: 3;
+  --z-popup-highlighted: 4;
+  --z-flow-info: 5;
+  --z-search: 5;
 }
 
 * {
@@ -82,7 +88,7 @@ ul {
 }
 
 .mapboxgl-popup {
-  z-index: 2;
+  z-index: var(--z-popup);
 }
 .mapboxgl-popup-content {
   padding: 0 !important;
@@ -119,8 +125,11 @@ ul {
 }
 
 .selectedPopup {
-  z-index: 98;
+  z-index: var(--z-popup-selected);
 }
 .highlightedPopup {
-  z-index: 99;
+  z-index: var(--z-popup-highlighted);
+}
+.highlightedPopup .mapboxgl-popup-tip, .linkedPopup .mapboxgl-popup-tip {
+  display: none;
 }

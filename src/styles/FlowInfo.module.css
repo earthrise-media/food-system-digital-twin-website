@@ -1,6 +1,6 @@
 .flowInfo {
   position: absolute;
-  z-index: 3;
+  z-index: var(--z-flow-info);
   top: 10px;
   left: 40px;
   filter: drop-shadow(0px 0px 25px rgba(41, 41, 41, 0.1));
@@ -46,6 +46,7 @@
 .flowInfo > nav > button > h2 {
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
+  margin: 8px 0 16px 0;
 }
 
 .flowInfo > nav > button:hover > span {
@@ -66,8 +67,11 @@
   opacity: 0.5;
 }
 
-.tabBar > button.selected {
+.tabBar > button:hover, .tabBar > button.selected {
   opacity: 1;
+}
+
+.tabBar > button.selected {
   border-bottom: 2px solid var(--background);
 }
 
