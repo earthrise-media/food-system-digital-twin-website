@@ -39,3 +39,4 @@ app-data.zip
 app-data/
 public/swagger.json
 in
+docker/
