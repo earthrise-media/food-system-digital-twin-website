@@ -38,9 +38,9 @@ Migrate the database:
 yarn migrate
 ```
 
-Download [seed data](https://drive.google.com/file/d/10DsMpXzoqaF9sWhSentwO5ReZSCrPPA9/view?usp=sharing) and expand it inside `data/` folder. The contents of the zip file should be located at `./data/food-system-digital-twin-app-data`.
+Download [seed data](https://drive.google.com/file/d/10DsMpXzoqaF9sWhSentwO5ReZSCrPPA9/view?usp=sharing) and expand it in the root folder the cloned repository. The contents of the zip file should be located at `./app-data`.
 
-Ingest seed data with command:
+Ingest downloaded data with:
 
 ```sh
 yarn seed
