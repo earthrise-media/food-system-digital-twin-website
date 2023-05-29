@@ -15,6 +15,10 @@ const COUNTIES_GEOJSON_PATH = path.join(
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
+  // Create postgis extension
+  await knex.raw("CREATE EXTENSION IF NOT EXISTS postgis");
+
+  // Create counties table
   await knex.schema.createTable("counties", (table) => {
     table.integer("id").primary();
     table.jsonb("properties");
