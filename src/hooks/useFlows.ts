@@ -11,7 +11,7 @@ import {
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { CATEGORIES, CATEGORY_COLORS } from "@/constants";
+import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import { fetcher, hexToRgb } from "@/utils";
 import { countiesAtom, flowTypeAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
@@ -212,7 +212,7 @@ const getPathTrips = (
         return acc;
       }, null as number | null) || 0;
     const category = CATEGORIES[categoryIndex];
-    const categoryColor = CATEGORY_COLORS[category];
+    const categoryColor = CATEGORIES_PROPS[category].color;
     const color = hexToRgb(categoryColor);
 
     trips.push({

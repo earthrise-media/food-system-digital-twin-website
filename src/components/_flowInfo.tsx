@@ -1,11 +1,11 @@
 import React, { use } from "react";
 import styles from "@/styles/FlowInfo.module.css";
-import { CATEGORY_COLORS } from "@/constants";
+import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import cx from "classnames";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import Logo from "./_logo";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
-import { flowTypeAtom, searchAtom } from "@/atoms";
+import { flowTypeAtom, searchAtom, foodGroupAtom } from "@/atoms";
 
 type FlowInfoProps = {};
 
@@ -13,6 +13,7 @@ function FlowInfo({}: FlowInfoProps) {
   const selectedCounty = useSelectedCounty();
   const [search, setSearch] = useAtom(searchAtom);
   const [flowType, setFlowType] = useAtom(flowTypeAtom);
+  const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
   return (
     <div className={styles.flowInfo}>
       <div className={styles.logoWrapper}>
@@ -67,97 +68,51 @@ function FlowInfo({}: FlowInfoProps) {
             <div className={styles.stats}>
               <h3>Main crops consumed:</h3>
               <ul className={styles.crops}>
-                <li
-                  style={
-                    {
-                      "--color": CATEGORY_COLORS.grain,
-                      "--width": "43.9%",
-                    } as React.CSSProperties
-                  }
-                >
-                  <dl>
-                    <dt>Grain</dt>
-                    <dd>43.9%</dd>
-                  </dl>
-                </li>
-                <li
-                  style={
-                    {
-                      "--color": CATEGORY_COLORS.nuts,
-                      "--width": "22.3%",
-                    } as React.CSSProperties
-                  }
-                >
-                  <dl>
-                    <dt>Nuts</dt>
-                    <dd>22.3%</dd>
-                  </dl>
-                </li>
-                <li
-                  style={
-                    {
-                      "--color": CATEGORY_COLORS.vegetables,
-                      "--width": "18.9%",
-                    } as React.CSSProperties
-                  }
-                >
-                  <dl>
-                    <dt>Vegetables</dt>
-                    <dd>18.9%</dd>
-                  </dl>
-                </li>
-                <li
-                  style={
-                    {
-                      "--color": CATEGORY_COLORS.fruits,
-                      "--width": "12.3%",
-                    } as React.CSSProperties
-                  }
-                >
-                  <dl>
-                    <dt>Fruit</dt>
-                    <dd>12.3%</dd>
-                  </dl>
-                  <ul className={styles.detail}>
-                    <li>
-                      <dl>
-                        <dt>Apples</dt>
-                        <dd>18.9%</dd>
-                      </dl>
-                    </li>
-                    <li>
-                      <dl>
-                        <dt>Stone fruits</dt>
-                        <dd>18.9%</dd>
-                      </dl>
-                    </li>
-                    <li>
-                      <dl>
-                        <dt>Berries</dt>
-                        <dd>18.9%</dd>
-                      </dl>
-                    </li>
-                    <li>
-                      <dl>
-                        <dt>Grapes</dt>
-                        <dd>18.9%</dd>
-                      </dl>
-                    </li>
-                  </ul>
-                </li>
-                <li
-                  style={
-                    {
-                      "--color": CATEGORY_COLORS.tubbers,
-                      "--width": "5.9%",
-                    } as React.CSSProperties
-                  }
-                >
-                  <dl>
-                    <dt>Tubers</dt>
-                    <dd>5.9%</dd>
-                  </dl>
-                </li>
+                {CATEGORIES.map((category) => (
+                  <li
+                    key={category}
+                    onClick={() => setFoodGroup(category)}
+                    style={
+                      {
+                        "--color": CATEGORIES_PROPS[category].color,
+                        "--width": `${Math.random()*100}%`,
+                      } as React.CSSProperties
+                    }
+                  >
+                    <dl>
+                      <dt>{ CATEGORIES_PROPS[category].name}</dt>
+                      <dd>20%</dd>
+                    </dl>
+                    {foodGroup === category && (
+                         <ul className={styles.detail}>
+                         <li>
+                           <dl>
+                             <dt>Apples</dt>
+                             <dd>18.9%</dd>
+                           </dl>
+                         </li>
+                         <li>
+                           <dl>
+                             <dt>Stone fruits</dt>
+                             <dd>18.9%</dd>
+                           </dl>
+                         </li>
+                         <li>
+                           <dl>
+                             <dt>Berries</dt>
+                             <dd>18.9%</dd>
+                           </dl>
+                         </li>
+                         <li>
+                           <dl>
+                             <dt>Grapes</dt>
+                             <dd>18.9%</dd>
+                           </dl>
+                         </li>
+                       </ul>
+                      )}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

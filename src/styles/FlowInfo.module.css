@@ -121,6 +121,7 @@
 
 .crops > li {
   margin-bottom: 30px;
+  cursor: pointer;
 }
 
 .crops dl {
@@ -166,6 +167,7 @@
 .crops > li > dl > dd::before {
   width: var(--width);
   background: var(--color);
+  transition: width 0.5s ease;
 }
 
 .detail {
