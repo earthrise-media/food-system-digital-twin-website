@@ -40,3 +40,4 @@ app-data/
 public/swagger.json
 in
 docker/
+data/population_counties_conus.geojson

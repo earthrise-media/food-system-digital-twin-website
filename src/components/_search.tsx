@@ -1,17 +1,15 @@
-import { Feature, FeatureCollection, Geometry } from "geojson";
 import { useCallback, useMemo } from "react";
-import { County } from "@/types";
 import Select from "react-select";
+import { useAtomValue, useSetAtom } from "jotai";
 import styles from "@/styles/Search.module.css";
+import { countiesAtom, countyAtom, searchAtom } from "@/atoms";
 
-function Search({
-  counties,
-  onSelectCounty,
-}: {
-  counties: FeatureCollection<Geometry, County>;
-  onSelectCounty?: (geoid: string) => void;
-}) {
+function Search() {
+  const counties = useAtomValue(countiesAtom);
+  const setSearch = useSetAtom(searchAtom);
+  const setCounty = useSetAtom(countyAtom);
   const options = useMemo(() => {
+    if (!counties) return [];
     return counties.features.map((county) => {
       const { name, stusps } = county.properties;
       return {
@@ -22,34 +20,38 @@ function Search({
   }, [counties]);
 
   const onChange = useCallback(
-    (e: { value: string }) => {
-      onSelectCounty && onSelectCounty(e.value);
+    ({ value }: { value: string }) => {
+      setCounty(value);
+      setSearch(false);
     },
-    [onSelectCounty]
+    [setCounty, setSearch]
   );
 
   return (
-    <div className={styles.wrapper}>
-      <button className={styles.close} />
+    <div className={styles.wrapper} onClick={() => setSearch(false)}>
+      <button className={styles.close} onClick={() => setSearch(false)} />
 
-      <Select
-        options={options}
-        onChange={onChange as any}
-        isSearchable={true}
-        // isClearable={true}
-        closeMenuOnSelect={false}
-        closeMenuOnScroll={false}
-        autoFocus={true}
-        unstyled
-        classNames={{
-          container: () => styles.search,
-          control: () => styles.control,
-          dropdownIndicator: () => styles.dropdownIndicator,
-          placeholder: () => styles.placeholder,
-          menu: () => styles.menu,
-          option: () => styles.option,
-        }}
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <Select
+          options={options}
+          onChange={onChange as any}
+          isSearchable={true}
+          closeMenuOnSelect={false}
+          closeMenuOnScroll={false}
+          autoFocus={true}
+          placeholder="Enter a US county name"
+          unstyled
+          maxMenuHeight={500}
+          classNames={{
+            container: () => styles.search,
+            control: () => styles.control,
+            dropdownIndicator: () => styles.dropdownIndicator,
+            placeholder: () => styles.placeholder,
+            menu: () => styles.menu,
+            option: () => styles.option,
+          }}
+        />
+      </div>
     </div>
   );
 }

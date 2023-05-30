@@ -1,6 +1,6 @@
 {
     "version": 8,
-    "name": "Monochrome",
+    "name": "FT",
     "metadata": {
         "mapbox:type": "default",
         "mapbox:origin": "monochrome-dark-v1",
@@ -507,7 +507,8 @@
                     "landuse": {"paint": {"fill-color": "hsl(38, 34%, 95%)"}},
                     "national-park": {
                         "paint": {"fill-color": "hsl(38, 34%, 95%)"}
-                    }
+                    },
+                    "land": {"paint": {"background-color": "#f5f2ed"}}
                 },
                 "buildings": {
                     "building-extrusion": {"layout": {"visibility": "none"}},
@@ -589,10 +590,10 @@
             }
         }
     },
-    "center": [-107.8176699951637, 35.02930578892247],
-    "zoom": 5.2270044076314806,
+    "center": [-103.79024862948536, 38.052633132257284],
+    "zoom": 3.525647118180716,
     "bearing": 0,
-    "pitch": 17,
+    "pitch": 0,
     "fog": {
         "range": [-1, 10],
         "color": "hsl(0, 0%, 100%)",
@@ -618,17 +619,7 @@
                 "mapbox:group": "Land & water, land"
             },
             "layout": {},
-            "paint": {
-                "background-color": [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    9,
-                    "hsl(38, 33%, 99%)",
-                    11,
-                    "hsl(38, 31%, 97%)"
-                ]
-            }
+            "paint": {"background-color": "#f5f2ed"}
         },
         {
             "id": "national-park",
@@ -2071,9 +2062,9 @@
                 ["==", ["get", "maritime"], "false"],
                 ["match", ["get", "worldview"], ["all", "US"], true, false]
             ],
-            "layout": {},
+            "layout": {"visibility": "none"},
             "paint": {
-                "line-color": "hsl(38, 27%, 95%)",
+                "line-color": "rgb(246, 243, 239)",
                 "line-dasharray": [1, 0]
             }
         },
@@ -2087,7 +2078,8 @@
                 "all",
                 ["==", ["get", "admin_level"], 1],
                 ["==", ["get", "maritime"], "false"],
-                ["match", ["get", "worldview"], ["all", "US"], true, false]
+                ["match", ["get", "worldview"], ["all", "US"], true, false],
+                ["match", ["get", "iso_3166_1"], ["US"], true, false]
             ],
             "layout": {},
             "paint": {
@@ -2169,7 +2161,7 @@
                 ["==", ["get", "maritime"], "false"],
                 ["match", ["get", "worldview"], ["all", "US"], true, false]
             ],
-            "layout": {},
+            "layout": {"visibility": "none"},
             "paint": {"line-dasharray": [10, 0], "line-color": "#eae3d7"}
         },
         {
@@ -2182,7 +2174,8 @@
                 "all",
                 ["==", ["get", "admin_level"], 1],
                 ["==", ["get", "maritime"], "false"],
-                ["match", ["get", "worldview"], ["all", "US"], true, false]
+                ["match", ["get", "worldview"], ["all", "US"], true, false],
+                ["match", ["get", "iso_3166_1"], ["US"], true, false]
             ],
             "layout": {},
             "paint": {"line-dasharray": [10, 0], "line-color": "#dcd0bc"}
@@ -2968,7 +2961,7 @@
         }
     ],
     "created": "2023-04-19T10:55:25.860Z",
-    "modified": "2023-04-25T12:51:52.013Z",
+    "modified": "2023-05-25T12:51:23.992Z",
     "id": "clgnkv1d000dl01qucf7wc8zc",
     "owner": "fausto-perez",
     "visibility": "public",

@@ -2,10 +2,10 @@ import styles from "@/styles/Logo.module.css";
 
 export default function Logo() {
   return (
-    <h1 className={styles.logo}>
+    <a className={styles.logo} href="https://theplotline.org/">
       Food Twin
       <br />
-      by the Plotline
-    </h1>
+      by <b>The Plotline</b>
+    </a>
   );
 }
