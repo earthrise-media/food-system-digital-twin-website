@@ -1,9 +1,9 @@
 import { distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import {
-  Link,
-  LinkWithPaths,
-  LinkWithTrips,
+  Flow,
+  FlowWithPaths,
+  FlowWithTrips,
   Path,
   RawCountyWithFlows,
   RawFlows,
@@ -11,14 +11,14 @@ import {
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { CATEGORY_COLORS } from "@/constants";
+import { CATEGORIES, CATEGORY_COLORS } from "@/constants";
 import { fetcher, hexToRgb } from "@/utils";
 import { countiesAtom, flowTypeAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
 import useSWR from "swr";
 
-export default function useFlows(): Link[] {
+export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useSelectedCounty();
   const flowType = useAtomValue(flowTypeAtom);
@@ -36,12 +36,12 @@ export default function useFlows(): Link[] {
     if (!selectedCounty || !counties || !flowsData) return [];
     const { inbound, county } = flowsData.flows;
 
-    let selectedLinks: Link[] = inbound.map(
+    let selectedLinks: Flow[] = inbound.map(
       ({ id, centroid, flows }: RawCountyWithFlows) => {
-        const value = Object.values(flows).reduce(
-          (partialSum, a) => partialSum + a,
-          0
-        );
+        const value = Math.floor(Math.random() * 100);
+        // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
+        // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
+        const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
 
         return {
           source:
@@ -57,6 +57,7 @@ export default function useFlows(): Link[] {
           targetId:
             flowType === "consumer" ? county.id.toString() : id.toString(),
           value,
+          valuesRatiosByFoodGroup: VALUES_RATIOS_BY_FOOD_GROUP,
         };
       }
     );
@@ -66,7 +67,7 @@ export default function useFlows(): Link[] {
 }
 
 const getCurvedPaths = (
-  link: Link,
+  link: Flow,
   {
     numLinesPerLink = 10,
     minWaypointsPer1000km = 4,
@@ -144,7 +145,7 @@ const getCurvedPaths = (
   return paths;
 };
 
-export function useFlowsWithCurvedPaths(links: Link[]): LinkWithPaths[] {
+export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
     numLinesPerLink: 10,
     minWaypointsPer1000km: 4,
@@ -163,8 +164,9 @@ export function useFlowsWithCurvedPaths(links: Link[]): LinkWithPaths[] {
 
 const getPathTrips = (
   path: Path,
+  flow: Flow,
   {
-    numParticles = 100,
+    numParticlesMultiplicator = 1,
     // numParticlesPer1000K = 100,
     fromTimestamp = 0,
     toTimeStamp = 100,
@@ -173,6 +175,8 @@ const getPathTrips = (
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
   } = {}
 ): Trip[] => {
+  const numParticles = flow.value * numParticlesMultiplicator;
+
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
   const interval = d / numParticles;
@@ -200,11 +204,16 @@ const getPathTrips = (
       return { coordinates: c, timestamp: timestamp };
     });
 
-    const hexColor =
-      Object.values(CATEGORY_COLORS)[
-        Math.floor(Math.random() * Object.values(CATEGORY_COLORS).length)
-      ];
-    const color = hexToRgb(hexColor);
+    const randomCategoryRatio = Math.random();
+    const categoryIndex =
+      flow.valuesRatiosByFoodGroup.reduce((acc, ratio, i) => {
+        if (acc !== null) return acc;
+        if (randomCategoryRatio < ratio) return i;
+        return acc;
+      }, null as number | null) || 0;
+    const category = CATEGORIES[categoryIndex];
+    const categoryColor = CATEGORY_COLORS[category];
+    const color = hexToRgb(categoryColor);
 
     trips.push({
       waypoints,
@@ -214,24 +223,27 @@ const getPathTrips = (
   return trips;
 };
 
-export function useFlowsWithTrips(links: LinkWithPaths[]): LinkWithTrips[] {
+export function useFlowsWithTrips(
+  flowsWithPaths: FlowWithPaths[]
+): FlowWithTrips[] {
   const params = useControls("trips", {
-    numParticles: 100,
+    numParticlesMultiplicator: 10,
     fromTimestamp: 0,
     toTimeStamp: 100,
     intervalHumanize: 0.5,
     speedKps: 100,
     speedKpsHumanize: 0.5,
   });
+
   return useMemo(() => {
-    return links.map((l) => {
+    return flowsWithPaths.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p, params);
+          return getPathTrips(p, l, params);
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [links, params]);
+  }, [flowsWithPaths, params]);
 }
