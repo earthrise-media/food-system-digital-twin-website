@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     .limit(5);
 
   // Get flow types
-  const flowTypes = await db("flow_types").select("id");
+  const crops = await db("crops").select("id", "name");
 
   // Generate randomized flows
   const flows = {
@@ -35,10 +35,11 @@ export default async function handler(req, res) {
     inbound: [...inboundCounties].map((county) => ({
       ...county,
       centroid: JSON.parse(county.centroid),
-      flows: flowTypes.reduce((acc, { id }) => {
-        acc[id] = Math.random() * 1000;
-        return acc;
-      }, {}),
+      flows: crops.map(({ id, name }) => ({
+        id,
+        name,
+        value: Math.random() * 1000,
+      })),
     })),
   };
 

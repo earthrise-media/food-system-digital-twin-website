@@ -1,4 +1,3 @@
-
 # Food System Digital Twin Website
 
 ## Installation and Usage
@@ -37,6 +36,14 @@ Migrate the database:
 
 ```sh
 yarn migrate
+```
+
+Download [seed data](https://drive.google.com/file/d/10DsMpXzoqaF9sWhSentwO5ReZSCrPPA9/view?usp=sharing) and expand it in the root folder the cloned repository. The contents of the zip file should be located at `./app-data`.
+
+Ingest downloaded data with:
+
+```sh
+yarn seed
 ```
 
 Start development server:
