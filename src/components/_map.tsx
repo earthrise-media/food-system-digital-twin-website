@@ -88,6 +88,10 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}
         initialViewState={INITIAL_VIEW_STATE}
+        maxBounds={[
+          [-160, 0],
+          [-50, 60],
+        ]}
       >
         <DeckGLOverlay layers={layers} />
         {!search && (
