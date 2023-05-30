@@ -6,7 +6,12 @@ import { Geometry, Feature } from "geojson";
 import { County, FlowWithTrips } from "@/types";
 import { featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
-import { countiesAtom, countyAtom, countyHighlightedAtom } from "@/atoms";
+import {
+  countiesAtom,
+  countyAtom,
+  countyHighlightedAtom,
+  flowTypeAtom,
+} from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
 
@@ -28,6 +33,8 @@ export default function useLayers(
   const [countyHiglighted, setCountyHighlighted] = useAtom(
     countyHighlightedAtom
   );
+  const flowType = useAtomValue(flowTypeAtom);
+
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useSelectedCounty();
   const { linesColor, animationSpeed } = useControls("layers", {
@@ -126,7 +133,9 @@ export default function useLayers(
           getColor: (d) => {
             if (
               !targetCountyHiglighted ||
-              targetCountyHiglighted === d.targetId
+              (flowType === "consumer"
+                ? targetCountyHiglighted === d.sourceId
+                : targetCountyHiglighted === d.targetId)
             ) {
               return d.color;
             }
