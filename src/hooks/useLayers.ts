@@ -11,6 +11,7 @@ import {
   countyAtom,
   countyHighlightedAtom,
   flowTypeAtom,
+  foodGroupAtom,
 } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
@@ -41,6 +42,8 @@ export default function useLayers(
     linesColor: { r: 200, b: 125, g: 106, a: 0.2 },
     animationSpeed: 1,
   });
+
+  const foodGroup = useAtomValue(foodGroupAtom);
 
   const linksAsGeoJSON = useMemo(() => {
     if (!flows.length) return null;
@@ -131,27 +134,35 @@ export default function useLayers(
           getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
           getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
           getColor: (d) => {
-            if (
-              !targetCountyHiglighted ||
-              (flowType === "consumer"
+            if (!targetCountyHiglighted && !foodGroup) return d.color;
+            const isSelectedCounty =
+              flowType === "consumer"
                 ? targetCountyHiglighted === d.sourceId
-                : targetCountyHiglighted === d.targetId)
-            ) {
-              return d.color;
+                : targetCountyHiglighted === d.targetId;
+
+            const isSelectedFoodGroup = d.foodGroup === foodGroup;
+
+            if (targetCountyHiglighted && isSelectedCounty && (!foodGroup || isSelectedFoodGroup)) {
+              return d.color
             }
-            return [...d.color.slice(0, 3), 50];
+
+            if (!targetCountyHiglighted &&foodGroup && isSelectedFoodGroup) {
+              return d.color
+            }
+
+            return [...d.color.slice(0, 3), 30];
           },
           updateTriggers: {
-            getColor: [targetCountyHiglighted],
+            getColor: [targetCountyHiglighted, foodGroup],
           },
-          widthMinPixels: 3,
+          widthMinPixels: 2.5,
           getWidth: (d) => {
             return 5000;
           },
           capRounded: true,
           jointRounded: true,
           fadeTrail: true,
-          trailLength: 0.2,
+          trailLength: 0.15,
           currentTime: currentFrame,
         }),
       ];
@@ -188,6 +199,8 @@ export default function useLayers(
     targetCountyHiglighted,
     linesColor,
     showAnimatedLayers,
+    flowType,
+    foodGroup,
   ]);
   return layers;
 }

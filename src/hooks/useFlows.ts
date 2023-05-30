@@ -218,6 +218,7 @@ const getPathTrips = (
     trips.push({
       waypoints,
       color: [...color, 255],
+      foodGroup: category,
     });
   }
   return trips;
