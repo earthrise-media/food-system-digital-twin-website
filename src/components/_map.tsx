@@ -45,24 +45,25 @@ type MapWrapperProps = {
 
 function MapWrapper({ mapStyle }: MapWrapperProps) {
   const counties = useAtomValue(countiesAtom);
-  const selectedLinks = useFlows();
-  const linksWithCurvedPaths = useFlowsWithCurvedPaths(selectedLinks);
-  const linksWithTrips = useFlowsWithTrips(linksWithCurvedPaths);
+  const selectedFlows = useFlows();
+  const flowsWithCurvedPaths = useFlowsWithCurvedPaths(selectedFlows);
+  const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths);
+
   const search = useAtomValue(searchAtom);
   const flowType = useAtomValue(flowTypeAtom);
 
   const targetCounties = useMemo(() => {
     if (!counties) return [];
-    return linksWithTrips.flatMap((l) => {
+    return flowsWithTrips.flatMap((l) => {
       const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId; 
       const target = counties.features.find(
         (county) => county.properties.geoid === idToLinkTo
       );
       return target ? [target] : [];
     });
-  }, [counties, linksWithTrips, flowType]);
+  }, [counties, flowsWithTrips, flowType]);
 
-  const layers = useLayers(targetCounties, linksWithTrips, !search);
+  const layers = useLayers(targetCounties, flowsWithTrips, !search);
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {

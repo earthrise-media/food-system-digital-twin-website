@@ -27,12 +27,13 @@ export type RawFlows = {
   };
 };
 
-export type Link = {
+export type Flow = {
   source: Position;
   target: Position;
   sourceId: string;
   targetId: string;
   value: number;
+  valuesRatiosByFoodGroup: number[];
 };
 
 export type Path = {
@@ -41,7 +42,7 @@ export type Path = {
   totalDistance: number;
 };
 
-export type LinkWithPaths = Link & {
+export type FlowWithPaths = Flow & {
   paths: Path[];
 };
 
@@ -57,7 +58,7 @@ export type Trip = {
   targetId?: string;
 };
 
-export type LinkWithTrips = LinkWithPaths & {
+export type FlowWithTrips = FlowWithPaths & {
   trips: Trip[];
 };
 

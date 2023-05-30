@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
 import { Geometry, Feature } from "geojson";
-import { County, LinkWithTrips } from "@/types";
+import { County, FlowWithTrips } from "@/types";
 import { featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
 import { countiesAtom, countyAtom, countyHighlightedAtom } from "@/atoms";
@@ -21,7 +21,7 @@ const BASE_LINE_LAYERS_OPTIONS = {
 
 export default function useLayers(
   targetCounties: Feature<Geometry, County>[],
-  links: LinkWithTrips[],
+  flows: FlowWithTrips[],
   showAnimatedLayers = true
 ) {
   const setCounty = useSetAtom(countyAtom);
@@ -36,8 +36,8 @@ export default function useLayers(
   });
 
   const linksAsGeoJSON = useMemo(() => {
-    if (!links.length) return null;
-    const features = links
+    if (!flows.length) return null;
+    const features = flows
       .map((l) => {
         return l.paths.map(
           ({ coordinates }) =>
@@ -53,23 +53,22 @@ export default function useLayers(
       .flat();
 
     return featureCollection(features);
-  }, [links]);
+  }, [flows]);
 
   const allTrips = useMemo(() => {
-    if (!links.length) return [];
-    return links.flatMap((l) =>
+    if (!flows.length) return [];
+    return flows.flatMap((l) =>
       l.trips.map((t) => {
         return { ...t, sourceId: l.sourceId, targetId: l.targetId };
       })
     );
-  }, [links]);
+  }, [flows]);
 
   const targetCountyHiglighted = useMemo(() => {
     if (!countyHiglighted) return null;
     const targetCountiesIds = targetCounties.map((c) => c.properties.geoid);
     return targetCountiesIds.find((id) => id === countyHiglighted);
   }, [countyHiglighted, targetCounties]);
-
 
   const [currentTime, setCurrentTime] = useState(0);
   useAnimationFrame((e: any) => setCurrentTime(e.time));
@@ -125,7 +124,10 @@ export default function useLayers(
           getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
           getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
           getColor: (d) => {
-            if (!targetCountyHiglighted || targetCountyHiglighted === d.targetId) {
+            if (
+              !targetCountyHiglighted ||
+              targetCountyHiglighted === d.targetId
+            ) {
               return d.color;
             }
             return [...d.color.slice(0, 3), 50];
