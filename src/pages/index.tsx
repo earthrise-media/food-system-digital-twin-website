@@ -1,22 +1,24 @@
-import Head from "next/head";
-import styles from "@/styles/Home.module.css";
-import { FeatureCollection } from "geojson";
-import { getLocalData } from "../lib/getLocalData";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import papa from "papaparse";
-import { Style } from "mapbox-gl";
-import FlowInfo from "@/components/_flowInfo";
+import Head from "next/head";
 import cx from "classnames";
+import { useEffect, useMemo, useState } from "react";
+import { FeatureCollection, Geometry } from "geojson";
+import { Style } from "mapbox-gl";
+import { useAtomValue, useSetAtom } from "jotai";
+import styles from "@/styles/Home.module.css";
+import { getLocalData } from "../lib/getLocalData";
+import FlowInfo from "@/components/_flowInfo";
 import { Kumbh_Sans } from "next/font/google";
 import Search from "@/components/_search";
+import { countiesAtom, searchAtom } from "@/atoms";
+import { County } from "@/types";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
   ssr: false,
 });
 
-const kumbhSans = Kumbh_Sans({ subsets: ["latin"] });
+export const kumbhSans = Kumbh_Sans({ subsets: ["latin"] });
 
 export default function Home({
   counties,
@@ -25,40 +27,52 @@ export default function Home({
   counties: FeatureCollection;
   mapStyle: Style;
 }) {
-  const [links, setLinks] = useState<Record<string, number>[]>();
-  useEffect(() => {
-    fetch("/synthetic_kcal_state_crop_1_results_pivoted.csv")
-      .then((response) => {
-        if (!response.ok) {
-          return null;
-        }
-        return response.text();
-      })
-      .then((data) => {
-        if (data) {
-          const rows = papa.parse(data, {
-            header: true,
-            dynamicTyping: true,
-          }).data;
-          console.log(rows);
-          setLinks(rows as Record<string, number>[]);
-        } else {
-          const links = counties.features.map((county) => {
-            const link: Record<string, number> = {
-              Supply: county?.properties?.geoid,
-            }
-            counties.features.forEach((target) => {
-              link[target?.properties?.geoid] = 15000 * Math.random();
-            });
-            return link
-          })
-          setLinks(links);
-        };
-      });
-  }, []);
 
-  // TODO handle app state
-  const searching = false;
+  // Inject the counties topojson into the map style
+  const mapStyleWithData = useMemo(() => {
+    if (!counties) return mapStyle;
+    const index = mapStyle.layers.findIndex((l) => l.id === "admin-2-boundary-bg");
+
+    return {
+      ...mapStyle,
+      sources: {
+        ...mapStyle.sources,
+        counties: {
+          type: "geojson",
+          data: counties,
+        },
+      },
+      layers: [
+        ...mapStyle.layers.slice(0, index),
+        {
+          id: "counties",
+          type: "fill",
+          source: "counties",
+          paint: {
+            "fill-color": "rgba(255,255,255,1)",
+            "fill-outline-color": "rgb(246, 243, 238)"
+          },
+        },
+        {
+          id: "counties-lines",
+          type: "line",
+          source: "counties",
+          paint: {
+            "line-color": "rgb(246, 243, 238)",
+            "line-width": 1.5,
+
+          },
+        },
+        ...mapStyle.layers.slice(index),
+      ],
+    } as Style;
+  }, [counties, mapStyle]);
+  const setCounties = useSetAtom(countiesAtom);
+  const search = useAtomValue(searchAtom);
+
+  useEffect(() => {
+    setCounties(counties as FeatureCollection<Geometry, County>);
+  }, [setCounties, counties]);
 
   return (
     <>
@@ -69,15 +83,9 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={cx(styles.main, kumbhSans.className)}>
-        {links && (
-          <DeckMap
-            counties={counties as any}
-            mapStyle={mapStyle}
-            links={links}
-          />
-        )}
+        <DeckMap mapStyle={mapStyleWithData} />
         <FlowInfo />
-        {searching && <Search counties={counties as any} />}
+        {search && <Search />}
       </main>
     </>
   );

@@ -1,6 +1,6 @@
 .flowInfo {
   position: absolute;
-  z-index: 3;
+  z-index: var(--z-flow-info);
   top: 10px;
   left: 40px;
   filter: drop-shadow(0px 0px 25px rgba(41, 41, 41, 0.1));
@@ -28,30 +28,50 @@
 }
 
 .flowInfo > nav > button {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.flowInfo > nav > button > span {
   font-size: var(--font-size-caption);
   opacity: 0.5;
   background: url("/icons/search.svg");
   background-repeat: no-repeat;
   padding: 2px 0 5px 20px;
+  width: 100%;
+  text-align: left;
 }
 
-.flowInfo > nav > h2 {
+.flowInfo > nav > button > h2 {
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-bold);
-  margin-bottom: 20px;
+  margin: 8px 0 16px 0;
+}
+
+.flowInfo > nav > button:hover > span {
+  opacity: 1;
+}
+
+.flowInfo > nav > button:hover > h2 {
+  text-decoration: underline;
 }
 
 .tabBar > button {
   margin-right: 20px;
   color: var(--background);
-  padding: 5px 0 5px 25px;
+  padding: 6px 0 6px 32px;
   font-weight: var(--font-weight-bold);
   background-repeat: no-repeat;
+  background-size: 26px;
   opacity: 0.5;
 }
 
-.tabBar > button.selected {
+.tabBar > button:hover, .tabBar > button.selected {
   opacity: 1;
+}
+
+.tabBar > button.selected {
   border-bottom: 2px solid var(--background);
 }
 
@@ -140,6 +160,7 @@
   width: 5px;
   background: var(--color);
   margin-right: 5px;
+  margin-bottom: 2px;
 }
 
 .crops > li > dl > dd::before {
@@ -158,11 +179,11 @@
 
 .detail dt::before {
   display: inline-block;
-  width: 3px;
-  height: 3px;
+  width: 4px;
+  height: 4px;
   content: " ";
   border-radius: 99px;
   background: var(--color);
   margin-right: 5px;
-  vertical-align: middle;
+  margin-bottom: 2px;
 }

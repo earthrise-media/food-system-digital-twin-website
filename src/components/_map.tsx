@@ -1,20 +1,29 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
-import { Map, useControl } from "react-map-gl";
+import { Map, MapRef, useControl, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { FeatureCollection, Geometry } from "geojson";
+import { useAtomValue } from "jotai";
 import Popup from "./_popup";
-import Search from "./_search";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Style } from "mapbox-gl";
 import useLayers from "@/hooks/useLayers";
-import { County } from "@/types";
-import useLinks, {
-  useLinksWithCurvedPaths,
-  useLinksWithTrips,
-} from "@/hooks/useLinks";
+import useFlows, {
+  useFlowsWithCurvedPaths,
+  useFlowsWithTrips,
+} from "@/hooks/useFlows";
+import { countiesAtom, flowTypeAtom, searchAtom } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
-import { Style } from "mapbox-gl";
+import useSelectedCounty from "@/hooks/useSelectedCounty";
+import { centroid } from "turf";
+import HighlightPopup from "./_highlightPopup";
+import LinkedPopup from "./_linkedPopup";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -31,46 +40,29 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
 }
 
 type MapWrapperProps = {
-  counties: FeatureCollection<Geometry, County>;
-  links: Record<string, number>[];
   mapStyle: Style;
 };
 
-function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
-  const [currentCountyId, setCurrentCountyId] = useState<string | null>(null);
+function MapWrapper({ mapStyle }: MapWrapperProps) {
+  const counties = useAtomValue(countiesAtom);
+  const selectedLinks = useFlows();
+  const linksWithCurvedPaths = useFlowsWithCurvedPaths(selectedLinks);
+  const linksWithTrips = useFlowsWithTrips(linksWithCurvedPaths);
+  const search = useAtomValue(searchAtom);
+  const flowType = useAtomValue(flowTypeAtom);
 
-  const selectedCounty = useMemo(() => {
-    if (!currentCountyId) return;
-    return counties.features.find(
-      (county) => county.properties.geoid === currentCountyId
-    );
-  }, [currentCountyId, counties]);
+  const targetCounties = useMemo(() => {
+    if (!counties) return [];
+    return linksWithTrips.flatMap((l) => {
+      const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId; 
+      const target = counties.features.find(
+        (county) => county.properties.geoid === idToLinkTo
+      );
+      return target ? [target] : [];
+    });
+  }, [counties, linksWithTrips, flowType]);
 
-  const selectedLinks = useLinks(counties, links, selectedCounty);
-
-  const linksWithCurvedPaths = useLinksWithCurvedPaths(selectedLinks);
-
-  const linksWithTrips = useLinksWithTrips(linksWithCurvedPaths);
-
-  const targetCounties = linksWithTrips.flatMap((l) => {
-    const target = counties.features.find(
-      (county) => county.properties.geoid === l.targetId
-    );
-    return target ? [target] : [];
-  });
-
-  const layers = useLayers(
-    counties,
-    selectedCounty,
-    targetCounties,
-    linksWithTrips,
-    setCurrentCountyId
-  );
-
-  // const onSearchCounty = useCallback((geoid: string) => {
-  //   setCurrentCountyId(geoid);
-  //   setSearching(false);
-  // }, []);
+  const layers = useLayers(targetCounties, linksWithTrips, !search);
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {
@@ -78,15 +70,34 @@ function MapWrapper({ counties, links, mapStyle }: MapWrapperProps) {
   }, [setUiVisible]);
   useKeyPress("u", toggleUI);
 
+  const mapRef = useRef<MapRef>(null);
+  const selectedCounty = useSelectedCounty();
+  useEffect(() => {
+    if (!selectedCounty) return;
+    mapRef.current?.flyTo({
+      center: centroid(selectedCounty).geometry.coordinates as any,
+      padding: { left: 200, top: 0, right: 0, bottom: 0 },
+    });
+  }, [selectedCounty]);
+
   return (
     <>
       <Map
+        ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}
         initialViewState={INITIAL_VIEW_STATE}
       >
         <DeckGLOverlay layers={layers} />
-        <Popup selectedCounty={selectedCounty} />
+        {!search && (
+          <>
+            {targetCounties.map((county) => {
+              return <LinkedPopup key={county.properties.geoid} county={county} />;
+            })}
+            <Popup />
+            <HighlightPopup />
+          </>
+        )}
       </Map>
       <Leva oneLineLabels={true} hidden={!uiVisible} />
     </>

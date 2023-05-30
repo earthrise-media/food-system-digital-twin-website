@@ -1,32 +1,36 @@
-import { Feature, Geometry } from "geojson";
 import { useEffect } from "react";
 import { useMap } from "react-map-gl";
-import { County } from "@/types";
 import { Popup as MapboxPopup } from "mapbox-gl";
 import { centroid } from "turf";
+import useSelectedCounty from "@/hooks/useSelectedCounty";
+import { useAtomValue } from "jotai";
+import { flowTypeAtom } from "@/atoms";
+import { kumbhSans } from "@/pages";
 
-function Popup({
-  selectedCounty,
-}: {
-  selectedCounty?: Feature<Geometry, County>;
-}) {
+function Popup() {
   const { current: map } = useMap();
+  const selectedCounty = useSelectedCounty();
+  const flowType = useAtomValue(flowTypeAtom);
 
   useEffect(() => {
     if (!map || !selectedCounty) return;
 
     const { name, stusps } = selectedCounty.properties;
-    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false })
+    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false, className: "selectedPopup" })
       .setLngLat(centroid(selectedCounty).geometry.coordinates as any)
       .setHTML(
-        `<dl><dt>${name}, ${stusps}</dt><dd><b>~323,234 Kcal</b> consumed</dd></dl>`
+        `<dl class=${
+          kumbhSans.className
+        }><dt>${name}, ${stusps}</dt><dd class=${flowType}><b>~323,234 Kcal</b> ${
+          flowType === "consumer" ? "consumed" : "produced"
+        } </dd></dl>`
       )
       .addTo(map.getMap());
 
     return () => {
       popup.remove();
     };
-  }, [map, selectedCounty]);
+  }, [map, selectedCounty, flowType]);
 
   return null;
 }
