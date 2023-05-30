@@ -7,5 +7,6 @@ export const countiesAtom = atom<FeatureCollection<Geometry, County> | null>(
   null
 );
 export const countyAtom = atomWithHash<string>("county", "47173");
+export const countyHighlightedAtom = atom<string | null>(null);
 export const searchAtom = atomWithHash<boolean>("search", false);
 export const flowTypeAtom = atomWithHash<FlowType>("flowType", "producer");

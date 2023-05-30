@@ -17,11 +17,13 @@ import useFlows, {
   useFlowsWithCurvedPaths,
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
-import { countiesAtom } from "@/atoms";
+import { countiesAtom, flowTypeAtom, searchAtom } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { centroid } from "turf";
+import HighlightPopup from "./_highlightPopup";
+import LinkedPopup from "./_linkedPopup";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -46,18 +48,21 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
   const selectedLinks = useFlows();
   const linksWithCurvedPaths = useFlowsWithCurvedPaths(selectedLinks);
   const linksWithTrips = useFlowsWithTrips(linksWithCurvedPaths);
+  const search = useAtomValue(searchAtom);
+  const flowType = useAtomValue(flowTypeAtom);
 
   const targetCounties = useMemo(() => {
     if (!counties) return [];
     return linksWithTrips.flatMap((l) => {
+      const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId; 
       const target = counties.features.find(
-        (county) => county.properties.geoid === l.targetId
+        (county) => county.properties.geoid === idToLinkTo
       );
       return target ? [target] : [];
     });
-  }, [counties, linksWithTrips]);
+  }, [counties, linksWithTrips, flowType]);
 
-  const layers = useLayers(targetCounties, linksWithTrips);
+  const layers = useLayers(targetCounties, linksWithTrips, !search);
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {
@@ -84,7 +89,15 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
         initialViewState={INITIAL_VIEW_STATE}
       >
         <DeckGLOverlay layers={layers} />
-        <Popup />
+        {!search && (
+          <>
+            {targetCounties.map((county) => {
+              return <LinkedPopup key={county.properties.geoid} county={county} />;
+            })}
+            <Popup />
+            <HighlightPopup />
+          </>
+        )}
       </Map>
       <Leva oneLineLabels={true} hidden={!uiVisible} />
     </>

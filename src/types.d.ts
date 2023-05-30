@@ -30,6 +30,7 @@ export type RawFlows = {
 export type Link = {
   source: Position;
   target: Position;
+  sourceId: string;
   targetId: string;
   value: number;
 };
@@ -52,6 +53,8 @@ export type Waypoint = {
 export type Trip = {
   waypoints: Waypoint[];
   color: number[];
+  sourceId?: string;
+  targetId?: string;
 };
 
 export type LinkWithTrips = LinkWithPaths & {

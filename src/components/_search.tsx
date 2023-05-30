@@ -28,27 +28,30 @@ function Search() {
   );
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} onClick={() => setSearch(false)}>
       <button className={styles.close} onClick={() => setSearch(false)} />
 
-      <Select
-        options={options}
-        onChange={onChange as any}
-        isSearchable={true}
-        // isClearable={true}
-        closeMenuOnSelect={false}
-        closeMenuOnScroll={false}
-        autoFocus={true}
-        unstyled
-        classNames={{
-          container: () => styles.search,
-          control: () => styles.control,
-          dropdownIndicator: () => styles.dropdownIndicator,
-          placeholder: () => styles.placeholder,
-          menu: () => styles.menu,
-          option: () => styles.option,
-        }}
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <Select
+          options={options}
+          onChange={onChange as any}
+          isSearchable={true}
+          closeMenuOnSelect={false}
+          closeMenuOnScroll={false}
+          autoFocus={true}
+          placeholder="Enter a US county name"
+          unstyled
+          maxMenuHeight={500}
+          classNames={{
+            container: () => styles.search,
+            control: () => styles.control,
+            dropdownIndicator: () => styles.dropdownIndicator,
+            placeholder: () => styles.placeholder,
+            menu: () => styles.menu,
+            option: () => styles.option,
+          }}
+        />
+      </div>
     </div>
   );
 }
