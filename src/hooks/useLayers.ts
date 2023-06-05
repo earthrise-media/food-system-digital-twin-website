@@ -95,7 +95,6 @@ export default function useLayers(
         data: counties as any,
         ...BASE_LINE_LAYERS_OPTIONS,
         getFillColor: [0, 0, 0, 0],
-        // TODO use values from Glbal CSS
         getLineColor: [0, 0, 0, 0],
         lineWidthMinPixels: 1,
         lineWidthMaxPixels: 5,
@@ -118,7 +117,7 @@ export default function useLayers(
           getFillColor: [0, 0, 0, 122],
           getLineColor: [0, 0, 0, 255],
           lineWidthMinPixels: 1,
-          lineWidthMaxPixels: 10,
+          lineWidthMaxPixels: 3,
         }),
         new GeoJsonLayer({
           id: "counties-targets",
@@ -127,8 +126,8 @@ export default function useLayers(
           getFillColor: [0, 0, 0, 50],
           getLineColor: [0, 0, 0, 150],
           lineWidthMinPixels: 0.5,
-          lineWidthMaxPixels: 5,
-          getLineWidth: 0.1,
+          lineWidthMaxPixels: 2,
+          getLineWidth: 0.01,
         }),
         new TripsLayer({
           id: "trips-layer",

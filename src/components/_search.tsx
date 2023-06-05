@@ -25,7 +25,6 @@ function Search() {
       setCounty(value);
       setSearch(false);
       setFoodGroup(null);
-
     },
     [setCounty, setSearch, setFoodGroup]
   );
