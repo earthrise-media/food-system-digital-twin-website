@@ -3,10 +3,10 @@ const fs = require("fs-extra");
 const postgis = require("knex-postgis");
 const { APP_DATA_DIR } = require("../config");
 
-// Generate absolute paths to the GeoJSON file in the local filesystem
-const COUNTIES_GEOJSON_PATH = path.join(
+// Generate absolute paths to the input file
+const COUNTIES_FILE_PATH = path.join(
   APP_DATA_DIR,
-  "population_counties_conus.geojson"
+  "county-population-consumption-production-scaled.geojson"
 );
 
 exports.seed = async function (knex) {
@@ -16,12 +16,12 @@ exports.seed = async function (knex) {
   await knex("counties").del();
 
   // Load GeoJSON file
-  const { features: counties } = await fs.readJSON(COUNTIES_GEOJSON_PATH);
+  const { features: counties } = await fs.readJson(COUNTIES_FILE_PATH);
 
   // Batch insert counties
   await knex("counties").insert(
     counties.map((county) => ({
-      id: county.properties.geoid,
+      id: county.properties.geography.slice(-5),
       properties: county.properties,
       geom: postgis(knex).geomFromGeoJSON(county.geometry),
     }))
