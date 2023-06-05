@@ -2,12 +2,13 @@ import { useCallback, useMemo } from "react";
 import Select from "react-select";
 import { useAtomValue, useSetAtom } from "jotai";
 import styles from "@/styles/Search.module.css";
-import { countiesAtom, countyAtom, searchAtom } from "@/atoms";
+import { countiesAtom, countyAtom, foodGroupAtom, searchAtom } from "@/atoms";
 
 function Search() {
   const counties = useAtomValue(countiesAtom);
   const setSearch = useSetAtom(searchAtom);
   const setCounty = useSetAtom(countyAtom);
+  const setFoodGroup = useSetAtom(foodGroupAtom);
   const options = useMemo(() => {
     if (!counties) return [];
     return counties.features.map((county) => {
@@ -23,8 +24,10 @@ function Search() {
     ({ value }: { value: string }) => {
       setCounty(value);
       setSearch(false);
+      setFoodGroup(null);
+
     },
-    [setCounty, setSearch]
+    [setCounty, setSearch, setFoodGroup]
   );
 
   return (

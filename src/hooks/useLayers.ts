@@ -31,6 +31,7 @@ export default function useLayers(
   showAnimatedLayers = true
 ) {
   const setCounty = useSetAtom(countyAtom);
+  const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
   const [countyHiglighted, setCountyHighlighted] = useAtom(
     countyHighlightedAtom
   );
@@ -42,8 +43,6 @@ export default function useLayers(
     linesColor: { r: 200, b: 125, g: 106, a: 0.2 },
     animationSpeed: 1,
   });
-
-  const foodGroup = useAtomValue(foodGroupAtom);
 
   const linksAsGeoJSON = useMemo(() => {
     if (!flows.length) return null;
@@ -100,7 +99,10 @@ export default function useLayers(
         getLineColor: [0, 0, 0, 0],
         lineWidthMinPixels: 1,
         lineWidthMaxPixels: 5,
-        onClick: ({ object }) => setCounty(object.properties.geoid),
+        onClick: ({ object }) => {
+          setCounty(object.properties.geoid);
+          setFoodGroup(null);
+        },
         onHover: ({ object }) =>
           setCountyHighlighted(object?.properties?.geoid ?? null),
         pickable: true,
@@ -196,6 +198,7 @@ export default function useLayers(
     currentFrame,
     setCounty,
     setCountyHighlighted,
+    setFoodGroup,
     targetCountyHiglighted,
     linesColor,
     showAnimatedLayers,

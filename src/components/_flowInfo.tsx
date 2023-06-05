@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React, { use, useCallback } from "react";
 import styles from "@/styles/FlowInfo.module.css";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import cx from "classnames";
@@ -6,6 +6,7 @@ import { useAtom } from "jotai";
 import Logo from "./_logo";
 import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { flowTypeAtom, searchAtom, foodGroupAtom } from "@/atoms";
+import { Category } from "@/types";
 
 type FlowInfoProps = {};
 
@@ -14,6 +15,11 @@ function FlowInfo({}: FlowInfoProps) {
   const [search, setSearch] = useAtom(searchAtom);
   const [flowType, setFlowType] = useAtom(flowTypeAtom);
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
+
+  const onFoodGroupClick = useCallback((category: Category) => {
+    setFoodGroup(foodGroup === category ? null : category);
+  }, [foodGroup, setFoodGroup]);
+
   return (
     <div className={styles.flowInfo}>
       <div className={styles.logoWrapper}>
@@ -71,7 +77,7 @@ function FlowInfo({}: FlowInfoProps) {
                 {CATEGORIES.map((category) => (
                   <li
                     key={category}
-                    onClick={() => setFoodGroup(category)}
+                    onClick={() => onFoodGroupClick(category)}
                     style={
                       {
                         "--color": CATEGORIES_PROPS[category].color,
