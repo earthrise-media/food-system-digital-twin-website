@@ -5,7 +5,7 @@ import {
   FlowWithPaths,
   FlowWithTrips,
   Path,
-  RawFlow,
+  RawCountyWithFlows,
   RawFlows,
   Trip,
 } from "@/types";
@@ -40,7 +40,7 @@ export default function useFlows(): Flow[] {
     const centerCentroid = centroid(selectedCounty);
     const { inbound } = flowsData;
     let selectedLinks: Flow[] = inbound.map(
-      ({ county_id, county_centroid }: RawFlow) => {
+      ({ county_id, county_centroid }: RawCountyWithFlows) => {
         const value = Math.floor(Math.random() * 100);
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]

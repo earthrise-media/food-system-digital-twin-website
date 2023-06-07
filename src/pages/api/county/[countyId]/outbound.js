@@ -1,3 +1,5 @@
+import { groupFlowsByCounty } from "./util";
+
 const db = require("../../../../helpers/db");
 
 export default async function handler(req, res) {
@@ -20,7 +22,7 @@ export default async function handler(req, res) {
     .orderBy("kcal_flows.value", "desc");
 
   return res.status(200).json({
-    outbound: outbound.map((f) => ({
+    outbound: groupFlowsByCounty(outbound).map((f) => ({
       ...f,
       county_centroid: JSON.parse(f.county_centroid),
     })),
