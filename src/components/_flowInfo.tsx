@@ -12,6 +12,7 @@ import {
 } from "@/atoms";
 import { Category } from "@/types";
 import { useFlowsData } from "@/hooks/useAPI";
+import classNames from "classnames";
 
 type FlowInfoProps = {};
 
@@ -68,14 +69,14 @@ function FlowInfo({}: FlowInfoProps) {
     );
 
     return {
-      total,
+      total: new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format( total / 1000000),
       byCropGroup,
       byCrop,
     };
   }, [flowsData]);
 
   return (
-    <div className={styles.flowInfo}>
+    <div className={classNames(styles.flowInfo, { [styles.loading]: isLoading })}>
       <div className={styles.logoWrapper}>
         <Logo />
       </div>
@@ -121,12 +122,12 @@ function FlowInfo({}: FlowInfoProps) {
               <dl>
                 <dt>Calories consumed:</dt>
                 <dd>
-                  <b>~323,234</b> kcal
+                  <b>~{stats?.total}</b> million kcal
                 </dd>
               </dl>
             </div>
             <div className={styles.stats}>
-              <h3>Main crops consumed:</h3>
+              <h3>Main crops {flowType === 'consumer' ? 'consumed' : 'produced' }:</h3>
               <ul className={styles.crops}>
                 {CATEGORIES.map((category) => (
                   <li
@@ -135,13 +136,13 @@ function FlowInfo({}: FlowInfoProps) {
                     style={
                       {
                         "--color": CATEGORIES_PROPS[category].color,
-                        "--width": `${stats?.byCropGroup[category].value}%`,
+                        "--width": `${stats?.byCropGroup[category]?.value || 0}%`,
                       } as React.CSSProperties
                     }
                   >
                     <dl>
                       <dt>{CATEGORIES_PROPS[category].name}</dt>
-                      <dd>{stats?.byCropGroup[category].value}%</dd>
+                      <dd>{stats?.byCropGroup[category]?.value}%</dd>
                     </dl>
                     {foodGroup === category && (
                       <ul className={styles.detail}>
