@@ -26,5 +26,6 @@ export default async function handler(req, res) {
       ...f,
       county_centroid: JSON.parse(f.county_centroid),
     })),
+    stats: getStats(inbound),
   });
 }
