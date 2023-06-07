@@ -8,7 +8,7 @@ export type County = {
   stusps: string;
 };
 
-export type Category = "vegetables" | "nuts" | "grain" | "fruits" | "tubbers";
+export type Category = "Vegetables" | "Nuts" | "Grain" | "Fruits" | "Potatoes";
 
 export type RawCountyFlows = {
   crop_id?: number;

@@ -5,7 +5,7 @@ import cx from "classnames";
 import { useAtom, useAtomValue } from "jotai";
 import Logo from "./_logo";
 import { flowTypeAtom, searchAtom, foodGroupAtom, selectedCountyAtom } from "@/atoms";
-import { Category, RawFlows } from "@/types";
+import { Category } from "@/types";
 import { useFlowsData } from "@/hooks/useAPI";
 
 type FlowInfoProps = {};

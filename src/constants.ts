@@ -1,34 +1,34 @@
 import { Category } from "./types";
 
 export const CATEGORIES: Category[] = [
-  "grain",
-  "nuts",
-  "vegetables",
-  "fruits",
-  "tubbers",
+  "Grain",
+  "Nuts",
+  "Vegetables",
+  "Fruits",
+  "Potatoes",
 ];
 
 export const CATEGORIES_PROPS: Record<
   Category,
   { name: string; color: string }
 > = {
-  vegetables: {
+  Vegetables: {
     name: "Vegetables",
     color: "#0FB5AE",
   },
-  nuts: {
+  Nuts: {
     name: "Nuts",
     color: "#4046CA",
   },
-  grain: {
+  Grain: {
     name: "Grain",
     color: "#F68511",
   },
-  fruits: {
+  Fruits: {
     name: "Fruits",
     color: "#DE3D82",
   },
-  tubbers: {
+  Potatoes: {
     name: "Tubers",
     color: "#7E84FA",
   },

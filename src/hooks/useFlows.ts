@@ -40,7 +40,7 @@ export default function useFlows(): Flow[] {
         county_centroid,
         flowsByCropGroup,
       }: RawCountyWithFlows) => {
-        console.log(flowsByCropGroup);
+
         const value = Math.floor(Math.random() * 100);
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
