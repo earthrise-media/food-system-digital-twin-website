@@ -13,6 +13,7 @@ import {
 import { Category } from "@/types";
 import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 import classNames from "classnames";
+import { getStats } from "@/utils";
 
 type FlowInfoProps = {};
 
@@ -51,48 +52,7 @@ function FlowInfo({}: FlowInfoProps) {
 
   const stats = useMemo(() => {
     if (!flowsData) return null;
-    const total = flowsData.stats.byCropGroup.reduce(
-      (acc, curr) => acc + curr.value,
-      0
-    );
-
-    const byCropGroup = Object.fromEntries(
-      flowsData.stats.byCropGroup.map(({ value, ...rest }) => [
-        rest.crop_category,
-        {
-          value: Math.round((value / total) * 1000) / 10,
-          ...rest,
-        },
-      ])
-    );
-
-    const byCropDict = flowsData.stats.byCrop.reduce((acc, curr) => {
-      const category = curr.crop_category;
-      if (!acc[category]) {
-        acc[category] = {};
-      }
-      if (!acc[category][curr.crop_name!]) {
-        acc[category][curr.crop_name!] = 0;
-      }
-      acc[category][curr.crop_name!] +=
-        Math.round((curr.value / total) * 1000) / 10;
-      return acc;
-    }, {} as Record<Category, Record<string, number>>);
-
-    const byCrop = Object.fromEntries(
-      Object.entries(byCropDict).map(([category, crops]) => {
-        const sortedCrops = Object.entries(crops).sort((a, b) => b[1] - a[1]);
-        return [category, sortedCrops];
-      })
-    );
-
-    return {
-      total: new Intl.NumberFormat("en-US", {
-        maximumSignificantDigits: 3,
-      }).format(total / 1000000),
-      byCropGroup,
-      byCrop,
-    };
+    return getStats(flowsData.stats.byCropGroup, flowsData.stats.byCrop);
   }, [flowsData]);
 
   return (
@@ -144,9 +104,9 @@ function FlowInfo({}: FlowInfoProps) {
               <dl>
                 <dt>Calories consumed:</dt>
                 <dd>
-                  {stats?.total && (
+                  {stats?.formattedTotal && (
                     <>
-                      <b>~{stats?.total}</b> million kcal
+                      <b>~{stats?.formattedTotal}</b> million kcal
                     </>
                   )}
                 </dd>

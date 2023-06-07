@@ -13,7 +13,7 @@ import {
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
-import { hexToRgb } from "@/utils";
+import { getStats, hexToRgb } from "@/utils";
 import { countiesAtom, flowTypeAtom, selectedCountyAtom } from "@/atoms";
 import { useControls } from "leva";
 import { centroid } from "turf";
@@ -38,13 +38,18 @@ export default function useFlows(): Flow[] {
       ({
         county_id,
         county_centroid,
+        flowsByCrop,
         flowsByCropGroup,
       }: RawCountyWithFlows) => {
+        const { total, byCropGroupCumulative } = getStats(
+          flowsByCropGroup,
+          flowsByCrop
+        );
 
-        const value = Math.floor(Math.random() * 100);
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
-        const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
+        // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
+        const value = Math.max(1, total / 200000000)
 
         return {
           source:
@@ -58,7 +63,7 @@ export default function useFlows(): Flow[] {
           sourceId: flowType === "consumer" ? county_id : centerId.toString(),
           targetId: flowType === "consumer" ? centerId.toString() : county_id,
           value,
-          valuesRatiosByFoodGroup: VALUES_RATIOS_BY_FOOD_GROUP,
+          valuesRatiosByFoodGroup: byCropGroupCumulative,
         };
       }
     );
@@ -205,6 +210,7 @@ const getPathTrips = (
       return { coordinates: c, timestamp: timestamp };
     });
 
+    if (!flow.valuesRatiosByFoodGroup) continue;
     const randomCategoryRatio = Math.random();
     const categoryIndex =
       flow.valuesRatiosByFoodGroup.reduce((acc, ratio, i) => {

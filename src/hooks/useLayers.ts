@@ -40,8 +40,8 @@ export default function useLayers(
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
   const { linesColor, animationSpeed } = useControls("layers", {
-    linesColor: { r: 200, b: 125, g: 106, a: 0.2 },
-    animationSpeed: 1,
+    linesColor: { r: 0, b: 0, g: 0, a: 0.05 },
+    animationSpeed: 3,
   });
 
   const linksAsGeoJSON = useMemo(() => {
@@ -143,12 +143,16 @@ export default function useLayers(
 
             const isSelectedFoodGroup = d.foodGroup === foodGroup;
 
-            if (targetCountyHiglighted && isSelectedCounty && (!foodGroup || isSelectedFoodGroup)) {
-              return d.color
+            if (
+              targetCountyHiglighted &&
+              isSelectedCounty &&
+              (!foodGroup || isSelectedFoodGroup)
+            ) {
+              return d.color;
             }
 
-            if (!targetCountyHiglighted &&foodGroup && isSelectedFoodGroup) {
-              return d.color
+            if (!targetCountyHiglighted && foodGroup && isSelectedFoodGroup) {
+              return d.color;
             }
 
             return [...d.color.slice(0, 3), 30];
@@ -158,7 +162,7 @@ export default function useLayers(
           },
           widthMinPixels: 2.5,
           getWidth: (d) => {
-            return 5000;
+            return 1000;
           },
           capRounded: true,
           jointRounded: true,
