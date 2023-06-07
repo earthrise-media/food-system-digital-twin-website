@@ -11,7 +11,7 @@ import {
   selectedCountyAtom,
 } from "@/atoms";
 import { Category } from "@/types";
-import { useFlowsData } from "@/hooks/useAPI";
+import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 import classNames from "classnames";
 
 type FlowInfoProps = {};
@@ -30,6 +30,24 @@ function FlowInfo({}: FlowInfoProps) {
   );
 
   const { data: flowsData, error, isLoading } = useFlowsData();
+  const { data: countyData, isLoading: isCountyLoading } = useCountyData();
+
+  const totalPopulation = useMemo(() => {
+    if (!countyData) return null;
+    const pop = countyData.properties.total_population;
+    if (pop < 1000000) {
+      return {
+        pop: new Intl.NumberFormat("en-US").format(pop),
+        unit: null,
+      };
+    }
+    return {
+      pop: new Intl.NumberFormat("en-US", {
+        maximumSignificantDigits: 3,
+      }).format(pop / 1000000),
+      unit: "million",
+    };
+  }, [countyData]);
 
   const stats = useMemo(() => {
     if (!flowsData) return null;
@@ -69,14 +87,18 @@ function FlowInfo({}: FlowInfoProps) {
     );
 
     return {
-      total: new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format( total / 1000000),
+      total: new Intl.NumberFormat("en-US", {
+        maximumSignificantDigits: 3,
+      }).format(total / 1000000),
       byCropGroup,
       byCrop,
     };
   }, [flowsData]);
 
   return (
-    <div className={classNames(styles.flowInfo, { [styles.loading]: isLoading })}>
+    <div
+      className={classNames(styles.flowInfo, { [styles.loading]: isLoading })}
+    >
       <div className={styles.logoWrapper}>
         <Logo />
       </div>
@@ -116,18 +138,24 @@ function FlowInfo({}: FlowInfoProps) {
               <dl>
                 <dt>Population:</dt>
                 <dd>
-                  <b>8.773</b> million
+                  <b>{totalPopulation?.pop}</b> {totalPopulation?.unit}
                 </dd>
               </dl>
               <dl>
                 <dt>Calories consumed:</dt>
                 <dd>
-                  <b>~{stats?.total}</b> million kcal
+                  {stats?.total && (
+                    <>
+                      <b>~{stats?.total}</b> million kcal
+                    </>
+                  )}
                 </dd>
               </dl>
             </div>
             <div className={styles.stats}>
-              <h3>Main crops {flowType === 'consumer' ? 'consumed' : 'produced' }:</h3>
+              <h3>
+                Main crops {flowType === "consumer" ? "consumed" : "produced"}:
+              </h3>
               <ul className={styles.crops}>
                 {CATEGORIES.map((category) => (
                   <li
@@ -136,7 +164,9 @@ function FlowInfo({}: FlowInfoProps) {
                     style={
                       {
                         "--color": CATEGORIES_PROPS[category].color,
-                        "--width": `${stats?.byCropGroup[category]?.value || 0}%`,
+                        "--width": `${
+                          stats?.byCropGroup[category]?.value || 0
+                        }%`,
                       } as React.CSSProperties
                     }
                   >

@@ -13,3 +13,11 @@ export function useFlowsData() {
     fetcher
   );
 }
+
+export function useCountyData() {
+  const selectedCounty = useAtomValue(selectedCountyAtom)
+  return useSWR<{ properties: Record<string, any>}>(
+    `/api/county/${selectedCounty?.properties.geoid}`,
+    fetcher
+  );
+}
