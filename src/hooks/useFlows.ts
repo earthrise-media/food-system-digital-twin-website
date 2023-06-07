@@ -32,7 +32,6 @@ export default function useFlows(): Flow[] {
     `/api/county/${selectedCounty?.properties.geoid}/inbound`,
     fetcher
   );
-  console.log(flowsData)
 
   return useMemo(() => {
     if (!selectedCounty || !counties || !flowsData) return [];

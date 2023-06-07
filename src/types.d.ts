@@ -11,8 +11,8 @@ export type County = {
 export type Category = "vegetables" | "nuts" | "grain" | "fruits" | "tubbers";
 
 export type RawCountyFlows = {
-  crop_id: number;
-  crop_name: string;
+  crop_id?: number;
+  crop_name?: string;
   crop_category: Category,
   value: number,
 }
@@ -21,7 +21,8 @@ export type RawCountyWithFlows = {
   county_id: string;
   county_name: string;
   county_centroid: Geometry<Point>;
-  flows: RawCountyFlows[];
+  flowsByCrop: RawCountyFlows[];
+  flowsByCropGroup: RawCountyFlows[];
 };
 
 export type RawFlows = {
