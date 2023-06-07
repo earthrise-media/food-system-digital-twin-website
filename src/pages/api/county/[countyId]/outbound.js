@@ -1,4 +1,4 @@
-import { groupFlowsByCounty } from "./util";
+import { getStats, groupFlowsByCounty } from "./util";
 
 const db = require("../../../../helpers/db");
 
