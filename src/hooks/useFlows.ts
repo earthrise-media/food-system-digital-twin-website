@@ -6,6 +6,8 @@ import {
   FlowWithTrips,
   Path,
   RawCountyWithFlows,
+  RawFlowsInbound,
+  RawFlowsOutbound,
   Trip,
 } from "@/types";
 import { useAtomValue } from "jotai";
@@ -19,23 +21,26 @@ import { useFlowsData } from "./useAPI";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
-  const selectedCounty = useAtomValue(selectedCountyAtom)
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
 
-  const {
-    data: flowsData,
-    error,
-    isLoading,
-  } = useFlowsData()
+  const { data: flowsData, error, isLoading } = useFlowsData();
 
   return useMemo(() => {
     if (!selectedCounty || !counties || !flowsData) return [];
     const { geoid: centerId } = selectedCounty.properties;
     const centerCentroid = centroid(selectedCounty);
-    const { inbound } = flowsData;
-    let selectedLinks: Flow[] = inbound.map(
-      ({ county_id, county_centroid, flowsByCropGroup }: RawCountyWithFlows) => {
-        console.log(flowsByCropGroup)
+    const flows =
+      flowType === "consumer"
+        ? (flowsData as RawFlowsInbound).inbound
+        : (flowsData as RawFlowsOutbound).outbound;
+    let selectedLinks: Flow[] = flows.map(
+      ({
+        county_id,
+        county_centroid,
+        flowsByCropGroup,
+      }: RawCountyWithFlows) => {
+        console.log(flowsByCropGroup);
         const value = Math.floor(Math.random() * 100);
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
@@ -50,10 +55,8 @@ export default function useFlows(): Flow[] {
             flowType === "consumer"
               ? centerCentroid.geometry.coordinates
               : county_centroid.coordinates,
-          sourceId:
-            flowType === "consumer" ? county_id : centerId.toString(),
-          targetId:
-            flowType === "consumer" ? centerId.toString() : county_id,
+          sourceId: flowType === "consumer" ? county_id : centerId.toString(),
+          targetId: flowType === "consumer" ? centerId.toString() : county_id,
           value,
           valuesRatiosByFoodGroup: VALUES_RATIOS_BY_FOOD_GROUP,
         };

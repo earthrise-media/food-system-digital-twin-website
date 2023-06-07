@@ -25,8 +25,12 @@ export type RawCountyWithFlows = {
   flowsByCropGroup: RawCountyFlows[];
 };
 
-export type RawFlows = {
+export type RawFlowsInbound = {
   inbound: RawCountyWithFlows[];
+};
+
+export type RawFlowsOutbound = {
+  outbound: RawCountyWithFlows[];
 };
 
 export type Flow = {
