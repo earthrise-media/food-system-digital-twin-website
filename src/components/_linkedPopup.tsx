@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useMap } from "react-map-gl";
 import { Popup as MapboxPopup } from "mapbox-gl";
-import { useHighlightedCounty } from "@/hooks/useSelectedCounty";
 import { kumbhSans } from "@/pages";
 import { Feature, Geometry } from "geojson";
 import { County } from "@/types";

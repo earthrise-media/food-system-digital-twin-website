@@ -2,14 +2,13 @@ import { useEffect } from "react";
 import { useMap } from "react-map-gl";
 import { Popup as MapboxPopup } from "mapbox-gl";
 import { centroid } from "turf";
-import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { useAtomValue } from "jotai";
-import { flowTypeAtom } from "@/atoms";
+import { flowTypeAtom, selectedCountyAtom } from "@/atoms";
 import { kumbhSans } from "@/pages";
 
 function Popup() {
   const { current: map } = useMap();
-  const selectedCounty = useSelectedCounty();
+  const selectedCounty = useAtomValue(selectedCountyAtom)
   const flowType = useAtomValue(flowTypeAtom);
 
   useEffect(() => {

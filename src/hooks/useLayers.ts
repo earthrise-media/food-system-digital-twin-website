@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
@@ -12,8 +12,8 @@ import {
   countyHighlightedAtom,
   flowTypeAtom,
   foodGroupAtom,
+  selectedCountyAtom,
 } from "@/atoms";
-import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
 
 const BASE_LINE_LAYERS_OPTIONS = {
@@ -38,7 +38,7 @@ export default function useLayers(
   const flowType = useAtomValue(flowTypeAtom);
 
   const counties = useAtomValue(countiesAtom);
-  const selectedCounty = useSelectedCounty();
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   const { linesColor, animationSpeed } = useControls("layers", {
     linesColor: { r: 200, b: 125, g: 106, a: 0.2 },
     animationSpeed: 1,

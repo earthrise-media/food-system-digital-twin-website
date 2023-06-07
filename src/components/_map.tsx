@@ -17,10 +17,9 @@ import useFlows, {
   useFlowsWithCurvedPaths,
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
-import { countiesAtom, flowTypeAtom, searchAtom } from "@/atoms";
+import { countiesAtom, flowTypeAtom, searchAtom, selectedCountyAtom } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
-import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { centroid } from "turf";
 import HighlightPopup from "./_highlightPopup";
 import LinkedPopup from "./_linkedPopup";
@@ -72,7 +71,7 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
   useKeyPress("u", toggleUI);
 
   const mapRef = useRef<MapRef>(null);
-  const selectedCounty = useSelectedCounty();
+  const selectedCounty = useAtomValue(selectedCountyAtom)
   useEffect(() => {
     if (!selectedCounty) return;
     mapRef.current?.flyTo({

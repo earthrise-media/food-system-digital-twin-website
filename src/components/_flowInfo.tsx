@@ -2,16 +2,15 @@ import React, { use, useCallback } from "react";
 import styles from "@/styles/FlowInfo.module.css";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import cx from "classnames";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import Logo from "./_logo";
-import useSelectedCounty from "@/hooks/useSelectedCounty";
-import { flowTypeAtom, searchAtom, foodGroupAtom } from "@/atoms";
+import { flowTypeAtom, searchAtom, foodGroupAtom, selectedCountyAtom } from "@/atoms";
 import { Category } from "@/types";
 
 type FlowInfoProps = {};
 
 function FlowInfo({}: FlowInfoProps) {
-  const selectedCounty = useSelectedCounty();
+  const selectedCounty = useAtomValue(selectedCountyAtom)
   const [search, setSearch] = useAtom(searchAtom);
   const [flowType, setFlowType] = useAtom(flowTypeAtom);
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);

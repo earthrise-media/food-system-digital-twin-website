@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useMap } from "react-map-gl";
 import { Popup as MapboxPopup } from "mapbox-gl";
-import { useHighlightedCounty } from "@/hooks/useSelectedCounty";
 import { kumbhSans } from "@/pages";
+import { useAtomValue } from "jotai";
+import { highlightedCountyAtom } from "@/atoms";
 
 function HighlightPopup() {
   const { current: map } = useMap();
-  const highlightedCounty = useHighlightedCounty();
+  const highlightedCounty = useAtomValue(highlightedCountyAtom)
 
   useEffect(() => {
     if (!map || !highlightedCounty) return;
