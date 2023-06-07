@@ -10,21 +10,17 @@ export type County = {
 
 export type Category = "vegetables" | "nuts" | "grain" | "fruits" | "tubbers";
 
-export type RawCounty = {
-  id: number;
-  name: string;
-  centroid: Geometry<Point>;
-};
-
-export type RawCountyWithFlows = RawCounty & {
-  flows: Record<Category, number>;
+export type RawFlow = { 
+  county_id: string;
+  county_name: string;
+  county_centroid: Geometry<Point>;
+  crop_id: number;
+  crop_name: string;
+  value: number;
 };
 
 export type RawFlows = {
-  flows: {
-    county: RawCounty;
-    inbound: RawCountyWithFlows[];
-  };
+  inbound: RawFlow[];
 };
 
 export type Flow = {
