@@ -14,7 +14,7 @@ function LinkedPopup({ county }: { county: Feature<Geometry, County> }) {
     if (!map || !county) return;
 
     const { name, stusps } = county.properties;
-    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false, className: "linkedPopup" })
+    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false, className: "linkedPopup", offset: 12 })
       .setLngLat(centroid(county).geometry.coordinates as any)
       .setHTML(
         `<dl class="${kumbhSans.className} compact"><dd>${name}, ${stusps}</dd></dl>`
