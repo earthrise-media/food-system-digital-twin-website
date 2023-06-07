@@ -1,11 +1,12 @@
-import React, { use, useCallback } from "react";
+import React, { useCallback } from "react";
 import styles from "@/styles/FlowInfo.module.css";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import cx from "classnames";
 import { useAtom, useAtomValue } from "jotai";
 import Logo from "./_logo";
 import { flowTypeAtom, searchAtom, foodGroupAtom, selectedCountyAtom } from "@/atoms";
-import { Category } from "@/types";
+import { Category, RawFlows } from "@/types";
+import { useFlowsData } from "@/hooks/useAPI";
 
 type FlowInfoProps = {};
 
@@ -18,6 +19,15 @@ function FlowInfo({}: FlowInfoProps) {
   const onFoodGroupClick = useCallback((category: Category) => {
     setFoodGroup(foodGroup === category ? null : category);
   }, [foodGroup, setFoodGroup]);
+
+  const {
+    data: flowsData,
+    error,
+    isLoading,
+  } = useFlowsData()
+
+
+  console.log(flowsData)
 
   return (
     <div className={styles.flowInfo}>

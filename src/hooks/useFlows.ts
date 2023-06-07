@@ -6,32 +6,27 @@ import {
   FlowWithTrips,
   Path,
   RawCountyWithFlows,
-  RawFlows,
   Trip,
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
-import { fetcher, hexToRgb } from "@/utils";
+import { hexToRgb } from "@/utils";
 import { countiesAtom, flowTypeAtom, selectedCountyAtom } from "@/atoms";
 import { useControls } from "leva";
-import useSWR from "swr";
 import { centroid } from "turf";
+import { useFlowsData } from "./useAPI";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom)
   const flowType = useAtomValue(flowTypeAtom);
 
-
   const {
     data: flowsData,
     error,
     isLoading,
-  } = useSWR<RawFlows>(
-    `/api/county/${selectedCounty?.properties.geoid}/inbound`,
-    fetcher
-  );
+  } = useFlowsData()
 
   return useMemo(() => {
     if (!selectedCounty || !counties || !flowsData) return [];
@@ -39,8 +34,8 @@ export default function useFlows(): Flow[] {
     const centerCentroid = centroid(selectedCounty);
     const { inbound } = flowsData;
     let selectedLinks: Flow[] = inbound.map(
-      ({ county_id, county_centroid, flows }: RawCountyWithFlows) => {
-        console.log(flows)
+      ({ county_id, county_centroid, flowsByCropGroup }: RawCountyWithFlows) => {
+        console.log(flowsByCropGroup)
         const value = Math.floor(Math.random() * 100);
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
