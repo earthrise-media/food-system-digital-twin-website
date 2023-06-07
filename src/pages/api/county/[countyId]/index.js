@@ -22,9 +22,15 @@ export default async function handler(req, res) {
 
   // Query county
   const county = await db("counties")
-    .select("id", "properties")
+    .select(
+      "id",
+      "properties",
+      db.raw("ST_AsGeoJSON(ST_Centroid(geom)) as centroid")
+    )
     .where("id", countyId)
     .first();
 
-  return res.status(200).json({ ...county });
+  return res
+    .status(200)
+    .json({ ...county, centroid: JSON.parse(county.centroid) });
 }

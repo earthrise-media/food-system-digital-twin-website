@@ -6,7 +6,7 @@ exports.up = async function (knex) {
   await knex.schema.createTable("crops", (table) => {
     table.integer("id").primary();
     table.string("name");
-    table.jsonb("meta");
+    table.string("category");
   });
 };
 

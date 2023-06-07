@@ -17,6 +17,7 @@ import { countiesAtom, flowTypeAtom } from "@/atoms";
 import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
 import useSWR from "swr";
+import { centroid } from "turf";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
@@ -34,10 +35,11 @@ export default function useFlows(): Flow[] {
 
   return useMemo(() => {
     if (!selectedCounty || !counties || !flowsData) return [];
-    const { inbound, county } = flowsData.flows;
-
+    const { geoid: centerId } = selectedCounty.properties;
+    const centerCentroid = centroid(selectedCounty);
+    const { inbound } = flowsData;
     let selectedLinks: Flow[] = inbound.map(
-      ({ id, centroid, flows }: RawCountyWithFlows) => {
+      ({ county_id, county_centroid }: RawCountyWithFlows) => {
         const value = Math.floor(Math.random() * 100);
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
@@ -46,16 +48,16 @@ export default function useFlows(): Flow[] {
         return {
           source:
             flowType === "consumer"
-              ? centroid.coordinates
-              : county.centroid.coordinates,
+              ? county_centroid.coordinates
+              : centerCentroid.geometry.coordinates,
           target:
             flowType === "consumer"
-              ? county.centroid.coordinates
-              : centroid.coordinates,
+              ? centerCentroid.geometry.coordinates
+              : county_centroid.coordinates,
           sourceId:
-            flowType === "consumer" ? id.toString() : county.id.toString(),
+            flowType === "consumer" ? county_id : centerId.toString(),
           targetId:
-            flowType === "consumer" ? county.id.toString() : id.toString(),
+            flowType === "consumer" ? centerId.toString() : county_id,
           value,
           valuesRatiosByFoodGroup: VALUES_RATIOS_BY_FOOD_GROUP,
         };

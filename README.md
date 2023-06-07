@@ -38,7 +38,7 @@ Migrate the database:
 yarn migrate
 ```
 
-Download [seed data](https://drive.google.com/file/d/10DsMpXzoqaF9sWhSentwO5ReZSCrPPA9/view?usp=sharing) and expand it in the root folder the cloned repository. The contents of the zip file should be located at `./app-data`.
+Download the contents of this [Google Drive folder](https://drive.google.com/drive/folders/1uDlDT7NNI7l5WC0A9WsAZTlFWpC0Uo1i?usp=sharing) and add it to a directory called `./app-data` in the cloned repository.
 
 Ingest downloaded data with:
 
