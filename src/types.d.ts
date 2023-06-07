@@ -17,6 +17,11 @@ export type RawCountyFlows = {
   value: number,
 }
   
+export type RawFlowStats = {
+  byCrop: RawCountyFlows[];
+  byCropGroup: RawCountyFlows[];
+};
+
 export type RawCountyWithFlows = { 
   county_id: string;
   county_name: string;
@@ -27,10 +32,12 @@ export type RawCountyWithFlows = {
 
 export type RawFlowsInbound = {
   inbound: RawCountyWithFlows[];
+  stats: RawFlowStats;
 };
 
 export type RawFlowsOutbound = {
   outbound: RawCountyWithFlows[];
+  stats: RawFlowStats;
 };
 
 export type Flow = {
