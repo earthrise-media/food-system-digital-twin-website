@@ -34,7 +34,8 @@ export default function useFlows(): Flow[] {
       flowType === "consumer"
         ? (flowsData as RawFlowsInbound).inbound
         : (flowsData as RawFlowsOutbound).outbound;
-    let selectedLinks: Flow[] = flows.map(
+
+    let selectedLinks: Flow[] = flows.slice(0,10).map(
       ({
         county_id,
         county_centroid,
@@ -75,7 +76,8 @@ export default function useFlows(): Flow[] {
 const getCurvedPaths = (
   link: Flow,
   {
-    numLinesPerLink = 10,
+    linesPerLinkMultiplicator = 1,
+    maxLinesPerLink = 30,
     minWaypointsPer1000km = 4,
     maxWaypointsPer1000km = 8,
     minDeviationDegrees = 0,
@@ -88,6 +90,11 @@ const getCurvedPaths = (
   const dist = distance(point(link.source), point(link.target));
   const minWaypoints = Math.round((dist / 1000) * minWaypointsPer1000km);
   const maxWaypoints = Math.round((dist / 1000) * maxWaypointsPer1000km);
+
+  const numLinesPerLink = Math.min(
+    Math.round(link.value * linesPerLinkMultiplicator),
+    maxLinesPerLink
+  );
 
   const paths = [];
   for (let lineIndex = 0; lineIndex < numLinesPerLink; lineIndex++) {
@@ -153,7 +160,8 @@ const getCurvedPaths = (
 
 export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
-    numLinesPerLink: 10,
+    linesPerLinkMultiplicator: 3,
+    maxLinesPerLink: 30,
     minWaypointsPer1000km: 4,
     maxWaypointsPer1000km: 8,
     minDeviationDegrees: 0,
@@ -179,9 +187,10 @@ const getPathTrips = (
     intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     speedKps = 100, // Speed in km per second
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
+    maxParticles = 500
   } = {}
 ): Trip[] => {
-  const numParticles = flow.value * numParticlesMultiplicator;
+  const numParticles = Math.min(flow.value * numParticlesMultiplicator, maxParticles);
 
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
@@ -241,6 +250,7 @@ export function useFlowsWithTrips(
     intervalHumanize: 0.5,
     speedKps: 100,
     speedKpsHumanize: 0.5,
+    maxParticles: 150,
   });
 
   return useMemo(() => {

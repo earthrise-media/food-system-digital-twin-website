@@ -41,7 +41,7 @@ export default function useLayers(
   const selectedCounty = useAtomValue(selectedCountyAtom);
   const { linesColor, animationSpeed } = useControls("layers", {
     linesColor: { r: 0, b: 0, g: 0, a: 0.05 },
-    animationSpeed: 3,
+    animationSpeed: 2,
   });
 
   const linksAsGeoJSON = useMemo(() => {
