@@ -250,7 +250,7 @@ export function useFlowsWithTrips(
     intervalHumanize: 0.5,
     speedKps: 100,
     speedKpsHumanize: 0.5,
-    maxParticles: 150,
+    maxParticles: 100,
   });
 
   return useMemo(() => {
