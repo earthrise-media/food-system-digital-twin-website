@@ -55,6 +55,31 @@ function FlowInfo({}: FlowInfoProps) {
     return getStats(flowsData.stats.byCropGroup, flowsData.stats.byCrop);
   }, [flowsData]);
 
+  const CropsTotalPanel = () => {
+    if (!stats || isLoading)
+      return (
+        <dt>Calories {flowType === "consumer" ? "consumed" : "produced"}:</dt>
+      );
+
+    if (stats.total === 0) {
+      return (
+        <dt>
+          No crops were {flowType === "consumer" ? "consumed" : "produced"} by
+          this county.
+        </dt>
+      );
+    }
+
+    return (
+      <>
+        <dt>Calories {flowType === "consumer" ? "consumed" : "produced"}:</dt>
+        <dd>
+          <b>~{stats?.formattedTotal}</b> million kcal
+        </dd>
+      </>
+    );
+  };
+
   return (
     <div
       className={classNames(styles.flowInfo, { [styles.loading]: isLoading })}
@@ -102,59 +127,55 @@ function FlowInfo({}: FlowInfoProps) {
                 </dd>
               </dl>
               <dl>
-                <dt>Calories consumed:</dt>
-                <dd>
-                  {stats?.formattedTotal && (
-                    <>
-                      <b>~{stats?.formattedTotal}</b> million kcal
-                    </>
-                  )}
-                </dd>
+                <CropsTotalPanel />
               </dl>
             </div>
-            <div className={styles.stats}>
-              <h3>
-                Main crops {flowType === "consumer" ? "consumed" : "produced"}:
-              </h3>
-              <ul className={styles.crops}>
-                {CATEGORIES.map((category) => {
-                  if (!isLoading && !stats?.byCropGroup[category]) {
-                    return null
-                  }
-                  return (
-                    <li
-                      key={category}
-                      onClick={() => onFoodGroupClick(category)}
-                      style={
-                        {
-                          "--color": CATEGORIES_PROPS[category].color,
-                          "--width": `${
-                            stats?.byCropGroup[category]?.value || 0
-                          }%`,
-                        } as React.CSSProperties
-                      }
-                    >
-                      <dl>
-                        <dt>{CATEGORIES_PROPS[category].name}</dt>
-                        <dd>{stats?.byCropGroup[category]?.value}%</dd>
-                      </dl>
-                      {foodGroup === category && (
-                        <ul className={styles.detail}>
-                          {stats?.byCrop[category].map(([name, value]) => (
-                            <li key={name}>
-                              <dl>
-                                <dt>{name}</dt>
-                                <dd>{value}%</dd>
-                              </dl>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            {stats && stats.total > 0 && (
+              <div className={styles.stats}>
+                <h3>
+                  Main crops {flowType === "consumer" ? "consumed" : "produced"}
+                  :
+                </h3>
+                <ul className={styles.crops}>
+                  {CATEGORIES.map((category) => {
+                    if (!isLoading && !stats?.byCropGroup[category]) {
+                      return null;
+                    }
+                    return (
+                      <li
+                        key={category}
+                        onClick={() => onFoodGroupClick(category)}
+                        style={
+                          {
+                            "--color": CATEGORIES_PROPS[category].color,
+                            "--width": `${
+                              stats?.byCropGroup[category]?.value || 0
+                            }%`,
+                          } as React.CSSProperties
+                        }
+                      >
+                        <dl>
+                          <dt>{CATEGORIES_PROPS[category].name}</dt>
+                          <dd>{stats?.byCropGroup[category]?.value}%</dd>
+                        </dl>
+                        {foodGroup === category && (
+                          <ul className={styles.detail}>
+                            {stats?.byCrop[category].map(([name, value]) => (
+                              <li key={name}>
+                                <dl>
+                                  <dt>{name}</dt>
+                                  <dd>{value}%</dd>
+                                </dl>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </div>
         </>
       )}
