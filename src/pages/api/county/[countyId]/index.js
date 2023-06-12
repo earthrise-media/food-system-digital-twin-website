@@ -30,6 +30,10 @@ export default async function handler(req, res) {
     .where("id", countyId)
     .first();
 
+  if (!county) {
+    return res.status(404).json({ message: "County not found" });
+  }
+
   return res
     .status(200)
     .json({ ...county, centroid: JSON.parse(county.centroid) });

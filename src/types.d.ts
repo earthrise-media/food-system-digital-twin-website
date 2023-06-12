@@ -8,7 +8,7 @@ export type County = {
   stusps: string;
 };
 
-export type Category = "vegetables" | "nuts" | "grain" | "fruits" | "tubbers";
+export type Category = "Vegetables" | "Nuts" | "Grain" | "Fruits" | "Potatoes";
 
 export type RawCountyFlows = {
   crop_id?: number;
@@ -17,6 +17,11 @@ export type RawCountyFlows = {
   value: number,
 }
   
+export type RawFlowStats = {
+  byCrop: RawCountyFlows[];
+  byCropGroup: RawCountyFlows[];
+};
+
 export type RawCountyWithFlows = { 
   county_id: string;
   county_name: string;
@@ -25,8 +30,14 @@ export type RawCountyWithFlows = {
   flowsByCropGroup: RawCountyFlows[];
 };
 
-export type RawFlows = {
+export type RawFlowsInbound = {
   inbound: RawCountyWithFlows[];
+  stats: RawFlowStats;
+};
+
+export type RawFlowsOutbound = {
+  outbound: RawCountyWithFlows[];
+  stats: RawFlowStats;
 };
 
 export type Flow = {

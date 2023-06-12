@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { use, useMemo, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
@@ -12,9 +12,10 @@ import {
   countyHighlightedAtom,
   flowTypeAtom,
   foodGroupAtom,
+  selectedCountyAtom,
 } from "@/atoms";
-import useSelectedCounty from "./useSelectedCounty";
 import { useControls } from "leva";
+import { MAX_ZOOM, MIN_ZOOM } from "@/components/_map";
 
 const BASE_LINE_LAYERS_OPTIONS = {
   stroked: true,
@@ -28,8 +29,10 @@ const BASE_LINE_LAYERS_OPTIONS = {
 export default function useLayers(
   targetCounties: Feature<Geometry, County>[],
   flows: FlowWithTrips[],
-  showAnimatedLayers = true
+  zoom: number,
+  showAnimatedLayers = true,
 ) {
+
   const setCounty = useSetAtom(countyAtom);
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
   const [countyHiglighted, setCountyHighlighted] = useAtom(
@@ -38,10 +41,10 @@ export default function useLayers(
   const flowType = useAtomValue(flowTypeAtom);
 
   const counties = useAtomValue(countiesAtom);
-  const selectedCounty = useSelectedCounty();
-  const { linesColor, animationSpeed } = useControls("layers", {
-    linesColor: { r: 200, b: 125, g: 106, a: 0.2 },
-    animationSpeed: 1,
+  const selectedCounty = useAtomValue(selectedCountyAtom);
+  const { linesColor, baseAnimationSpeed } = useControls("layers", {
+    linesColor: { r: 0, b: 0, g: 0, a: 0.05 },
+    baseAnimationSpeed: 3,
   });
 
   const linksAsGeoJSON = useMemo(() => {
@@ -85,8 +88,10 @@ export default function useLayers(
   const loopLength = 100;
 
   const currentFrame = useMemo(() => {
-    return (currentTime * animationSpeed) % loopLength;
-  }, [currentTime, animationSpeed]);
+    const animationSpeed = (1 + MAX_ZOOM - zoom) / (1 + MAX_ZOOM - MIN_ZOOM);
+    const speed = animationSpeed * baseAnimationSpeed;
+    return (currentTime * speed) % loopLength;
+  }, [currentTime, baseAnimationSpeed, zoom]);
 
   const layers = useMemo(() => {
     let layers: (GeoJsonLayer | TripsLayer)[] = [
@@ -143,22 +148,26 @@ export default function useLayers(
 
             const isSelectedFoodGroup = d.foodGroup === foodGroup;
 
-            if (targetCountyHiglighted && isSelectedCounty && (!foodGroup || isSelectedFoodGroup)) {
-              return d.color
+            if (
+              targetCountyHiglighted &&
+              isSelectedCounty &&
+              (!foodGroup || isSelectedFoodGroup)
+            ) {
+              return d.color;
             }
 
-            if (!targetCountyHiglighted &&foodGroup && isSelectedFoodGroup) {
-              return d.color
+            if (!targetCountyHiglighted && foodGroup && isSelectedFoodGroup) {
+              return d.color;
             }
 
-            return [...d.color.slice(0, 3), 30];
+            return [...d.color.slice(0, 3), 55];
           },
           updateTriggers: {
             getColor: [targetCountyHiglighted, foodGroup],
           },
           widthMinPixels: 2.5,
           getWidth: (d) => {
-            return 5000;
+            return 1000;
           },
           capRounded: true,
           jointRounded: true,

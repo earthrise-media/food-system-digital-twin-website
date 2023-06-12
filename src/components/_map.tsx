@@ -10,6 +10,7 @@ import { Map, MapRef, useControl, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useAtomValue } from "jotai";
 import Popup from "./_popup";
+import styles from "@/styles/Map.module.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Style } from "mapbox-gl";
 import useLayers from "@/hooks/useLayers";
@@ -17,13 +18,20 @@ import useFlows, {
   useFlowsWithCurvedPaths,
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
-import { countiesAtom, flowTypeAtom, searchAtom } from "@/atoms";
+import {
+  countiesAtom,
+  flowTypeAtom,
+  searchAtom,
+  selectedCountyAtom,
+} from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
-import useSelectedCounty from "@/hooks/useSelectedCounty";
 import { centroid } from "turf";
 import HighlightPopup from "./_highlightPopup";
 import LinkedPopup from "./_linkedPopup";
+import { useFlowsData } from "@/hooks/useAPI";
+import { RawFlowsInbound, RawFlowsOutbound } from "@/types";
+import { countyAtom } from "@/atoms";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -32,6 +40,14 @@ const INITIAL_VIEW_STATE = {
   pitch: 30,
   bearing: 0,
 };
+
+const MAX_BOUNDS = [
+  [-160, 0],
+  [-50, 60],
+];
+
+export const MIN_ZOOM = 3;
+export const MAX_ZOOM = 8;
 
 function DeckGLOverlay(props: MapboxOverlayProps) {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
@@ -55,7 +71,7 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
   const targetCounties = useMemo(() => {
     if (!counties) return [];
     return flowsWithTrips.flatMap((l) => {
-      const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId; 
+      const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId;
       const target = counties.features.find(
         (county) => county.properties.geoid === idToLinkTo
       );
@@ -63,7 +79,14 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
     });
   }, [counties, flowsWithTrips, flowType]);
 
-  const layers = useLayers(targetCounties, flowsWithTrips, !search);
+  const [viewState, setViewState] = React.useState(INITIAL_VIEW_STATE);
+
+  const layers = useLayers(
+    targetCounties,
+    flowsWithTrips,
+    Math.floor(viewState.zoom),
+    !search
+  );
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {
@@ -72,7 +95,7 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
   useKeyPress("u", toggleUI);
 
   const mapRef = useRef<MapRef>(null);
-  const selectedCounty = useSelectedCounty();
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   useEffect(() => {
     if (!selectedCounty) return;
     mapRef.current?.flyTo({
@@ -81,23 +104,47 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
     });
   }, [selectedCounty]);
 
+  const { data: flowsData, error, isLoading } = useFlowsData();
+  const currentCountyId = useAtomValue(countyAtom);
+  const bannerError = useMemo(() => {
+    if (error) return "Error loading county calories";
+    else if (isLoading) return "Loading...";
+    else if (flowsData) {
+      const data =
+        (flowsData as RawFlowsOutbound).outbound ||
+        (flowsData as RawFlowsInbound).inbound;
+      if (!data.length)
+        return flowType === "consumer"
+          ? "No calories consumed in this county"
+          : "No calories produced in this county";
+      else if (data.length === 1 && data[0].county_id === currentCountyId)
+        return flowType === "consumer"
+          ? "All calories consumed in this county produced internally"
+          : "All calories produced in this county consumed internally";
+      return null;
+    } else return null;
+  }, [flowsData, isLoading, error, currentCountyId, flowType]);
+
   return (
     <>
+      {bannerError && <div className={styles.banner}>{bannerError}</div>}
       <Map
+        {...viewState}
+        onMove={(evt) => setViewState(evt.viewState)}
         ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}
-        initialViewState={INITIAL_VIEW_STATE}
-        maxBounds={[
-          [-160, 0],
-          [-50, 60],
-        ]}
+        maxBounds={MAX_BOUNDS as any}
+        minZoom={MIN_ZOOM}
+        maxZoom={MAX_ZOOM}
       >
         <DeckGLOverlay layers={layers} />
         {!search && (
           <>
             {targetCounties.map((county) => {
-              return <LinkedPopup key={county.properties.geoid} county={county} />;
+              return (
+                <LinkedPopup key={county.properties.geoid} county={county} />
+              );
             })}
             <Popup />
             <HighlightPopup />

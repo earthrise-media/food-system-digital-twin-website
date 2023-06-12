@@ -6,44 +6,51 @@ import {
   FlowWithTrips,
   Path,
   RawCountyWithFlows,
-  RawFlows,
+  RawFlowsInbound,
+  RawFlowsOutbound,
   Trip,
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
-import { fetcher, hexToRgb } from "@/utils";
-import { countiesAtom, flowTypeAtom } from "@/atoms";
-import useSelectedCounty from "./useSelectedCounty";
+import { getStats, hexToRgb } from "@/utils";
+import { countiesAtom, flowTypeAtom, selectedCountyAtom } from "@/atoms";
 import { useControls } from "leva";
-import useSWR from "swr";
 import { centroid } from "turf";
+import { useFlowsData } from "./useAPI";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
-  const selectedCounty = useSelectedCounty();
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
 
-  const {
-    data: flowsData,
-    error,
-    isLoading,
-  } = useSWR<RawFlows>(
-    `/api/county/${selectedCounty?.properties.geoid}/inbound`,
-    fetcher
-  );
+  const { data: flowsData, error, isLoading } = useFlowsData();
 
   return useMemo(() => {
     if (!selectedCounty || !counties || !flowsData) return [];
     const { geoid: centerId } = selectedCounty.properties;
     const centerCentroid = centroid(selectedCounty);
-    const { inbound } = flowsData;
-    let selectedLinks: Flow[] = inbound.map(
-      ({ county_id, county_centroid }: RawCountyWithFlows) => {
-        const value = Math.floor(Math.random() * 100);
+    const flows =
+      flowType === "consumer"
+        ? (flowsData as RawFlowsInbound).inbound
+        : (flowsData as RawFlowsOutbound).outbound;
+
+    let selectedLinks: Flow[] = flows.slice(0,10).map(
+      ({
+        county_id,
+        county_centroid,
+        flowsByCrop,
+        flowsByCropGroup,
+      }: RawCountyWithFlows) => {
+        const { total, byCropGroupCumulative } = getStats(
+          flowsByCropGroup,
+          flowsByCrop
+        );
+
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
         // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
-        const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
+        // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
+        const value = Math.max(1, total / 200000000)
 
         return {
           source:
@@ -54,12 +61,10 @@ export default function useFlows(): Flow[] {
             flowType === "consumer"
               ? centerCentroid.geometry.coordinates
               : county_centroid.coordinates,
-          sourceId:
-            flowType === "consumer" ? county_id : centerId.toString(),
-          targetId:
-            flowType === "consumer" ? centerId.toString() : county_id,
+          sourceId: flowType === "consumer" ? county_id : centerId.toString(),
+          targetId: flowType === "consumer" ? centerId.toString() : county_id,
           value,
-          valuesRatiosByFoodGroup: VALUES_RATIOS_BY_FOOD_GROUP,
+          valuesRatiosByFoodGroup: byCropGroupCumulative,
         };
       }
     );
@@ -71,7 +76,8 @@ export default function useFlows(): Flow[] {
 const getCurvedPaths = (
   link: Flow,
   {
-    numLinesPerLink = 10,
+    linesPerLinkMultiplicator = 1,
+    maxLinesPerLink = 30,
     minWaypointsPer1000km = 4,
     maxWaypointsPer1000km = 8,
     minDeviationDegrees = 0,
@@ -84,6 +90,11 @@ const getCurvedPaths = (
   const dist = distance(point(link.source), point(link.target));
   const minWaypoints = Math.round((dist / 1000) * minWaypointsPer1000km);
   const maxWaypoints = Math.round((dist / 1000) * maxWaypointsPer1000km);
+
+  const numLinesPerLink = Math.min(
+    Math.round(link.value * linesPerLinkMultiplicator),
+    maxLinesPerLink
+  );
 
   const paths = [];
   for (let lineIndex = 0; lineIndex < numLinesPerLink; lineIndex++) {
@@ -149,7 +160,8 @@ const getCurvedPaths = (
 
 export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
-    numLinesPerLink: 10,
+    linesPerLinkMultiplicator: 3,
+    maxLinesPerLink: 30,
     minWaypointsPer1000km: 4,
     maxWaypointsPer1000km: 8,
     minDeviationDegrees: 0,
@@ -175,9 +187,10 @@ const getPathTrips = (
     intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     speedKps = 100, // Speed in km per second
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
+    maxParticles = 500
   } = {}
 ): Trip[] => {
-  const numParticles = flow.value * numParticlesMultiplicator;
+  const numParticles = Math.min(flow.value * numParticlesMultiplicator, maxParticles);
 
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
@@ -206,6 +219,7 @@ const getPathTrips = (
       return { coordinates: c, timestamp: timestamp };
     });
 
+    if (!flow.valuesRatiosByFoodGroup) continue;
     const randomCategoryRatio = Math.random();
     const categoryIndex =
       flow.valuesRatiosByFoodGroup.reduce((acc, ratio, i) => {
@@ -236,6 +250,7 @@ export function useFlowsWithTrips(
     intervalHumanize: 0.5,
     speedKps: 100,
     speedKpsHumanize: 0.5,
+    maxParticles: 100,
   });
 
   return useMemo(() => {

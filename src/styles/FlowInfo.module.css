@@ -67,7 +67,8 @@
   opacity: 0.5;
 }
 
-.tabBar > button:hover, .tabBar > button.selected {
+.tabBar > button:hover,
+.tabBar > button.selected {
   opacity: 1;
 }
 
@@ -89,7 +90,7 @@
 }
 
 .summary > dl {
-  flex: 1;
+  /* flex: 1; */
 }
 
 .summary dt {
@@ -105,7 +106,14 @@
 
 .summary > dl:first-child {
   margin-right: 15px;
+  width: 40%;
   border-right: 1px solid var(--foreground-10);
+}
+
+.content {
+  max-height: 55vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .stats {
@@ -170,6 +178,11 @@
   transition: width 0.5s ease;
 }
 
+.loading .crops > li > dl > dd::before {
+  animation: fade 1s linear infinite;
+  width: 100%;
+}
+
 .detail {
   margin-left: 30px;
   margin-top: 25px;
@@ -188,4 +201,14 @@
   background: var(--color);
   margin-right: 5px;
   margin-bottom: 2px;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }

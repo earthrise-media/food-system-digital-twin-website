@@ -1,0 +1,11 @@
+.banner {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 10px auto;
+  background: white;
+  border-radius: var(--border-radius-small);
+  z-index: var(--z-popup);
+  padding: 5px 10px;
+}
