@@ -32,6 +32,15 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
+const MAX_BOUNDS = [
+  [-160, 0],
+  [-50, 60],
+];
+
+export const MIN_ZOOM = 3;
+export const MAX_ZOOM = 8;
+
+
 function DeckGLOverlay(props: MapboxOverlayProps) {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
   overlay.setProps(props);
@@ -62,7 +71,9 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
     });
   }, [counties, flowsWithTrips, flowType]);
 
-  const layers = useLayers(targetCounties, flowsWithTrips, !search);
+  const [viewState, setViewState] = React.useState(INITIAL_VIEW_STATE);
+
+  const layers = useLayers(targetCounties, flowsWithTrips, Math.floor(viewState.zoom), !search);
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {
@@ -80,17 +91,19 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
     });
   }, [selectedCounty]);
 
+
+
   return (
     <>
       <Map
+        {...viewState}
+        onMove={evt => setViewState(evt.viewState)}
         ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}
-        initialViewState={INITIAL_VIEW_STATE}
-        maxBounds={[
-          [-160, 0],
-          [-50, 60],
-        ]}
+        maxBounds={MAX_BOUNDS as any}
+        minZoom={MIN_ZOOM}
+        maxZoom={MAX_ZOOM}
       >
         <DeckGLOverlay layers={layers} />
         {!search && (
