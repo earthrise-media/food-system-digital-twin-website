@@ -1,16 +1,19 @@
+import { searchAtom } from "@/atoms";
+import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 
 export default function useKeyPress(targetKey: string, callback: () => void) {
-  function downHandler({ key }: { key: string}): void {
-    if (key === targetKey) {
+  const search = useAtomValue(searchAtom);
+  const downHandler = ({ key }: { key: string}) => {
+    if (!search && key === targetKey) {
       callback();
     }
-  }
+  };
 
   useEffect(() => {
     window.addEventListener("keydown", downHandler);
     return () => {
       window.removeEventListener("keydown", downHandler);
     };
-  }, []); // Empty array ensures that effect is only run on mount and unmount
+  }, [search]); 
 }

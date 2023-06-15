@@ -26,6 +26,10 @@ export default function useFlows(): Flow[] {
 
   const { data: flowsData, error, isLoading } = useFlowsData();
 
+  const { maxTargetCounties } = useControls("filtering", {
+    maxTargetCounties: 100,
+  });
+
   return useMemo(() => {
     if (!selectedCounty || !counties || !flowsData) return [];
     const { geoid: centerId } = selectedCounty.properties;
@@ -35,7 +39,7 @@ export default function useFlows(): Flow[] {
         ? (flowsData as RawFlowsInbound).inbound
         : (flowsData as RawFlowsOutbound).outbound;
 
-    let selectedLinks: Flow[] = flows.slice(0,10).map(
+    let selectedLinks: Flow[] = flows.slice(0, maxTargetCounties).map(
       ({
         county_id,
         county_centroid,
@@ -70,7 +74,7 @@ export default function useFlows(): Flow[] {
     );
 
     return selectedLinks;
-  }, [counties, flowsData, selectedCounty, flowType]);
+  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties]);
 }
 
 const getCurvedPaths = (
