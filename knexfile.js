@@ -9,7 +9,10 @@ const DATABASE_URL = process.env.DATABASE_URL
 
 module.exports = {
   client: 'postgresql',
-  connection: DATABASE_URL,
+  connection: { 
+    connectionString: DATABASE_URL, 
+    ssl:  {rejectUnauthorized: false}
+  },
   migrations: {
     tableName: 'knex_migrations',
   },
