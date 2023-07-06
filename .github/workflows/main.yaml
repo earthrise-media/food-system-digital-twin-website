@@ -2,6 +2,7 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - aws-deploy
       - main
       - develop
 
@@ -44,6 +45,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Build, tag, and push the image
+        if: github.ref == 'refs/heads/aws-deploy'
         id: build-image        
         run: |          
           docker build --build-arg PAT=${{ secrets.PAT }} -t ghcr.io/earthrise-media/food-system-digital-twin-website:${{ env.version }} -t 966040274096.dkr.ecr.us-east-2.amazonaws.com/food-twin/site:latest .        
@@ -52,7 +54,7 @@ jobs:
           docker push 966040274096.dkr.ecr.us-east-2.amazonaws.com/food-twin/site:latest
 
       - name: Update Deployment
-        # if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/aws-deploy'
         run: |
           curl -L --output copilot-linux https://github.com/aws/copilot-cli/releases/download/v1.28.0/copilot-linux
           chmod +x copilot-linux
