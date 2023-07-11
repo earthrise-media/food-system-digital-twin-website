@@ -9,11 +9,14 @@ import {
   searchAtom,
   foodGroupAtom,
   selectedCountyAtom,
+  countyHighlightedAtom,
 } from "@/atoms";
-import { Category } from "@/types";
+import { Category, County } from "@/types";
 import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 import classNames from "classnames";
 import { getStats } from "@/utils";
+import useLinkedCounties from "@/hooks/useLinkedCounties";
+import { Feature, Geometry } from "geojson";
 
 type FlowInfoProps = {};
 
@@ -22,6 +25,9 @@ function FlowInfo({}: FlowInfoProps) {
   const [search, setSearch] = useAtom(searchAtom);
   const [flowType, setFlowType] = useAtom(flowTypeAtom);
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
+  const [countyHiglighted, setCountyHighlighted] = useAtom(
+    countyHighlightedAtom
+  );
 
   const onFoodGroupClick = useCallback(
     (category: Category) => {
@@ -54,6 +60,8 @@ function FlowInfo({}: FlowInfoProps) {
     if (!flowsData) return null;
     return getStats(flowsData.stats.byCropGroup, flowsData.stats.byCrop);
   }, [flowsData]);
+
+  const topLinkedCountries = useLinkedCounties()
 
   const CropsTotalPanel = () => {
     if (!stats || isLoading)
@@ -101,20 +109,20 @@ function FlowInfo({}: FlowInfoProps) {
 
             <div className={styles.tabBar}>
               <button
-                onClick={() => setFlowType("consumer")}
-                className={cx(styles.consumer, {
-                  [styles.selected]: flowType === "consumer",
-                })}
-              >
-                Consumer
-              </button>
-              <button
                 onClick={() => setFlowType("producer")}
                 className={cx(styles.producer, {
                   [styles.selected]: flowType === "producer",
                 })}
               >
                 Producer
+              </button>
+              <button
+                onClick={() => setFlowType("consumer")}
+                className={cx(styles.consumer, {
+                  [styles.selected]: flowType === "consumer",
+                })}
+              >
+                Consumer
               </button>
             </div>
           </nav>
@@ -174,6 +182,26 @@ function FlowInfo({}: FlowInfoProps) {
                     );
                   })}
                 </ul>
+              </div>
+            )}
+            {!!topLinkedCountries?.length && (
+              <div className={styles.top}>
+                <h3>
+                  Top {flowType === "consumer" ? "sourcing" : "destination"}{" "}
+                  counties{" "}
+                </h3>
+                <ol>
+                  {topLinkedCountries.map((county: Feature<Geometry, County>) => (
+                    <li
+                    // TODO highlight on hover
+                      onMouseOver={() => setCountyHighlighted(county.properties.geoid)}
+                      onMouseOut={() => setCountyHighlighted(null)}
+                      key={county.properties.geoid}
+                    >
+                      {county.properties.name}, {county.properties.stusps}
+                    </li>
+                  ))}
+                </ol>
               </div>
             )}
           </div>
