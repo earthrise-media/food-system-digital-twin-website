@@ -40,6 +40,8 @@ export type RawFlowsOutbound = {
   stats: RawFlowStats;
 };
 
+export type RawFlows = RawFlowsInbound & RawFlowsOutbound;
+
 export type Flow = {
   source: Position;
   target: Position;

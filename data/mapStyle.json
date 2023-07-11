@@ -1,6 +1,6 @@
 {
     "version": 8,
-    "name": "FT",
+    "name": "Food Twin v2",
     "metadata": {
         "mapbox:type": "default",
         "mapbox:origin": "monochrome-dark-v1",
@@ -79,7 +79,7 @@
         },
         "mapbox:uiParadigm": "layers",
         "mapbox:decompiler": {
-            "id": "clgnkv1d000dl01qucf7wc8zc",
+            "id": "cljpgc8t200t601qw8rcj4m81",
             "componentVersion": "16.0.0",
             "strata": [
                 {
@@ -117,375 +117,166 @@
                         ["natural-features", "natural-labels"],
                         ["point-of-interest-labels", "poi-labels"],
                         ["transit", "transit-labels"],
-                        ["place-labels", "place-labels"]
+                        ["place-labels", "place-labels"],
+                        "road"
                     ]
                 }
             ],
             "overrides": {
                 "road-network": {
-                    "tunnel-primary-case": {"layout": {"visibility": "none"}},
-                    "road-number-shield": {"layout": {"visibility": "none"}},
-                    "tunnel-primary-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-number-shield-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-primary-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-major-link-case": {"layout": {"visibility": "none"}},
-                    "road-construction-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "turning-feature-outline": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-oneway-arrow-blue-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-primary-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-primary-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-oneway-arrow-blue-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-oneway-arrow-white": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-motorway-trunk": {"layout": {"visibility": "none"}},
-                    "road-secondary-tertiary-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-motorway-trunk": {"layout": {"visibility": "none"}},
-                    "tunnel-minor-link-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-major-link-2-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-oneway-arrow-white": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-major-link-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-label": {"layout": {"visibility": "none"}},
-                    "bridge-minor-link-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-street": {"layout": {"visibility": "none"}},
-                    "tunnel-street": {"layout": {"visibility": "none"}},
-                    "road-primary-case": {"layout": {"visibility": "none"}},
-                    "road-minor": {"layout": {"visibility": "none"}},
-                    "bridge-motorway-trunk-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "traffic-signal-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-secondary-tertiary-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-major-link-2-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-motorway-trunk-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-street-low-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-major-link-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "crosswalks": {"layout": {"visibility": "none"}},
-                    "bridge-motorway-trunk-2": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-motorway-trunk-case-low-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-street-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-construction-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-case-simple": {"layout": {"visibility": "none"}},
-                    "level-crossing": {"layout": {"visibility": "none"}},
-                    "bridge-major-link-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-exit-shield": {"layout": {"visibility": "none"}},
-                    "tunnel-street-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-construction-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-primary-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-minor-case": {"layout": {"visibility": "none"}},
-                    "road-oneway-arrow-blue-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-minor-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-secondary-tertiary-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-minor-case": {"layout": {"visibility": "none"}},
-                    "road-polygon": {"layout": {"visibility": "none"}},
-                    "road-street-case": {"layout": {"visibility": "none"}},
-                    "road-oneway-arrow-white": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-motorway-trunk-2-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-secondary-tertiary-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-major-link-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-motorway-trunk": {"layout": {"visibility": "none"}},
-                    "bridge-street-low": {"layout": {"visibility": "none"}},
-                    "turning-feature": {"layout": {"visibility": "none"}},
-                    "tunnel-street-low": {"layout": {"visibility": "none"}},
-                    "bridge-secondary-tertiary": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-major-link-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-motorway-trunk-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-minor-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-minor": {"layout": {"visibility": "none"}},
-                    "tunnel-secondary-tertiary": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-street": {"layout": {"visibility": "none"}},
-                    "bridge-minor": {"layout": {"visibility": "none"}},
-                    "road-street-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-secondary-tertiary-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-minor-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-major-link": {"layout": {"visibility": "none"}},
-                    "bridge-secondary-tertiary-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-street-low-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-motorway-trunk-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-secondary-tertiary-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-oneway-arrow-white-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "turning-feature-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-street-low-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-major-link": {"layout": {"visibility": "none"}},
-                    "road-motorway-trunk-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-motorway-trunk-2-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-street-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-minor-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-secondary-tertiary-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-primary": {"layout": {"visibility": "none"}},
-                    "bridge-construction": {"layout": {"visibility": "none"}},
-                    "tunnel-street-case": {"layout": {"visibility": "none"}},
-                    "road-minor-case": {"layout": {"visibility": "none"}},
-                    "bridge-minor-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-oneway-arrow-blue": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-intersection": {"layout": {"visibility": "none"}},
-                    "bridge-simple": {"layout": {"visibility": "none"}},
-                    "level-crossing-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-exit-shield-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-major-link-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-construction": {"layout": {"visibility": "none"}},
-                    "bridge-street-case": {"layout": {"visibility": "none"}},
-                    "bridge-minor-link": {"layout": {"visibility": "none"}},
-                    "bridge-motorway-trunk-2-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-motorway-trunk-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-major-link-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-major-link-2": {"layout": {"visibility": "none"}},
-                    "tunnel-minor-link": {"layout": {"visibility": "none"}},
-                    "tunnel-simple": {"layout": {"visibility": "none"}},
-                    "road-street-low": {"layout": {"visibility": "none"}},
-                    "road-label-simple": {"layout": {"visibility": "none"}},
-                    "road-secondary-tertiary": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-motorway-trunk-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-minor-navigation": {"layout": {"visibility": "none"}},
-                    "road-primary-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-street-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-street-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-label-navigation": {"layout": {"visibility": "none"}},
-                    "road-major-link": {"layout": {"visibility": "none"}},
-                    "tunnel-oneway-arrow-white-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-major-link-2-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-motorway-trunk-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-secondary-tertiary-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-motorway-trunk-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-oneway-arrow-white-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-primary": {"layout": {"visibility": "none"}},
-                    "tunnel-oneway-arrow-blue": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-minor-link-case": {"layout": {"visibility": "none"}},
-                    "turning-feature-outline-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-construction": {"layout": {"visibility": "none"}},
-                    "bridge-primary": {"layout": {"visibility": "none"}},
-                    "bridge-oneway-arrow-blue": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-simple": {"layout": {"visibility": "none"}},
-                    "road-major-link-case-navigation": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-minor-link": {"layout": {"visibility": "none"}},
-                    "bridge-primary-case": {"layout": {"visibility": "none"}}
+                    "tunnel-primary-case": {"layout": {}},
+                    "road-number-shield": {"layout": {}},
+                    "tunnel-primary-case-navigation": {"layout": {}},
+                    "road-number-shield-navigation": {"layout": {}},
+                    "bridge-primary-case-navigation": {"layout": {}},
+                    "road-major-link-case": {"layout": {}},
+                    "road-construction-navigation": {"layout": {}},
+                    "turning-feature-outline": {"layout": {}},
+                    "bridge-oneway-arrow-blue-navigation": {"layout": {}},
+                    "bridge-primary-navigation": {"layout": {}},
+                    "tunnel-primary-navigation": {"layout": {}},
+                    "tunnel-oneway-arrow-blue-navigation": {"layout": {}},
+                    "bridge-oneway-arrow-white": {"layout": {}},
+                    "bridge-motorway-trunk": {"layout": {}},
+                    "road-secondary-tertiary-case": {"layout": {}},
+                    "tunnel-motorway-trunk": {"layout": {}},
+                    "tunnel-minor-link-case": {"layout": {}},
+                    "bridge-major-link-2-case": {"layout": {}},
+                    "tunnel-oneway-arrow-white": {"layout": {}},
+                    "road-major-link-navigation": {"layout": {}},
+                    "road-label": {"layout": {}},
+                    "bridge-minor-link-case": {"layout": {}},
+                    "bridge-street": {"layout": {}},
+                    "tunnel-street": {"layout": {}},
+                    "road-primary-case": {"layout": {}},
+                    "road-minor": {"layout": {}},
+                    "bridge-motorway-trunk-case-navigation": {"layout": {}},
+                    "traffic-signal-navigation": {"layout": {}},
+                    "road-secondary-tertiary-navigation": {"layout": {}},
+                    "bridge-major-link-2-navigation": {"layout": {}},
+                    "tunnel-motorway-trunk-case-navigation": {"layout": {}},
+                    "road-street-low-navigation": {"layout": {}},
+                    "tunnel-major-link-case": {"layout": {}},
+                    "crosswalks": {"layout": {}},
+                    "bridge-motorway-trunk-2": {"layout": {}},
+                    "road-motorway-trunk-case-low-navigation": {"layout": {}},
+                    "bridge-street-case-navigation": {"layout": {}},
+                    "tunnel-construction-navigation": {"layout": {}},
+                    "level-crossing": {"layout": {}},
+                    "bridge-major-link-case": {"layout": {}},
+                    "road-exit-shield": {"layout": {}},
+                    "tunnel-street-case-navigation": {"layout": {}},
+                    "bridge-construction-navigation": {"layout": {}},
+                    "road-primary-navigation": {"layout": {}},
+                    "bridge-minor-case": {"layout": {}},
+                    "road-oneway-arrow-blue-navigation": {"layout": {}},
+                    "road-minor-case-navigation": {"layout": {}},
+                    "tunnel-secondary-tertiary-case": {"layout": {}},
+                    "tunnel-minor-case": {"layout": {}},
+                    "road-polygon": {"layout": {}},
+                    "road-street-case": {"layout": {}},
+                    "road-oneway-arrow-white": {"layout": {}},
+                    "bridge-motorway-trunk-2-case-navigation": {"layout": {}},
+                    "bridge-secondary-tertiary-case": {"layout": {}},
+                    "tunnel-major-link-navigation": {"layout": {}},
+                    "road-motorway-trunk": {"layout": {}},
+                    "bridge-street-low": {"layout": {}},
+                    "turning-feature": {"layout": {}},
+                    "tunnel-street-low": {"layout": {}},
+                    "bridge-secondary-tertiary": {"layout": {}},
+                    "bridge-major-link-navigation": {"layout": {}},
+                    "road-motorway-trunk-case": {"layout": {}},
+                    "bridge-minor-navigation": {"layout": {}},
+                    "tunnel-minor": {"layout": {}},
+                    "tunnel-secondary-tertiary": {"layout": {}},
+                    "road-street": {"layout": {}},
+                    "bridge-minor": {"layout": {}},
+                    "road-street-navigation": {"layout": {}},
+                    "tunnel-secondary-tertiary-navigation": {"layout": {}},
+                    "tunnel-minor-navigation": {"layout": {}},
+                    "bridge-major-link": {"layout": {}},
+                    "bridge-secondary-tertiary-navigation": {"layout": {}},
+                    "tunnel-street-low-navigation": {"layout": {}},
+                    "road-motorway-trunk-case-navigation": {"layout": {}},
+                    "bridge-secondary-tertiary-case-navigation": {"layout": {}},
+                    "road-oneway-arrow-white-navigation": {"layout": {}},
+                    "turning-feature-navigation": {"layout": {}},
+                    "bridge-street-low-navigation": {"layout": {}},
+                    "tunnel-major-link": {"layout": {}},
+                    "road-motorway-trunk-navigation": {"layout": {}},
+                    "bridge-motorway-trunk-2-case": {"layout": {}},
+                    "road-street-case-navigation": {"layout": {}},
+                    "tunnel-minor-case-navigation": {"layout": {}},
+                    "tunnel-secondary-tertiary-case-navigation": {"layout": {}},
+                    "road-primary": {"layout": {}},
+                    "bridge-construction": {"layout": {}},
+                    "tunnel-street-case": {"layout": {}},
+                    "road-minor-case": {"layout": {}},
+                    "bridge-minor-case-navigation": {"layout": {}},
+                    "road-oneway-arrow-blue": {"layout": {}},
+                    "road-intersection": {"layout": {}},
+                    "level-crossing-navigation": {"layout": {}},
+                    "road-exit-shield-navigation": {"layout": {}},
+                    "bridge-major-link-case-navigation": {"layout": {}},
+                    "tunnel-construction": {"layout": {}},
+                    "bridge-street-case": {"layout": {}},
+                    "bridge-minor-link": {"layout": {}},
+                    "bridge-motorway-trunk-2-navigation": {"layout": {}},
+                    "tunnel-motorway-trunk-case": {"layout": {}},
+                    "tunnel-major-link-case-navigation": {"layout": {}},
+                    "bridge-major-link-2": {"layout": {}},
+                    "tunnel-minor-link": {"layout": {}},
+                    "road-street-low": {"layout": {}},
+                    "road-label-simple": {"layout": {}},
+                    "road-secondary-tertiary": {"layout": {}},
+                    "bridge-motorway-trunk-case": {"layout": {}},
+                    "road-minor-navigation": {"layout": {}},
+                    "road-primary-case-navigation": {"layout": {}},
+                    "tunnel-street-navigation": {"layout": {}},
+                    "bridge-street-navigation": {"layout": {}},
+                    "road-label-navigation": {"layout": {}},
+                    "road-major-link": {"layout": {}},
+                    "tunnel-oneway-arrow-white-navigation": {"layout": {}},
+                    "bridge-major-link-2-case-navigation": {"layout": {}},
+                    "tunnel-motorway-trunk-navigation": {"layout": {}},
+                    "road-secondary-tertiary-case-navigation": {"layout": {}},
+                    "bridge-motorway-trunk-navigation": {"layout": {}},
+                    "bridge-oneway-arrow-white-navigation": {"layout": {}},
+                    "tunnel-primary": {"layout": {}},
+                    "tunnel-oneway-arrow-blue": {"layout": {}},
+                    "road-minor-link-case": {"layout": {}},
+                    "turning-feature-outline-navigation": {"layout": {}},
+                    "road-construction": {"layout": {}},
+                    "bridge-primary": {"layout": {}},
+                    "bridge-oneway-arrow-blue": {"layout": {}},
+                    "road-major-link-case-navigation": {"layout": {}},
+                    "road-minor-link": {"layout": {}},
+                    "bridge-primary-case": {"layout": {}}
                 },
                 "natural-features": {
                     "waterway-label": {
-                        "layout": {"visibility": "none"},
-                        "paint": {"text-color": "hsl(38, 31%, 68%)"}
+                        "paint": {"text-color": "hsl(38, 31%, 68%)"},
+                        "layout": {"visibility": "none"}
                     },
                     "natural-line-label": {"layout": {"visibility": "none"}},
                     "natural-point-label": {"layout": {"visibility": "none"}},
                     "water-line-label": {"layout": {"visibility": "none"}},
                     "water-point-label": {"layout": {"visibility": "none"}}
                 },
-                "place-labels": {
-                    "settlement-subdivision-label": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "settlement-minor-label": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "settlement-major-label": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "state-label": {"layout": {"visibility": "none"}},
-                    "country-label": {"layout": {"visibility": "none"}},
-                    "continent-label": {"layout": {"visibility": "none"}}
-                },
-                "point-of-interest-labels": {
-                    "poi-label": {"layout": {"visibility": "none"}}
-                },
                 "walking-cycling": {
-                    "road-path-bg": {"layout": {"visibility": "none"}},
-                    "tunnel-pedestrian": {"layout": {"visibility": "none"}},
-                    "tunnel-steps": {"layout": {"visibility": "none"}},
-                    "bridge-path-trail": {"layout": {"visibility": "none"}},
-                    "road-path-cycleway-piste": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-path-trail": {"layout": {"visibility": "none"}},
-                    "bridge-steps": {"layout": {"visibility": "none"}},
-                    "gate-fence-hedge": {"layout": {"visibility": "none"}},
-                    "road-pedestrian": {"layout": {"visibility": "none"}},
-                    "bridge-path-bg": {"layout": {"visibility": "none"}},
-                    "bridge-path": {"layout": {"visibility": "none"}},
-                    "tunnel-path-cycleway-piste": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "tunnel-path": {"layout": {"visibility": "none"}},
-                    "path-pedestrian-label": {"layout": {"visibility": "none"}},
-                    "bridge-path-cycleway-piste": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-path-trail": {"layout": {"visibility": "none"}},
-                    "bridge-steps-bg": {"layout": {"visibility": "none"}},
-                    "golf-hole-label": {"layout": {"visibility": "none"}},
-                    "road-path": {"layout": {"visibility": "none"}},
-                    "gate-label": {"layout": {"visibility": "none"}},
-                    "road-pedestrian-case": {"layout": {"visibility": "none"}},
-                    "golf-hole-line": {"layout": {"visibility": "none"}},
-                    "road-steps-bg": {"layout": {"visibility": "none"}},
-                    "road-pedestrian-polygon-pattern": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "road-steps": {"layout": {"visibility": "none"}},
-                    "road-pedestrian-polygon-fill": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-pedestrian-case": {
-                        "layout": {"visibility": "none"}
-                    },
-                    "bridge-pedestrian": {"layout": {"visibility": "none"}}
+                    "road-path-bg": {"layout": {}},
+                    "gate-fence-hedge": {"layout": {}},
+                    "bridge-path-bg": {"layout": {}},
+                    "path-pedestrian-label": {"layout": {}},
+                    "bridge-steps-bg": {"layout": {}},
+                    "golf-hole-label": {"layout": {}},
+                    "gate-label": {"layout": {}},
+                    "road-pedestrian-case": {"layout": {}},
+                    "golf-hole-line": {"layout": {}},
+                    "road-steps-bg": {"layout": {}},
+                    "road-pedestrian-polygon-pattern": {"layout": {}},
+                    "road-pedestrian-polygon-fill": {"layout": {}},
+                    "bridge-pedestrian-case": {"layout": {}}
                 },
                 "transit": {
                     "ferry-auto": {"layout": {"visibility": "none"}},
@@ -502,8 +293,8 @@
                     "bridge-rail-tracks": {"layout": {"visibility": "none"}}
                 },
                 "land-and-water": {
-                    "water": {"paint": {"fill-color": "hsl(38, 29%, 90%)"}},
-                    "waterway": {"paint": {"line-color": "hsl(38, 29%, 90%)"}},
+                    "water": {"paint": {"fill-color": "#dce5ea"}},
+                    "waterway": {"paint": {"line-color": "#dce5ea"}},
                     "landuse": {"paint": {"fill-color": "hsl(38, 34%, 95%)"}},
                     "national-park": {
                         "paint": {"fill-color": "hsl(38, 34%, 95%)"}
@@ -517,6 +308,31 @@
                     "building-number-label": {"layout": {"visibility": "none"}},
                     "building-underground": {"layout": {"visibility": "none"}},
                     "block-number-label": {"layout": {"visibility": "none"}}
+                },
+                "point-of-interest-labels": {
+                    "poi-label": {"layout": {"visibility": "none"}}
+                },
+                "place-labels": {
+                    "state-label": {"layout": {"visibility": "none"}},
+                    "country-label": {"layout": {"visibility": "none"}},
+                    "continent-label": {"layout": {"visibility": "none"}},
+                    "settlement-major-label": {
+                        "layout": {"icon-image": "border-dot-13"},
+                        "paint": {
+                            "text-opacity": ["step", ["zoom"], 0, 5, 1],
+                            "icon-opacity": ["step", ["zoom"], 0.5, 5, 0]
+                        }
+                    },
+                    "settlement-subdivision-label": {
+                        "layout": {"visibility": "none"}
+                    },
+                    "settlement-minor-label": {
+                        "layout": {"icon-image": "dot-9"},
+                        "paint": {
+                            "icon-opacity": ["step", ["zoom"], 0, 4, 0.5, 7, 0],
+                            "text-opacity": ["step", ["zoom"], 0, 7, 1]
+                        }
+                    }
                 }
             },
             "components": {
@@ -590,8 +406,8 @@
             }
         }
     },
-    "center": [-103.79024862948536, 38.052633132257284],
-    "zoom": 3.525647118180716,
+    "center": [-109.52511750431277, 37.474235374457066],
+    "zoom": 4.367425276516656,
     "bearing": 0,
     "pitch": 0,
     "fog": {
@@ -608,7 +424,7 @@
             "type": "vector"
         }
     },
-    "sprite": "mapbox://sprites/fausto-perez/clgnkv1d000dl01qucf7wc8zc/c62zdxg1e8pckyle2rud2bk1v",
+    "sprite": "mapbox://sprites/fausto-perez/cljpgc8t200t601qw8rcj4m81/c62zdxg1e8pckyle2rud2bk1v",
     "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
     "layers": [
         {
@@ -736,7 +552,7 @@
                 "line-join": ["step", ["zoom"], "miter", 11, "round"]
             },
             "paint": {
-                "line-color": "hsl(38, 29%, 90%)",
+                "line-color": "#dce5ea",
                 "line-width": [
                     "interpolate",
                     ["exponential", 1.3],
@@ -767,7 +583,7 @@
             "source": "composite",
             "source-layer": "water",
             "layout": {},
-            "paint": {"fill-color": "hsl(38, 29%, 90%)"}
+            "paint": {"fill-color": "#dce5ea"}
         },
         {
             "id": "land-structure-polygon",
@@ -887,7 +703,7 @@
                 ],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"line-cap": "round", "visibility": "none"},
+            "layout": {"line-cap": "round"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -919,7 +735,7 @@
                 ["match", ["get", "type"], ["cycleway", "piste"], true, false],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
+            "layout": {},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -951,7 +767,7 @@
                 ["!=", ["get", "type"], "steps"],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"line-cap": "round", "visibility": "none"},
+            "layout": {"line-cap": "round"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -982,7 +798,6 @@
                 ["==", ["get", "type"], "steps"],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1025,7 +840,6 @@
                 ["==", ["get", "class"], "pedestrian"],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1109,7 +923,6 @@
                 ],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1198,8 +1011,7 @@
             ],
             "layout": {
                 "line-cap": "round",
-                "line-join": ["step", ["zoom"], "miter", 14, "round"],
-                "visibility": "none"
+                "line-join": ["step", ["zoom"], "miter", 14, "round"]
             },
             "paint": {
                 "line-width": [
@@ -1232,10 +1044,7 @@
                 ["match", ["get", "structure"], ["none", "ford"], true, false],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {
-                "line-join": ["step", ["zoom"], "miter", 14, "round"],
-                "visibility": "none"
-            },
+            "layout": {"line-join": ["step", ["zoom"], "miter", 14, "round"]},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1284,8 +1093,7 @@
             ],
             "layout": {
                 "line-cap": "round",
-                "line-join": ["step", ["zoom"], "miter", 14, "round"],
-                "visibility": "none"
+                "line-join": ["step", ["zoom"], "miter", 14, "round"]
             },
             "paint": {
                 "line-width": [
@@ -1321,7 +1129,7 @@
                 ["match", ["get", "structure"], ["none", "ford"], true, false],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"line-join": "round", "visibility": "none"},
+            "layout": {"line-join": "round"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1365,10 +1173,7 @@
                 ["case", ["has", "layer"], [">=", ["get", "layer"], 0], true],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {
-                "line-join": ["step", ["zoom"], "miter", 14, "round"],
-                "visibility": "none"
-            },
+            "layout": {"line-join": ["step", ["zoom"], "miter", 14, "round"]},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1530,8 +1335,7 @@
             ],
             "layout": {
                 "line-cap": ["step", ["zoom"], "butt", 14, "round"],
-                "line-join": ["step", ["zoom"], "miter", 14, "round"],
-                "visibility": "none"
+                "line-join": ["step", ["zoom"], "miter", 14, "round"]
             },
             "paint": {
                 "line-width": [
@@ -1629,7 +1433,7 @@
                 ],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"line-cap": "round", "visibility": "none"},
+            "layout": {"line-cap": "round"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1661,7 +1465,7 @@
                 ["match", ["get", "type"], ["cycleway", "piste"], true, false],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
+            "layout": {},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1693,7 +1497,7 @@
                 ["!=", ["get", "type"], "steps"],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"line-cap": "round", "visibility": "none"},
+            "layout": {"line-cap": "round"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1724,7 +1528,6 @@
                 ["==", ["get", "structure"], "bridge"],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1767,7 +1570,6 @@
                 ["==", ["get", "class"], "pedestrian"],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1851,7 +1653,6 @@
                 ],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {"visibility": "none"},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -1984,10 +1785,7 @@
                 ],
                 ["==", ["geometry-type"], "LineString"]
             ],
-            "layout": {
-                "line-cap": ["step", ["zoom"], "butt", 14, "round"],
-                "visibility": "none"
-            },
+            "layout": {"line-cap": ["step", ["zoom"], "butt", 14, "round"]},
             "paint": {
                 "line-width": [
                     "interpolate",
@@ -2062,7 +1860,6 @@
                 ["==", ["get", "maritime"], "false"],
                 ["match", ["get", "worldview"], ["all", "US"], true, false]
             ],
-            "layout": {"visibility": "none"},
             "paint": {
                 "line-color": "rgb(246, 243, 239)",
                 "line-dasharray": [1, 0]
@@ -2161,7 +1958,6 @@
                 ["==", ["get", "maritime"], "false"],
                 ["match", ["get", "worldview"], ["all", "US"], true, false]
             ],
-            "layout": {"visibility": "none"},
             "paint": {"line-dasharray": [10, 0], "line-color": "#eae3d7"}
         },
         {
@@ -2707,9 +2503,8 @@
                     0
                 ],
                 "symbol-sort-key": ["get", "symbolrank"],
-                "icon-image": "",
+                "icon-image": "dot-9",
                 "text-font": ["DIN Pro Regular", "Arial Unicode MS Regular"],
-                "visibility": "none",
                 "text-anchor": ["step", ["zoom"], "center", 8, "center"],
                 "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
                 "text-max-width": 7
@@ -2726,8 +2521,9 @@
                 ],
                 "text-halo-color": "hsl(38, 30%, 100%)",
                 "text-halo-width": 1,
-                "icon-opacity": ["step", ["zoom"], 1, 8, 0],
-                "text-halo-blur": 1
+                "icon-opacity": ["step", ["zoom"], 0, 4, 0.5, 7, 0],
+                "text-halo-blur": 1,
+                "text-opacity": ["step", ["zoom"], 0, 7, 1]
             }
         },
         {
@@ -2798,9 +2594,8 @@
                     0
                 ],
                 "symbol-sort-key": ["get", "symbolrank"],
-                "icon-image": "",
+                "icon-image": "border-dot-13",
                 "text-font": ["DIN Pro Medium", "Arial Unicode MS Regular"],
-                "visibility": "none",
                 "text-anchor": ["step", ["zoom"], "center", 8, "center"],
                 "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
                 "text-max-width": 7
@@ -2817,8 +2612,9 @@
                 ],
                 "text-halo-color": "hsl(38, 30%, 100%)",
                 "text-halo-width": 1,
-                "icon-opacity": ["step", ["zoom"], 1, 8, 0],
-                "text-halo-blur": 1
+                "icon-opacity": ["step", ["zoom"], 0.5, 5, 0],
+                "text-halo-blur": 1,
+                "text-opacity": ["step", ["zoom"], 0, 5, 1]
             }
         },
         {
@@ -2958,13 +2754,21 @@
                     0
                 ]
             }
+        },
+        {
+            "id": "road",
+            "type": "line",
+            "source": "composite",
+            "source-layer": "road",
+            "layout": {"visibility": "none"},
+            "paint": {"line-color": "hsl(40, 31%, 85%)"}
         }
     ],
-    "created": "2023-04-19T10:55:25.860Z",
-    "modified": "2023-05-25T12:51:23.992Z",
-    "id": "clgnkv1d000dl01qucf7wc8zc",
+    "created": "2023-07-05T08:23:29.942Z",
+    "modified": "2023-07-11T08:31:29.137Z",
+    "id": "cljpgc8t200t601qw8rcj4m81",
     "owner": "fausto-perez",
-    "visibility": "public",
+    "visibility": "private",
     "protected": false,
     "draft": false
 }

@@ -21,6 +21,7 @@ import useFlows, {
 import {
   countiesAtom,
   flowTypeAtom,
+  highlightedCountyAtom,
   searchAtom,
   selectedCountyAtom,
 } from "@/atoms";
@@ -61,9 +62,11 @@ type MapWrapperProps = {
 
 function MapWrapper({ mapStyle }: MapWrapperProps) {
   const counties = useAtomValue(countiesAtom);
+  const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
   const flowsWithCurvedPaths = useFlowsWithCurvedPaths(selectedFlows);
   const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths);
+  const highlightedCounty = useAtomValue(highlightedCountyAtom);
 
   const search = useAtomValue(searchAtom);
   const flowType = useAtomValue(flowTypeAtom);
@@ -104,7 +107,7 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
     });
   }, [selectedCounty]);
 
-  const { data: flowsData, error, isLoading } = useFlowsData();
+
   const currentCountyId = useAtomValue(countyAtom);
   const bannerError = useMemo(() => {
     if (error) return "Error loading county calories";
@@ -141,11 +144,12 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         {!search && (
           <>
-            {targetCounties.map((county) => {
+            {/* {targetCounties.map((county) => {
               return (
                 <LinkedPopup key={county.properties.geoid} county={county} />
               );
-            })}
+            })} */}
+            {highlightedCounty && <LinkedPopup county={highlightedCounty} />}
             <Popup />
             <HighlightPopup />
           </>

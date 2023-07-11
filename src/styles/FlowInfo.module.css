@@ -89,9 +89,22 @@
   padding-bottom: 15px;
 }
 
-.summary > dl {
-  /* flex: 1; */
+.stats {
+  padding-top: 15px;
+  border-bottom: 1px solid var(--foreground-10);
 }
+
+.stats > h3, .top > h3 {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-normal);
+  margin-bottom: 10px;
+  color: var(--foreground-50);
+}
+
+.top {
+  padding-top: 15px;
+}
+
 
 .summary dt {
   font-size: var(--font-size-caption);
@@ -116,16 +129,7 @@
   overflow-y: auto;
 }
 
-.stats {
-  padding-top: 15px;
-}
 
-.stats > h3 {
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-normal);
-  margin-bottom: 10px;
-  color: var(--foreground-50);
-}
 
 .crops > li {
   margin-bottom: 30px;

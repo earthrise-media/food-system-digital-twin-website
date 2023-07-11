@@ -12,6 +12,7 @@ import {
   countyHighlightedAtom,
   flowTypeAtom,
   foodGroupAtom,
+  highlightedCountyAtom,
   selectedCountyAtom,
 } from "@/atoms";
 import { useControls } from "leva";
@@ -38,6 +39,7 @@ export default function useLayers(
   const [countyHiglighted, setCountyHighlighted] = useAtom(
     countyHighlightedAtom
   );
+  const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
 
   const counties = useAtomValue(countiesAtom);
@@ -98,7 +100,6 @@ export default function useLayers(
       new GeoJsonLayer({
         id: "counties",
         data: counties as any,
-        ...BASE_LINE_LAYERS_OPTIONS,
         getFillColor: [0, 0, 0, 0],
         getLineColor: [0, 0, 0, 0],
         lineWidthMinPixels: 1,
@@ -119,7 +120,7 @@ export default function useLayers(
           id: "counties-selected",
           data: [selectedCounty],
           ...BASE_LINE_LAYERS_OPTIONS,
-          getFillColor: [0, 0, 0, 122],
+          getFillColor: [255, 255, 255, 200],
           getLineColor: [0, 0, 0, 255],
           lineWidthMinPixels: 1,
           lineWidthMaxPixels: 3,
@@ -128,11 +129,22 @@ export default function useLayers(
           id: "counties-targets",
           data: targetCounties,
           ...BASE_LINE_LAYERS_OPTIONS,
-          getFillColor: [0, 0, 0, 50],
+          getFillColor: [255, 255, 255, 150],
           getLineColor: [0, 0, 0, 150],
           lineWidthMinPixels: 0.5,
           lineWidthMaxPixels: 2,
           getLineWidth: 0.01,
+        }),
+        new GeoJsonLayer({
+          id: "county-hover",
+          data: highlightedCounty ? [highlightedCounty] : [],
+          ...BASE_LINE_LAYERS_OPTIONS,
+          getFillColor: [255, 255, 255, 150],
+          getLineColor: [0, 0, 0, 150],
+          lineWidthMinPixels: 0.5,
+          lineWidthMaxPixels: 2,
+          getLineWidth: 0.01,
+          visible: !!highlightedCounty
         }),
         new TripsLayer({
           id: "trips-layer",
@@ -208,6 +220,7 @@ export default function useLayers(
     setCountyHighlighted,
     setFoodGroup,
     targetCountyHiglighted,
+    highlightedCounty,
     linesColor,
     showAnimatedLayers,
     flowType,

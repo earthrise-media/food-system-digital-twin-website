@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import cx from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { FeatureCollection, Geometry } from "geojson";
 import { Style } from "mapbox-gl";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -30,7 +30,7 @@ export default function Home({
 
   // Inject the counties topojson into the map style
   const mapStyleWithData = useMemo(() => {
-    if (!counties) return mapStyle;
+    return mapStyle;
     const index = mapStyle.layers.findIndex((l) => l.id === "admin-2-boundary-bg");
 
     return {
