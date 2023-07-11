@@ -13,7 +13,7 @@ function HighlightPopup() {
     if (!map || !highlightedCounty) return;
 
     const { name, stusps } = highlightedCounty.properties;
-    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false, className: "highlightedPopup" })
+    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false, className: "highlightedPopup", offset: 12})
       .trackPointer()
       .setHTML(
         `<dl class="${
