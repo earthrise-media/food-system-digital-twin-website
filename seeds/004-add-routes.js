@@ -27,8 +27,8 @@ exports.seed = async function (knex) {
       const encodedPolyline = feature.properties.polyline;
 
       return {
-        start: feature.properties.start_geoid,
-        end: feature.properties.end_geoid,
+        origin_id: feature.properties.start_geoid,
+        destination_id: feature.properties.end_geoid,
         geom: knex.raw("ST_LineFromEncodedPolyline(:encodedPolyline)", {
           encodedPolyline,
         }),

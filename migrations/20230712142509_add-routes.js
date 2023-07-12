@@ -4,10 +4,10 @@
  */
 exports.up = function (knex) {
   return knex.schema.createTable("routes", (table) => {
-    table.string("start");
-    table.string("end");
+    table.string("origin_id");
+    table.string("destination_id");
     table.geography("geom", "4326");
-    table.primary(["start", "end"]);
+    table.primary(["origin_id", "destination_id"]);
   });
 };
 
