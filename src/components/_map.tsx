@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import GL from "@luma.gl/constants";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, MapRef, useControl, useMap } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -141,7 +142,14 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         minZoom={MIN_ZOOM}
         maxZoom={MAX_ZOOM}
       >
-        <DeckGLOverlay layers={layers} />
+        <DeckGLOverlay
+          layers={layers}
+          // parameters={{
+          //   clearColor: [0, 0, 0, 1],
+          //   blendFunc: [GL.ONE, GL.ONE, GL.ONE, GL.ONE],
+          //   depthTest: false,
+          // }}
+        />
         {!search && (
           <>
             {targetCounties.map((county) => {

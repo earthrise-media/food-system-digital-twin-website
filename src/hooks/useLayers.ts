@@ -1,4 +1,5 @@
 import { use, useMemo, useState } from "react";
+import GL from "@luma.gl/constants";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
@@ -30,9 +31,8 @@ export default function useLayers(
   targetCounties: Feature<Geometry, County>[],
   flows: FlowWithTrips[],
   zoom: number,
-  showAnimatedLayers = true,
+  showAnimatedLayers = true
 ) {
-
   const setCounty = useSetAtom(countyAtom);
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
   const [countyHiglighted, setCountyHighlighted] = useAtom(
@@ -43,7 +43,8 @@ export default function useLayers(
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
   const { linesColor, baseAnimationSpeed } = useControls("layers", {
-    linesColor: { r: 0, b: 0, g: 0, a: 0.05 },
+    // linesColor: { r: 0, b: 0, g: 0, a: 0.05 },
+    linesColor: { r: 0, b: 245, g: 100, a: 1 },
     baseAnimationSpeed: 3,
   });
 
@@ -134,47 +135,48 @@ export default function useLayers(
           lineWidthMaxPixels: 2,
           getLineWidth: 0.01,
         }),
-        new TripsLayer({
-          id: "trips-layer",
-          data: allTrips,
-          getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
-          getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
-          getColor: (d) => {
-            if (!targetCountyHiglighted && !foodGroup) return d.color;
-            const isSelectedCounty =
-              flowType === "consumer"
-                ? targetCountyHiglighted === d.sourceId
-                : targetCountyHiglighted === d.targetId;
+        // new TripsLayer({
+        //   id: "trips-layer",
+        //   data: allTrips,
+        //   getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
+        //   getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
+        //   // opacity: 0.8,
+        //   getColor: (d) => {
+        //     if (!targetCountyHiglighted && !foodGroup) return d.color;
+        //     const isSelectedCounty =
+        //       flowType === "consumer"
+        //         ? targetCountyHiglighted === d.sourceId
+        //         : targetCountyHiglighted === d.targetId;
 
-            const isSelectedFoodGroup = d.foodGroup === foodGroup;
+        //     const isSelectedFoodGroup = d.foodGroup === foodGroup;
 
-            if (
-              targetCountyHiglighted &&
-              isSelectedCounty &&
-              (!foodGroup || isSelectedFoodGroup)
-            ) {
-              return d.color;
-            }
+        //     if (
+        //       targetCountyHiglighted &&
+        //       isSelectedCounty &&
+        //       (!foodGroup || isSelectedFoodGroup)
+        //     ) {
+        //       return d.color;
+        //     }
 
-            if (!targetCountyHiglighted && foodGroup && isSelectedFoodGroup) {
-              return d.color;
-            }
+        //     if (!targetCountyHiglighted && foodGroup && isSelectedFoodGroup) {
+        //       return d.color;
+        //     }
 
-            return [...d.color.slice(0, 3), 55];
-          },
-          updateTriggers: {
-            getColor: [targetCountyHiglighted, foodGroup],
-          },
-          widthMinPixels: 2.5,
-          getWidth: (d) => {
-            return 1000;
-          },
-          capRounded: true,
-          jointRounded: true,
-          fadeTrail: true,
-          trailLength: 0.15,
-          currentTime: currentFrame,
-        }),
+        //     return [...d.color.slice(0, 3), 55];
+        //   },
+        //   updateTriggers: {
+        //     getColor: [targetCountyHiglighted, foodGroup],
+        //   },
+        //   widthMinPixels: 2.5,
+        //   getWidth: (d) => {
+        //     return 1000;
+        //   },
+        //   capRounded: true,
+        //   jointRounded: true,
+        //   fadeTrail: true,
+        //   trailLength: 0.15,
+        //   currentTime: currentFrame,
+        // }),
       ];
     }
     if (linksAsGeoJSON && showAnimatedLayers) {
@@ -184,13 +186,21 @@ export default function useLayers(
           data: linksAsGeoJSON as any,
           stroked: true,
           lineWidthUnits: "pixels",
-          getLineWidth: 0.5,
+          getLineWidth: 4,
           getLineColor: [
             linesColor.r,
             linesColor.g,
             linesColor.b,
             linesColor.a * 255,
           ],
+          parameters: {
+            // blendFunc: [GL.DST_ALPHA, GL.ONE, GL.ONE, GL.ONE_MINUS_SRC_ALPHA],
+            // blendEquation: [GL.FUNC_ADD, GL.FUNC_ADD],
+            blendFunc: [GL.SRC_ALPHA, GL.ONE, GL.ONE_MINUS_DST_ALPHA, GL.ONE],
+            blendEquation: GL.FUNC_ADD
+
+          },
+          opacity: 0.8,
           // getLineColor: (d: any) => d.properties.color,
           // getLineWidth: (d: any) => d.properties.width,
         })
