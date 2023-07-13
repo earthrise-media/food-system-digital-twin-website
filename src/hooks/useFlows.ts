@@ -1,5 +1,6 @@
 import { distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
+import polyline from 'google-polyline';
 import {
   Flow,
   FlowWithPaths,
@@ -18,6 +19,7 @@ import { countiesAtom, flowTypeAtom, selectedCountyAtom } from "@/atoms";
 import { useControls } from "leva";
 import { centroid } from "turf";
 import { useFlowsData } from "./useAPI";
+import { Geometry } from "geojson";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
@@ -70,12 +72,17 @@ export default function useFlows(): Flow[] {
               ? centerCentroid.geometry.coordinates
               : county_centroid.coordinates;
 
+          const routeGeometry = route_geometry ? {
+            type: "LineString",
+            coordinates: polyline.decode(route_geometry).map(([lng, lat]) => [lat, lng])
+          } as Geometry : undefined;
+
           return {
             source,
             target,
             sourceId,
             targetId,
-            routeGeometry: route_geometry,
+            routeGeometry,
             value,
             valuesRatiosByFoodGroup: byCropGroupCumulative,
           };

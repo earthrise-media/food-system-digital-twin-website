@@ -10,7 +10,7 @@ export default function useMapStyle(
 ):Style {
   const routes = flows
     .filter((flow) => flow.routeGeometry)
-    .map((flow) => feature(flow.routeGeometry as Feature<LineString>));
+    .map((flow) => feature(flow.routeGeometry));
 
   const style = {
     ...initialMapStyle,

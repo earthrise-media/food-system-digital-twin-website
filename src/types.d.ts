@@ -26,7 +26,7 @@ export type RawCountyWithFlows = {
   county_id: string;
   county_name: string;
   county_centroid: Geometry<Point>;
-  route_geometry?: Feature<LineString>;
+  route_geometry?: string;
   flowsByCrop: RawCountyFlows[];
   flowsByCropGroup: RawCountyFlows[];
 };
@@ -48,7 +48,7 @@ export type Flow = {
   targetId: string;
   value: number;
   valuesRatiosByFoodGroup: number[];
-  routeGeometry?: Feature<LineString>;
+  routeGeometry?: Geometry<LineString>;
 };
 
 export type Path = {
