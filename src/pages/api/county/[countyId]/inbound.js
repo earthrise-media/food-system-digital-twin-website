@@ -23,25 +23,16 @@ export default async function handler(req, res) {
 
   const originsIds = [...new Set(inbound.map((f) => f.county_id))];
 
-  const routes = (
-    await db("routes")
-      .select(
-        "routes.origin_id",
-        "routes.destination_id",
-        db.raw("ST_AsGeoJSON(routes.geom) as geom")
-      )
-      .where("routes.origin_id", "in", originsIds)
-      .andWhere("routes.destination_id", countyId)
-  ).map((r) => ({
-    ...r,
-    geom: JSON.parse(r.geom),
-  }));
+  const routes = await db("routes")
+    .select("routes.origin_id", "routes.destination_id", "polyline")
+    .where("routes.origin_id", "in", originsIds)
+    .andWhere("routes.destination_id", countyId);
 
   return res.status(200).json({
     inbound: groupFlowsByCounty(inbound).map((f) => ({
       ...f,
       county_centroid: JSON.parse(f.county_centroid),
-      route_geometry: routes.find((r) => r.origin_id === f.county_id)?.geom,
+      route_geometry: routes.find((r) => r.origin_id === f.county_id)?.polyline,
     })),
     stats: getStats(inbound),
   });
