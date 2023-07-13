@@ -2528,6 +2528,11 @@
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.8.tgz#30744afdb385e2945e22f3b033f897f76b1f12ca"
   integrity sha512-1rkryxURpr6aWP7R786/UQOkJ3PcpQiWkAXBmdWc7ryFWqN6a4xfK7BtjXvFBKO9LjQ+MWQSWxYeZX1OApnArA==
 
+"@types/google-polyline@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/google-polyline/-/google-polyline-1.0.0.tgz#fc44be1fb8d8cad7d8e9a7c5f05e934204f88213"
+  integrity sha512-XE9nhb1Su6PbirnBy8o/tZcDE/b53fGeUG4pC/Z4/ku54nfm49PXM5IXcCTuL+Df6rXkY6T5yNiYgX90egq+aw==
+
 "@types/hammerjs@^2.0.41":
   version "2.0.41"
   resolved "https://registry.yarnpkg.com/@types/hammerjs/-/hammerjs-2.0.41.tgz#f6ecf57d1b12d2befcce00e928a6a097c22980aa"
@@ -4322,6 +4327,11 @@ globrex@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/globrex/-/globrex-0.1.2.tgz#dd5d9ec826232730cd6793a5e33a9302985e6098"
   integrity sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==
+
+google-polyline@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/google-polyline/-/google-polyline-1.0.3.tgz#b1fafd8841059f7049d4ba6767c386be979510dc"
+  integrity sha512-36BnqVxmVcR8lTvzO6aeXdICNChAwQLlfMkR1P9IBpTWE8hA6bAbQHCVArwMHB5WIMq9owywtAkjioe3crNq4Q==
 
 gopd@^1.0.1:
   version "1.0.1"

@@ -32,6 +32,7 @@ import LinkedPopup from "./_linkedPopup";
 import { useFlowsData } from "@/hooks/useAPI";
 import { RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
+import useMapStyle from "@/hooks/useMapStyle";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -56,14 +57,16 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
 }
 
 type MapWrapperProps = {
-  mapStyle: Style;
+  initialMapStyle: Style;
 };
 
-function MapWrapper({ mapStyle }: MapWrapperProps) {
+function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const counties = useAtomValue(countiesAtom);
   const selectedFlows = useFlows();
+
   const flowsWithCurvedPaths = useFlowsWithCurvedPaths(selectedFlows);
   const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths);
+  const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
   const search = useAtomValue(searchAtom);
   const flowType = useAtomValue(flowTypeAtom);
