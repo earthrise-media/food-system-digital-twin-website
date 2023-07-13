@@ -1,4 +1,4 @@
-import { Point } from "geojson";
+import { Feature, LineString, Point } from "geojson";
 import { Geometry } from "geojson";
 import { Position } from "geojson";
 
@@ -26,6 +26,7 @@ export type RawCountyWithFlows = {
   county_id: string;
   county_name: string;
   county_centroid: Geometry<Point>;
+  route_geometry?: Feature<LineString>;
   flowsByCrop: RawCountyFlows[];
   flowsByCropGroup: RawCountyFlows[];
 };
@@ -47,6 +48,7 @@ export type Flow = {
   targetId: string;
   value: number;
   valuesRatiosByFoodGroup: number[];
+  routeGeometry?: Feature<LineString>;
 };
 
 export type Path = {

@@ -39,39 +39,48 @@ export default function useFlows(): Flow[] {
         ? (flowsData as RawFlowsInbound).inbound
         : (flowsData as RawFlowsOutbound).outbound;
 
-    let selectedLinks: Flow[] = flows.slice(0, maxTargetCounties).map(
-      ({
-        county_id,
-        county_centroid,
-        flowsByCrop,
-        flowsByCropGroup,
-      }: RawCountyWithFlows) => {
-        const { total, byCropGroupCumulative } = getStats(
+    let selectedLinks: Flow[] = flows
+      .slice(0, maxTargetCounties)
+      .map(
+        ({
+          county_id,
+          county_centroid,
+          route_geometry,
+          flowsByCrop,
           flowsByCropGroup,
-          flowsByCrop
-        );
+        }: RawCountyWithFlows) => {
+          const { total, byCropGroupCumulative } = getStats(
+            flowsByCropGroup,
+            flowsByCrop
+          );
 
-        // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
-        // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
-        // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
-        const value = Math.max(1, total / 200000000)
+          // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
+          // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
+          // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
+          const value = Math.max(1, total / 200000000);
 
-        return {
-          source:
-            flowType === "consumer"
-              ? county_centroid.coordinates
-              : centerCentroid.geometry.coordinates,
-          target:
+          const source = "consumer"
+            ? county_centroid.coordinates
+            : centerCentroid.geometry.coordinates;
+          const sourceId = flowType === "consumer" ? county_id : centerId.toString();
+          const targetId = flowType === "consumer" ? centerId.toString() : county_id;
+
+          const target =
             flowType === "consumer"
               ? centerCentroid.geometry.coordinates
-              : county_centroid.coordinates,
-          sourceId: flowType === "consumer" ? county_id : centerId.toString(),
-          targetId: flowType === "consumer" ? centerId.toString() : county_id,
-          value,
-          valuesRatiosByFoodGroup: byCropGroupCumulative,
-        };
-      }
-    );
+              : county_centroid.coordinates;
+
+          return {
+            source,
+            target,
+            sourceId,
+            targetId,
+            routeGeometry: route_geometry,
+            value,
+            valuesRatiosByFoodGroup: byCropGroupCumulative,
+          };
+        }
+      );
 
     return selectedLinks;
   }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties]);
@@ -191,10 +200,13 @@ const getPathTrips = (
     intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     speedKps = 100, // Speed in km per second
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
-    maxParticles = 500
+    maxParticles = 500,
   } = {}
 ): Trip[] => {
-  const numParticles = Math.min(flow.value * numParticlesMultiplicator, maxParticles);
+  const numParticles = Math.min(
+    flow.value * numParticlesMultiplicator,
+    maxParticles
+  );
 
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
