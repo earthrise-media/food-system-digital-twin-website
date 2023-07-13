@@ -21,21 +21,30 @@ exports.seed = async function (knex) {
   const nonFeatureLines = [];
 
   const processBatch = async (batch) => {
-    const transformedBatch = batch.map((line) => {
-      const feature = JSON.parse(line.slice(0, -1));
+    const transformedBatch = batch
+      .map((line) => {
+        try {
+          // parse feature, removing trailing comma if present
+          const feature = JSON.parse(
+            line.endsWith(",") ? line.slice(0, -1) : line
+          );
 
-      const encodedPolyline = feature.properties.polyline;
-
-      return {
-        origin_id: feature.properties.start_geoid.toString().padStart(5, "0"),
-        destination_id: feature.properties.end_geoid
-          .toString()
-          .padStart(5, "0"),
-        geom: knex.raw("ST_LineFromEncodedPolyline(:encodedPolyline)", {
-          encodedPolyline,
-        }),
-      };
-    });
+          return {
+            origin_id: feature.properties.start_geoid
+              .toString()
+              .padStart(5, "0"),
+            destination_id: feature.properties.end_geoid
+              .toString()
+              .padStart(5, "0"),
+            polyline: feature.properties.polyline,
+          };
+        } catch (error) {
+          console.log(`error parsing line: ${line}`);
+          console.log(error);
+          return null;
+        }
+      })
+      .filter((element) => element !== null);
 
     featuresCount += transformedBatch.length;
 
