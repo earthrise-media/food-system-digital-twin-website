@@ -6,7 +6,7 @@ exports.up = function (knex) {
   return knex.schema.createTable("routes", (table) => {
     table.string("origin_id");
     table.string("destination_id");
-    table.geography("geom", "4326");
+    table.text("polyline");
     table.primary(["origin_id", "destination_id"]);
   });
 };
