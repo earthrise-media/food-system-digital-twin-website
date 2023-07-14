@@ -1,3 +1,5 @@
+import db from "../../../../helpers/db";
+
 export function groupFlowsByCounty(rawFlows) {
   const flowsByCounty = rawFlows.reduce((acc, curr) => {
     const existing = acc.find((f) => f.county_id === curr.county_id);
@@ -47,8 +49,8 @@ export function groupFlowsByCounty(rawFlows) {
 export function getStats(flows) {
   const stats = {
     byCrop: {},
-    byCropGroup: {}
-  }
+    byCropGroup: {},
+  };
 
   stats.byCrop = flows.reduce((acc, curr) => {
     const existing = acc.find((f) => f.crop_id === curr.crop_id);
@@ -79,4 +81,35 @@ export function getStats(flows) {
   }, []);
 
   return stats;
+}
+
+/**
+ *
+ * Get polyline geometry for routes between a set of origins and a destination,
+ * assuming routes are symmetric (i.e. route for A to B is equal to B to A).
+ *
+ * @param {string} originsIds
+ * @param {Array(string)} countyId
+ * @returns
+ */
+export async function getSymmetricRoutes(countyId, originsIds) {
+  console.log(countyId, originsIds);
+
+  const routesForward = await db("routes")
+    .select("routes.origin_id", "routes.destination_id", "polyline")
+    .where("routes.origin_id", "in", originsIds)
+    .andWhere("routes.destination_id", countyId);
+
+  const routesBackwards = await db("routes")
+    .select(
+      "routes.origin_id as destination_id",
+      "routes.destination_id as origin_id",
+      "polyline"
+    )
+    .where("routes.destination_id", "in", originsIds)
+    .andWhere("routes.origin_id", countyId);
+
+  const routes = routesForward.concat(routesBackwards);
+
+  return routes;
 }
