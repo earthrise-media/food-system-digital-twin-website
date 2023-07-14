@@ -93,8 +93,6 @@ export function getStats(flows) {
  * @returns
  */
 export async function getSymmetricRoutes(countyId, originsIds) {
-  console.log(countyId, originsIds);
-
   const routesForward = await db("routes")
     .select("routes.origin_id", "routes.destination_id", "polyline")
     .where("routes.origin_id", "in", originsIds)
