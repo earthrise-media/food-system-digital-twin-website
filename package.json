@@ -23,6 +23,7 @@
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
     "fs-extra": "^11.1.1",
+    "google-polyline": "^1.0.3",
     "jotai": "^2.1.0",
     "jotai-location": "^0.5.1",
     "knex": "^2.4.2",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@apidevtools/swagger-cli": "^4.0.4",
     "@types/geojson": "^7946.0.10",
+    "@types/google-polyline": "^1.0.0",
     "@types/papaparse": "^5.3.7",
     "@types/turf": "^3.5.32"
   }
