@@ -1,9 +1,11 @@
-import { getStats, groupFlowsByCounty } from "./util";
+import { getStats, getSymmetricRoutes, groupFlowsByCounty } from "./util";
 
 const db = require("../../../../helpers/db");
 
 export default async function handler(req, res) {
   const { countyId } = req.query;
+
+  if (!countyId) return res.status(404).json({ message: "Missing countyId" });
 
   // Get inbound kcal flows for target county
   const inbound = await db("kcal_flows")
@@ -23,10 +25,7 @@ export default async function handler(req, res) {
 
   const originsIds = [...new Set(inbound.map((f) => f.county_id))];
 
-  const routes = await db("routes")
-    .select("routes.origin_id", "routes.destination_id", "polyline")
-    .where("routes.origin_id", "in", originsIds)
-    .andWhere("routes.destination_id", countyId);
+  const routes = await getSymmetricRoutes(countyId, originsIds);
 
   return res.status(200).json({
     inbound: groupFlowsByCounty(inbound).map((f) => ({
