@@ -7,7 +7,7 @@ import { Style } from "mapbox-gl";
 import { useAtomValue, useSetAtom } from "jotai";
 import styles from "@/styles/Home.module.css";
 import { getLocalData } from "../lib/getLocalData";
-import FlowInfo from "@/components/_flowInfo";
+import FlowInfo from "@/components/sidebar/_sidebar";
 import { Kumbh_Sans } from "next/font/google";
 import Search from "@/components/_search";
 import { countiesAtom, searchAtom } from "@/atoms";

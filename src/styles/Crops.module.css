@@ -1,0 +1,86 @@
+
+.crops > li {
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+
+.crops dl {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.crops > li > dl > dt,
+.crops > li > dl > dd {
+  font-weight: var(--font-weight-bold);
+}
+
+.crops > li > dl::before,
+.crops > li > dl > dt::before,
+.crops > li > dl > dd::before {
+  height: 5px;
+  content: " ";
+  border-radius: 99px;
+}
+
+.crops > li > dl::before,
+.crops > li > dl > dd::before {
+  position: absolute;
+  display: block;
+  left: 0;
+  top: 20px;
+}
+
+.crops > li > dl::before {
+  width: 100%;
+  background: var(--background-2);
+}
+
+.crops > li > dl > dt::before {
+  display: inline-block;
+  width: 5px;
+  background: var(--color);
+  margin-right: 5px;
+  margin-bottom: 2px;
+}
+
+.crops > li > dl > dd::before {
+  width: var(--width);
+  background: var(--color);
+  transition: width 0.5s ease;
+}
+
+.loading .crops > li > dl > dd::before {
+  animation: fade 1s linear infinite;
+  width: 100%;
+}
+
+.detail {
+  margin-left: 30px;
+  margin-top: 25px;
+}
+
+.detail > li {
+  margin-bottom: 10px;
+}
+
+.detail dt::before {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  content: " ";
+  border-radius: 99px;
+  background: var(--color);
+  margin-right: 5px;
+  margin-bottom: 2px;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}

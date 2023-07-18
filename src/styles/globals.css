@@ -2,6 +2,7 @@
   --border-radius: 8px;
   --border-radius-small: 4px;
   --padding: 24px;
+  --padding-v: 32px;
 
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 246, 243, 238;
@@ -21,6 +22,7 @@
   --font-size-caption: 12px;
   --font-size-body: 13px;
   --font-size-subtitle: 20px;
+  --font-size-section: 16px;
   --font-size-logo: 28px;
   --font-size-title: 36px;
 

@@ -1,0 +1,79 @@
+.flowInfo {
+  position: absolute;
+  z-index: var(--z-flow-info);
+  top: 10px;
+  left: 40px;
+  filter: drop-shadow(0px 0px 25px rgba(41, 41, 41, 0.1));
+  width: 368px;
+}
+
+.logoWrapper {
+  transform: scale(0.5) translateX(-50%);
+}
+
+.flowInfo > nav {
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  background: var(--foreground);
+  color: var(--background);
+  padding: var(--padding);
+  padding-bottom: 0;
+}
+
+.flowInfo > nav > button {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.flowInfo > nav > button > span {
+  font-size: var(--font-size-caption);
+  opacity: 0.5;
+  background: url("/icons/search.svg");
+  background-repeat: no-repeat;
+  padding: 2px 0 5px 20px;
+  width: 100%;
+  text-align: left;
+}
+
+.flowInfo > nav > button > h2 {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  margin: 8px 0 16px 0;
+}
+
+.flowInfo > nav > button:hover > span {
+  opacity: 1;
+}
+
+.flowInfo > nav > button:hover > h2 {
+  text-decoration: underline;
+}
+
+.content {
+  background: var(--background-80);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  max-height: 55vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.content > section {
+  padding: var(--padding-v) var(--padding);
+  border-bottom: 1px solid var(--foreground-10);
+}
+
+.summary {
+  border-bottom: 1px solid var(--foreground-10);
+  padding-bottom: 16px;
+}
+
+.crops {
+  padding-top: 16px;
+}
+
+.content > section > h3 {
+  font-size: var(--font-size-section);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 15px;
+}
+
