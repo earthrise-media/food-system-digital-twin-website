@@ -44,14 +44,16 @@ export default function CountiesList() {
             </li>
           ))}
       </ol>
-      <button
-        onClick={() => setShowAllCounties(!showAllCounties)}
-        className={styles.showAll}
-      >
-        {showAllCounties
-          ? `Show top ${TOP_NUMBER} counties`
-          : `+ ${topLinkedCountries.length - TOP_NUMBER} more`}
-      </button>
+      {topLinkedCountries.length > TOP_NUMBER && (
+        <button
+          onClick={() => setShowAllCounties(!showAllCounties)}
+          className={styles.showAll}
+        >
+          {showAllCounties
+            ? `Show top ${TOP_NUMBER} counties`
+            : `+ ${topLinkedCountries.length - TOP_NUMBER} more`}
+        </button>
+      )}
     </>
   );
 }

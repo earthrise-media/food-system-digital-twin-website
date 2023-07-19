@@ -95,7 +95,7 @@ export default function useFlows(): Flow[] {
           };
         }
       );
-    console.log(selectedLinks);
+
     return selectedLinks;
   }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties]);
 }
