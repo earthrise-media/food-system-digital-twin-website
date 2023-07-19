@@ -1,6 +1,6 @@
 import { distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
-import polyline from 'google-polyline';
+import polyline from "google-polyline";
 import { Geometry } from "geojson";
 import {
   Flow,
@@ -34,8 +34,8 @@ export default function useFlows(): Flow[] {
 
   return useMemo(() => {
     if (!selectedCounty || !counties || !flowsData) return [];
-    const { geoid: centerId } = selectedCounty.properties;
-    const centerCentroid = centroid(selectedCounty);
+    const { geoid: selectedId } = selectedCounty.properties;
+    const selectedCentroid = centroid(selectedCounty);
     const flows =
       flowType === "consumer"
         ? (flowsData as RawFlowsInbound).inbound
@@ -61,21 +61,28 @@ export default function useFlows(): Flow[] {
           // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
           const value = Math.max(1, total / 200000000);
 
-          const source = "consumer"
-            ? county_centroid.coordinates
-            : centerCentroid.geometry.coordinates;
-          const sourceId = flowType === "consumer" ? county_id : centerId.toString();
-          const targetId = flowType === "consumer" ? centerId.toString() : county_id;
-
+          const source =
+            flowType === "consumer"
+              ? county_centroid.coordinates
+              : selectedCentroid.geometry.coordinates;
           const target =
             flowType === "consumer"
-              ? centerCentroid.geometry.coordinates
+              ? selectedCentroid.geometry.coordinates
               : county_centroid.coordinates;
 
-          const routeGeometry = route_geometry ? {
-            type: "LineString",
-            coordinates: polyline.decode(route_geometry).map(([lng, lat]) => [lat, lng])
-          } as Geometry : undefined;
+          const sourceId =
+            flowType === "consumer" ? county_id : selectedId.toString();
+          const targetId =
+            flowType === "consumer" ? selectedId.toString() : county_id;
+
+          const routeGeometry = route_geometry
+            ? ({
+                type: "LineString",
+                coordinates: polyline
+                  .decode(route_geometry)
+                  .map(([lng, lat]) => [lat, lng]),
+              } as Geometry)
+            : undefined;
 
           return {
             source,
@@ -88,7 +95,7 @@ export default function useFlows(): Flow[] {
           };
         }
       );
-
+    console.log(selectedLinks);
     return selectedLinks;
   }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties]);
 }
