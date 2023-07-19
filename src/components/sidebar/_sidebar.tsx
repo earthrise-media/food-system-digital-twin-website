@@ -52,19 +52,18 @@ function FlowInfo({}: FlowInfoProps) {
             <section>
               <h3>Crops {flowType === "consumer" ? "consumed" : "produced"}</h3>
               <div className={styles.summary}>
-              <Summary stats={stats} />
+                <Summary stats={stats} />
               </div>
 
               <div className={styles.crops}>
                 <Crops stats={stats} />
               </div>
 
-              {flowType === "producer" && <Drought />}
+              {/* {flowType === "producer" && <Drought />} */}
             </section>
             <section>
               <h3>
-                {flowType === "consumer" ? "Sourcing" : "Destination"}{" "}
-                counties{" "}
+                {flowType === "consumer" ? "Sourcing" : "Destination"} counties{" "}
               </h3>
               <CountiesList />
               <Roads />
