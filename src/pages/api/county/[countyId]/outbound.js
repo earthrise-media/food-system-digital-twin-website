@@ -28,12 +28,15 @@ export default async function handler(req, res) {
   const routes = await getSymmetricRoutes(countyId, destinationIds);
 
   return res.status(200).json({
-    outbound: groupFlowsByCounty(outbound).map((f) => ({
-      ...f,
-      county_centroid: JSON.parse(f.county_centroid),
-      route_geometry: routes.find((r) => r.destination_id === f.county_id)
-        ?.polyline,
-    })),
+    outbound: groupFlowsByCounty(outbound).map((f) => {
+      const route = routes.find((r) => r.origin_id === f.county_id);
+      return {
+        ...f,
+        county_centroid: JSON.parse(f.county_centroid),
+        route_geometry: route?.polyline,
+        route_direction: route?.direction,
+      };
+    }),
     stats: getStats(outbound),
   });
 }

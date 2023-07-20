@@ -1,7 +1,7 @@
 import { distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import polyline from "google-polyline";
-import { Geometry } from "geojson";
+import { Geometry, LineString } from "geojson";
 import {
   Flow,
   FlowWithPaths,
@@ -16,7 +16,12 @@ import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import { getStats, hexToRgb } from "@/utils";
-import { countiesAtom, flowTypeAtom, roadsAtom, selectedCountyAtom } from "@/atoms";
+import {
+  countiesAtom,
+  flowTypeAtom,
+  roadsAtom,
+  selectedCountyAtom,
+} from "@/atoms";
 import { useControls } from "leva";
 import { centroid } from "turf";
 import { useFlowsData } from "./useAPI";
@@ -48,6 +53,7 @@ export default function useFlows(): Flow[] {
           county_id,
           county_centroid,
           route_geometry,
+          route_direction,
           flowsByCrop,
           flowsByCropGroup,
         }: RawCountyWithFlows) => {
@@ -81,8 +87,13 @@ export default function useFlows(): Flow[] {
                 coordinates: polyline
                   .decode(route_geometry)
                   .map(([lng, lat]) => [lat, lng]),
-              } as Geometry)
+              } as LineString)
             : undefined;
+
+          // Works in consumer, probably the opposite in producer
+          if (route_direction === "backward") {
+            routeGeometry?.coordinates.reverse();
+          }
 
           return {
             source,
@@ -204,21 +215,23 @@ export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
 }
 
 const getRoadPaths = (link: Flow): Path[] => {
-  return [{
-    coordinates: link.routeGeometry?.coordinates || [],
-    distances: [distance(point(link.source), point(link.target))],
-    totalDistance: distance(point(link.source), point(link.target)),
-  }]
-}
+  return [
+    {
+      coordinates: link.routeGeometry?.coordinates || [],
+      distances: [distance(point(link.source), point(link.target))],
+      totalDistance: distance(point(link.source), point(link.target)),
+    },
+  ];
+};
 
-export function useFlowsWithRoadPaths(flows: Flow[], ): FlowWithPaths[] {
+export function useFlowsWithRoadPaths(flows: Flow[]): FlowWithPaths[] {
   return useMemo(() => {
     return flows.map((l) => {
       const paths = getRoadPaths(l);
       return { ...l, paths };
     });
   }, [flows]);
-};
+}
 
 const getPathTrips = (
   path: Path,
@@ -302,16 +315,18 @@ export function useFlowsWithTrips(
     maxParticles: 100,
   });
 
-  const roads = useAtomValue(roadsAtom)
+  const roads = useAtomValue(roadsAtom);
 
   return useMemo(() => {
-    const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths
+    const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths;
     return flowsWithPaths.map((l) => {
       const trips = l.paths
         .map((p) => {
           return getPathTrips(p, l, {
             ...params,
-            numParticlesMultiplicator: roads ? params.numParticlesRoadsMultiplicator : params.numParticlesCurvedPathsMultiplicator
+            numParticlesMultiplicator: roads
+              ? params.numParticlesRoadsMultiplicator
+              : params.numParticlesCurvedPathsMultiplicator,
           });
         })
         .flat();
