@@ -1,31 +1,37 @@
 import cx from "classnames";
-import { countyAtom, countyHighlightedAtom } from "@/atoms";
+import {
+  allLinkedCountiesAtom,
+  countyAtom,
+  countyHighlightedAtom,
+} from "@/atoms";
 import useLinkedCounties from "@/hooks/useLinkedCounties";
 import { County } from "@/types";
 import { Feature, Geometry } from "geojson";
 import { useAtom, useSetAtom } from "jotai";
 import styles from "@/styles/CountiesList.module.css";
-import { useState } from "react";
-
-const TOP_NUMBER = 5;
+import { TOP_COUNTIES_NUMBER } from "@/constants";
 
 export default function CountiesList() {
   const setCounty = useSetAtom(countyAtom);
   const [countyHiglighted, setCountyHighlighted] = useAtom(
     countyHighlightedAtom
   );
+  const [allLinkedCounties, setAllLinkedCounties] = useAtom(
+    allLinkedCountiesAtom
+  );
 
-  const topLinkedCountries = useLinkedCounties();
-
-  const [showAllCounties, setShowAllCounties] = useState(false);
+  const linkedCounties = useLinkedCounties();
 
   // TODO add loading state
-  if (!topLinkedCountries) return null;
+  if (!linkedCounties) return null;
   return (
     <>
       <ol className={styles.countiesList}>
-        {topLinkedCountries
-          .slice(0, showAllCounties ? Number.POSITIVE_INFINITY : TOP_NUMBER)
+        {linkedCounties
+          .slice(
+            0,
+            allLinkedCounties ? Number.POSITIVE_INFINITY : TOP_COUNTIES_NUMBER
+          )
           .map((county: Feature<Geometry, County>) => (
             <li
               onMouseOver={() => setCountyHighlighted(county.properties.geoid)}
@@ -44,14 +50,14 @@ export default function CountiesList() {
             </li>
           ))}
       </ol>
-      {topLinkedCountries.length > TOP_NUMBER && (
+      {linkedCounties.length > TOP_COUNTIES_NUMBER && (
         <button
-          onClick={() => setShowAllCounties(!showAllCounties)}
+          onClick={() => setAllLinkedCounties(!allLinkedCounties)}
           className={styles.showAll}
         >
-          {showAllCounties
-            ? `Show top ${TOP_NUMBER} counties`
-            : `+ ${topLinkedCountries.length - TOP_NUMBER} more`}
+          {allLinkedCounties
+            ? `Show top ${TOP_COUNTIES_NUMBER} counties`
+            : `+ ${linkedCounties.length - TOP_COUNTIES_NUMBER} more`}
         </button>
       )}
     </>

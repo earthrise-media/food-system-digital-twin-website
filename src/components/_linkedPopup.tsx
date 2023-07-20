@@ -1,29 +1,47 @@
-import { useEffect } from "react";
+import cx from "classnames";
 import { useMap } from "react-map-gl";
-import { Popup as MapboxPopup } from "mapbox-gl";
-import { kumbhSans } from "@/pages";
 import { Feature, Geometry } from "geojson";
 import { County } from "@/types";
-import { centroid } from "turf";
+import styles from "@/styles/Popups.module.css";
+import { usePopup } from "@/hooks/usePopup";
 
-function LinkedPopup({ county }: { county: Feature<Geometry, County> }) {
+export type LinkedPopupCounty = {
+  rank: number;
+} & County;
+
+function LinkedPopup({
+  county,
+}: {
+  county: Feature<Geometry, LinkedPopupCounty>;
+}) {
   const { current: map } = useMap();
-
-  useEffect(() => {
-    if (!map || !county) return;
-
-    const { name, stusps } = county.properties;
-    const popup = new MapboxPopup({ closeOnClick: false, closeButton: false, className: "linkedPopup", offset: 12 })
-      .setLngLat(centroid(county).geometry.coordinates as any)
-      .setHTML(
-        `<dl class="${kumbhSans.className} compact"><dd>${name}, ${stusps}</dd></dl>`
-      )
-      .addTo(map.getMap());
-
-    return () => {
-      popup.remove();
-    };
-  }, [map, county]);
+  const { name, stusps } = county.properties;
+  usePopup({
+    county,
+    popupOptions: {
+      offset: 20,
+    },
+    className: cx("noTip", {
+      [styles.hidden]: map ? map?.getZoom() < 5 : false,
+    }),
+    children: (
+      <div className={cx(styles.popupContent, styles.fixed)}>
+        {name}, {stusps}
+      </div>
+    ),
+  });
+  usePopup({
+    county,
+    popupOptions: {
+      anchor: "center",
+    },
+    className: "noTip",
+    children: (
+      <div className={cx(styles.rank, styles.fixed)}>
+        {county.properties.rank}
+      </div>
+    ),
+  });
 
   return null;
 }

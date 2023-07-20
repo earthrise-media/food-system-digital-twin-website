@@ -10,7 +10,8 @@
   color: var(--background);
   margin-right: 10px;
   border-radius: 100%;
-  min-width: 14px;
+  min-width: 18px;
+  min-height: 18px;
   text-align: center;
   display: inline-block;
   font-size: var(--font-size-caption);

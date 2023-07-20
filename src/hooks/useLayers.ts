@@ -1,4 +1,4 @@
-import { use, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
@@ -28,12 +28,11 @@ const BASE_LINE_LAYERS_OPTIONS = {
 };
 
 export default function useLayers(
-  targetCounties: Feature<Geometry, County>[],
+  targetCounties: Feature<Geometry, County>[] | null,
   flows: FlowWithTrips[],
   zoom: number,
-  showAnimatedLayers = true,
+  showAnimatedLayers = true
 ) {
-
   const setCounty = useSetAtom(countyAtom);
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
   const [countyHiglighted, setCountyHighlighted] = useAtom(
@@ -80,7 +79,9 @@ export default function useLayers(
 
   const targetCountyHiglighted = useMemo(() => {
     if (!countyHiglighted) return null;
-    const targetCountiesIds = targetCounties.map((c) => c.properties.geoid);
+    const targetCountiesIds = (targetCounties || []).map(
+      (c) => c.properties.geoid
+    );
     return targetCountiesIds.find((id) => id === countyHiglighted);
   }, [countyHiglighted, targetCounties]);
 
@@ -127,7 +128,7 @@ export default function useLayers(
         }),
         new GeoJsonLayer({
           id: "counties-targets",
-          data: targetCounties,
+          data: targetCounties || [],
           ...BASE_LINE_LAYERS_OPTIONS,
           getFillColor: [255, 255, 255, 150],
           getLineColor: [0, 0, 0, 150],
@@ -144,7 +145,7 @@ export default function useLayers(
           lineWidthMinPixels: 0.5,
           lineWidthMaxPixels: 2,
           getLineWidth: 0.01,
-          visible: !!highlightedCounty
+          visible: !!highlightedCounty,
         }),
         new TripsLayer({
           id: "trips-layer",

@@ -6,10 +6,10 @@ import React, {
   useState,
 } from "react";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
-import { Map, MapRef, useControl, useMap } from "react-map-gl";
+import { Map, MapRef, useControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useAtomValue } from "jotai";
-import Popup from "./_popup";
+import Popup from "./_mainPopup";
 import styles from "@/styles/Map.module.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Style } from "mapbox-gl";
@@ -19,7 +19,6 @@ import useFlows, {
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
 import {
-  countiesAtom,
   flowTypeAtom,
   highlightedCountyAtom,
   searchAtom,
@@ -34,6 +33,8 @@ import { useFlowsData } from "@/hooks/useAPI";
 import { RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
 import useMapStyle from "@/hooks/useMapStyle";
+import useLinkedCounties from "@/hooks/useLinkedCounties";
+import { TOP_COUNTIES_NUMBER } from "@/constants";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -62,7 +63,6 @@ type MapWrapperProps = {
 };
 
 function MapWrapper({ initialMapStyle }: MapWrapperProps) {
-  const counties = useAtomValue(countiesAtom);
   const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
 
@@ -74,21 +74,64 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const search = useAtomValue(searchAtom);
   const flowType = useAtomValue(flowTypeAtom);
 
-  const targetCounties = useMemo(() => {
-    if (!counties) return [];
-    return flowsWithTrips.flatMap((l) => {
-      const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId;
-      const target = counties.features.find(
-        (county) => county.properties.geoid === idToLinkTo
+  const linkedCounties = useLinkedCounties();
+  const selectedCounty = useAtomValue(selectedCountyAtom);
+
+  const topCounties = useMemo(() => {
+    if (!linkedCounties) return [];
+    const topCounties = linkedCounties
+      .slice(0, TOP_COUNTIES_NUMBER)
+      .map((c, i) => ({
+        ...c,
+        properties: {
+          ...c.properties,
+          rank: i + 1,
+        },
+      }));
+    return topCounties;
+  }, [linkedCounties]);
+
+  const linkedHighlightedCounty = useMemo(() => {
+    if (!highlightedCounty || !linkedCounties) return;
+    const highlightedTopCounty = topCounties.find(
+      (county) => county.properties.geoid === highlightedCounty.properties.geoid
+    );
+    if (!highlightedTopCounty) {
+      const linkedHighlightedCountyIndex = linkedCounties.findIndex(
+        (county) =>
+          county.properties.geoid === highlightedCounty.properties.geoid
       );
-      return target ? [target] : [];
-    });
-  }, [counties, flowsWithTrips, flowType]);
+      if (linkedHighlightedCountyIndex === -1) return;
+      const linkedHighlightedCounty =
+        linkedCounties[linkedHighlightedCountyIndex];
+      return {
+        ...linkedHighlightedCounty,
+        properties: {
+          ...linkedHighlightedCounty.properties,
+          rank: linkedHighlightedCountyIndex + 1,
+        },
+      };
+    }
+  }, [linkedCounties, highlightedCounty, topCounties]);
+
+  const simpleHighlightedCounty = useMemo(() => {
+    if (!highlightedCounty) return;
+    const highlightedTopCounty = topCounties.find(
+      (county) => county.properties.geoid === highlightedCounty.properties.geoid
+    );
+    if (
+      highlightedTopCounty ||
+      linkedHighlightedCounty?.properties.geoid ===
+        highlightedCounty.properties.geoid
+    )
+      return;
+    return highlightedCounty;
+  }, [highlightedCounty, topCounties, linkedHighlightedCounty]);
 
   const [viewState, setViewState] = React.useState(INITIAL_VIEW_STATE);
 
   const layers = useLayers(
-    targetCounties,
+    linkedCounties,
     flowsWithTrips,
     Math.floor(viewState.zoom),
     !search
@@ -101,7 +144,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   useKeyPress("u", toggleUI);
 
   const mapRef = useRef<MapRef>(null);
-  const selectedCounty = useAtomValue(selectedCountyAtom);
   useEffect(() => {
     if (!selectedCounty) return;
     mapRef.current?.flyTo({
@@ -109,7 +151,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
       padding: { left: 200, top: 0, right: 0, bottom: 0 },
     });
   }, [selectedCounty]);
-
 
   const currentCountyId = useAtomValue(countyAtom);
   const bannerError = useMemo(() => {
@@ -147,14 +188,18 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         {!search && (
           <>
-            {/* {targetCounties.map((county) => {
+            {topCounties.map((county) => {
               return (
                 <LinkedPopup key={county.properties.geoid} county={county} />
               );
-            })} */}
-            {highlightedCounty && <LinkedPopup county={highlightedCounty} />}
-            <Popup />
-            <HighlightPopup />
+            })}
+            {linkedHighlightedCounty && (
+              <LinkedPopup county={linkedHighlightedCounty} />
+            )}
+            {selectedCounty && <Popup county={selectedCounty} />}
+            {simpleHighlightedCounty && (
+              <HighlightPopup county={simpleHighlightedCounty} />
+            )}
           </>
         )}
       </Map>

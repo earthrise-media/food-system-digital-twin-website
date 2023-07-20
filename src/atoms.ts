@@ -12,6 +12,10 @@ export const searchAtom = atomWithHash<boolean>("search", false);
 export const flowTypeAtom = atomWithHash<FlowType>("flowType", "consumer");
 export const foodGroupAtom = atomWithHash<Category | null>("foodGroup", null);
 export const roadsAtom = atomWithHash<boolean>("roads", false);
+export const allLinkedCountiesAtom = atomWithHash<boolean>(
+  "allLinkedCounties",
+  false
+);
 
 export const selectedCountyAtom = atom((get) => {
   const countyId = get(countyAtom);
