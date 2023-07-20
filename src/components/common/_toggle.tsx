@@ -1,4 +1,5 @@
 import styles from "@/styles/Toggle.module.css";
+import { useId } from "react";
 
 export default function Toggle({
   checked,
@@ -7,15 +8,16 @@ export default function Toggle({
   checked: boolean;
   onChange: (checked: boolean) => void;
 }) {
+  const id = useId()
   return (
     <div className={styles.toggle}>
       <input
         type="checkbox"
-        id="switch"
+        id={id}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <label htmlFor="switch">Toggle</label>
+      <label htmlFor={id}>Toggle</label>
     </div>
   );
 }

@@ -11,7 +11,7 @@ import Summary from "./_summary";
 import Crops from "./_crops";
 import CountiesList from "./_countiesList";
 import Roads from "./_roads";
-import Drought from "./_drought";
+import AdverseConditions from "./_adverseConditions";
 import Tabs from "./_tabs";
 
 type FlowInfoProps = {};
@@ -59,7 +59,7 @@ function FlowInfo({}: FlowInfoProps) {
                 <Crops stats={stats} />
               </div>
 
-              {/* {flowType === "producer" && <Drought />} */}
+              {flowType === "producer" && <AdverseConditions />}
             </section>
             <section>
               <h3>

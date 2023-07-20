@@ -80,3 +80,5 @@ export type FlowWithTrips = FlowWithPaths & {
 };
 
 export type FlowType = "producer" | "consumer";
+
+export type AdverseConditions = 'drought' | 'heatStress'

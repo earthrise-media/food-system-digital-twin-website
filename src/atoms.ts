@@ -1,7 +1,7 @@
 import { FeatureCollection, Geometry } from "geojson";
 import { atom } from "jotai";
 import { atomWithHash } from "jotai-location";
-import { County, FlowType, Category } from "./types";
+import { County, FlowType, Category, AdverseConditions } from "./types";
 
 export const countiesAtom = atom<FeatureCollection<Geometry, County> | null>(
   null
@@ -12,6 +12,7 @@ export const searchAtom = atomWithHash<boolean>("search", false);
 export const flowTypeAtom = atomWithHash<FlowType>("flowType", "consumer");
 export const foodGroupAtom = atomWithHash<Category | null>("foodGroup", null);
 export const roadsAtom = atomWithHash<boolean>("roads", false);
+export const adverseConditionsAtom = atomWithHash<AdverseConditions | null>("adverseConditions", null);
 export const allLinkedCountiesAtom = atomWithHash<boolean>(
   "allLinkedCounties",
   false
