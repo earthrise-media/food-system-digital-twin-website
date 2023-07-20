@@ -1,7 +1,7 @@
 import { distance, point, lineString } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import polyline from "google-polyline";
-import { Geometry, LineString } from "geojson";
+import { LineString } from "geojson";
 import {
   Flow,
   FlowWithPaths,
@@ -11,11 +11,12 @@ import {
   RawFlowsInbound,
   RawFlowsOutbound,
   Trip,
+  Waypoint,
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
-import { getStats, hexToRgb } from "@/utils";
+import { getDistances, getStats, hexToRgb } from "@/utils";
 import {
   countiesAtom,
   flowTypeAtom,
@@ -168,24 +169,13 @@ const getCurvedPaths = (
 
     const allWaypoints = [link.source, ...waypoints, link.target];
 
-    const distances = [];
-    for (
-      let waypointIndex = 1;
-      waypointIndex < allWaypoints.length;
-      waypointIndex++
-    ) {
-      const waypoint = allWaypoints[waypointIndex];
-      const prevWaypoint = allWaypoints[waypointIndex - 1];
-      const dist = distance(point(prevWaypoint), point(waypoint));
-      distances.push(dist);
-    }
-
-    const totalDistance = distances.reduce((a, b) => a + b, 0);
-
     let feature = lineString(allWaypoints);
     if (smooth) {
-      feature = bezierSpline(feature, { resolution: 200 });
+      feature = bezierSpline(feature, { resolution: 500 });
     }
+
+    const allWaypointsCoords = feature.geometry.coordinates;
+    const { distances, totalDistance } = getDistances(allWaypointsCoords);
 
     paths.push({
       coordinates: feature.geometry.coordinates,
@@ -215,11 +205,14 @@ export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
 }
 
 const getRoadPaths = (link: Flow): Path[] => {
+  const { distances, totalDistance } = getDistances(
+    link.routeGeometry?.coordinates || []
+  );
   return [
     {
       coordinates: link.routeGeometry?.coordinates || [],
-      distances: [distance(point(link.source), point(link.target))],
-      totalDistance: distance(point(link.source), point(link.target)),
+      distances,
+      totalDistance,
     },
   ];
 };
@@ -273,11 +266,22 @@ const getPathTrips = (
     const timestampEnd = timestampStart + baseDuration;
 
     const timestampDelta = timestampEnd - timestampStart;
-    const waypoints = path.coordinates.map((c, i) => {
-      const timestamp =
-        timestampStart + (i / (path.coordinates.length - 1)) * timestampDelta;
-      return { coordinates: c, timestamp: timestamp };
-    });
+    const waypointsAccumulator = path.coordinates.reduce(
+      (accumulator, currentCoords, currentIndex) => {
+        const accDistance = accumulator.accDistance;
+        const accDistanceRatio = accDistance / path.totalDistance;
+        const timestamp = timestampStart + accDistanceRatio * timestampDelta;
+
+        return {
+          accDistance: accDistance + path.distances[currentIndex],
+          waypoints: [
+            ...accumulator.waypoints,
+            { coordinates: currentCoords, timestamp: timestamp },
+          ],
+        };
+      },
+      { waypoints: [] as Waypoint[], accDistance: 0 }
+    );
 
     if (!flow.valuesRatiosByFoodGroup) continue;
     const randomCategoryRatio = Math.random();
@@ -290,9 +294,9 @@ const getPathTrips = (
     const category = CATEGORIES[categoryIndex];
     const categoryColor = CATEGORIES_PROPS[category].color;
     const color = hexToRgb(categoryColor);
-
+    // console.log(waypoints)
     trips.push({
-      waypoints,
+      waypoints: waypointsAccumulator.waypoints,
       color: [...color, 255],
       foodGroup: category,
     });
