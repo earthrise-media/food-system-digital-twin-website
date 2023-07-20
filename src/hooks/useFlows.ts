@@ -1,4 +1,4 @@
-import { distance, point, lineString } from "@turf/turf";
+import { distance, point, lineString, circle, centroid } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import polyline from "google-polyline";
 import { LineString } from "geojson";
@@ -24,7 +24,6 @@ import {
   selectedCountyAtom,
 } from "@/atoms";
 import { useControls } from "leva";
-import { centroid } from "turf";
 import { useFlowsData } from "./useAPI";
 
 export default function useFlows(): Flow[] {
@@ -198,11 +197,26 @@ export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
   });
   return useMemo(() => {
     return flows.map((l) => {
-      const paths = getCurvedPaths(l, params);
+      const isSelf = l.sourceId === l.targetId;
+      const paths = isSelf ? getSelfPath(l) : getCurvedPaths(l, params);
       return { ...l, paths };
     });
   }, [flows, params]);
 }
+
+const getSelfPath = (link: Flow): Path[] => {
+  const circleFeature = circle(point(link.source), 30, 20, "kilometers")
+  const circleCoords = circleFeature.geometry.coordinates[0];
+  const { distances, totalDistance } = getDistances(
+    circleCoords
+  );
+  return [{
+    coordinates: circleCoords,
+    distances,
+    totalDistance,
+  }]
+}
+
 
 const getRoadPaths = (link: Flow): Path[] => {
   const { distances, totalDistance } = getDistances(
@@ -219,8 +233,9 @@ const getRoadPaths = (link: Flow): Path[] => {
 
 export function useFlowsWithRoadPaths(flows: Flow[]): FlowWithPaths[] {
   return useMemo(() => {
-    return flows.map((l) => {
-      const paths = getRoadPaths(l);
+    return flows.map((l, i) => {
+      const isSelf = l.sourceId === l.targetId;
+      const paths = isSelf ? getSelfPath(l) : getRoadPaths(l);
       return { ...l, paths };
     });
   }, [flows]);

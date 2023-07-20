@@ -67,6 +67,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
 
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowsWithCurvedPaths = useFlowsWithCurvedPaths(selectedFlows);
   const flowsWithRoadPaths = useFlowsWithRoadPaths(selectedFlows);
   const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths, flowsWithRoadPaths);
@@ -77,7 +78,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const flowType = useAtomValue(flowTypeAtom);
 
   const linkedCounties = useLinkedCounties();
-  const selectedCounty = useAtomValue(selectedCountyAtom);
+
 
   const topCounties = useMemo(() => {
     if (!linkedCounties) return [];
