@@ -1,4 +1,4 @@
-import { roadsAtom } from "@/atoms";
+import { roadsAtom, searchAtom } from "@/atoms";
 import { Flow } from "@/types";
 import { featureCollection } from "@turf/helpers";
 import { useAtomValue } from "jotai";
@@ -9,9 +9,10 @@ export default function useMapStyle(
   initialMapStyle: Style,
   flows: Flow[] = []
 ): Style {
-  const roads = useAtomValue(roadsAtom)
+  const roads = useAtomValue(roadsAtom);
+  const search = useAtomValue(searchAtom);
 
-  if (!roads) return initialMapStyle;
+  if (!roads || !!search) return initialMapStyle;
 
   const routes = flows
     .filter((flow) => flow.routeGeometry)
