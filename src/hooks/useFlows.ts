@@ -16,7 +16,7 @@ import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import { getStats, hexToRgb } from "@/utils";
-import { countiesAtom, flowTypeAtom, selectedCountyAtom } from "@/atoms";
+import { countiesAtom, flowTypeAtom, roadsAtom, selectedCountyAtom } from "@/atoms";
 import { useControls } from "leva";
 import { centroid } from "turf";
 import { useFlowsData } from "./useAPI";
@@ -185,7 +185,7 @@ const getCurvedPaths = (
   return paths;
 };
 
-export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
+export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
     linesPerLinkMultiplicator: 3,
     maxLinesPerLink: 30,
@@ -196,12 +196,29 @@ export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
     smooth: false,
   });
   return useMemo(() => {
-    return links.map((l) => {
+    return flows.map((l) => {
       const paths = getCurvedPaths(l, params);
       return { ...l, paths };
     });
-  }, [links, params]);
+  }, [flows, params]);
 }
+
+const getRoadPaths = (link: Flow): Path[] => {
+  return [{
+    coordinates: link.routeGeometry?.coordinates || [],
+    distances: [distance(point(link.source), point(link.target))],
+    totalDistance: distance(point(link.source), point(link.target)),
+  }]
+}
+
+export function useFlowsWithRoadPaths(flows: Flow[], ): FlowWithPaths[] {
+  return useMemo(() => {
+    return flows.map((l) => {
+      const paths = getRoadPaths(l);
+      return { ...l, paths };
+    });
+  }, [flows]);
+};
 
 const getPathTrips = (
   path: Path,
@@ -271,10 +288,12 @@ const getPathTrips = (
 };
 
 export function useFlowsWithTrips(
-  flowsWithPaths: FlowWithPaths[]
+  flowsWithCurvedPaths: FlowWithPaths[],
+  flowsWithRoadPaths: FlowWithPaths[]
 ): FlowWithTrips[] {
   const params = useControls("trips", {
-    numParticlesMultiplicator: 10,
+    numParticlesCurvedPathsMultiplicator: 10,
+    numParticlesRoadsMultiplicator: 100,
     fromTimestamp: 0,
     toTimeStamp: 100,
     intervalHumanize: 0.5,
@@ -283,15 +302,21 @@ export function useFlowsWithTrips(
     maxParticles: 100,
   });
 
+  const roads = useAtomValue(roadsAtom)
+
   return useMemo(() => {
+    const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths
     return flowsWithPaths.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p, l, params);
+          return getPathTrips(p, l, {
+            ...params,
+            numParticlesMultiplicator: roads ? params.numParticlesRoadsMultiplicator : params.numParticlesCurvedPathsMultiplicator
+          });
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [flowsWithPaths, params]);
+  }, [flowsWithCurvedPaths, flowsWithRoadPaths, params, roads]);
 }

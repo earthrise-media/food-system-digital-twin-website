@@ -13,6 +13,7 @@ import {
   flowTypeAtom,
   foodGroupAtom,
   highlightedCountyAtom,
+  roadsAtom,
   selectedCountyAtom,
 } from "@/atoms";
 import { useControls } from "leva";
@@ -40,6 +41,7 @@ export default function useLayers(
   );
   const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
+  const roads = useAtomValue(roadsAtom)
 
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
@@ -190,7 +192,7 @@ export default function useLayers(
         }),
       ];
     }
-    if (linksAsGeoJSON && showAnimatedLayers) {
+    if (linksAsGeoJSON && showAnimatedLayers && !roads) {
       layers.push(
         new GeoJsonLayer({
           id: "lines",
@@ -226,6 +228,7 @@ export default function useLayers(
     showAnimatedLayers,
     flowType,
     foodGroup,
+    roads,
   ]);
   return layers;
 }

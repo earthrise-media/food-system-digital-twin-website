@@ -34,8 +34,8 @@ export default function useMapStyle(
         type: "line",
         source: "routes",
         paint: {
-          "line-color": "#ff0000",
-          "line-width": 2,
+          "line-color": "#ffffff",
+          "line-width": 4,
         },
       },
     ],

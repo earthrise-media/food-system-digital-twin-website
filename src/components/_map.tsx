@@ -16,6 +16,7 @@ import { Style } from "mapbox-gl";
 import useLayers from "@/hooks/useLayers";
 import useFlows, {
   useFlowsWithCurvedPaths,
+  useFlowsWithRoadPaths,
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
 import {
@@ -67,7 +68,8 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const selectedFlows = useFlows();
 
   const flowsWithCurvedPaths = useFlowsWithCurvedPaths(selectedFlows);
-  const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths);
+  const flowsWithRoadPaths = useFlowsWithRoadPaths(selectedFlows);
+  const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths, flowsWithRoadPaths);
   const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
