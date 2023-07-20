@@ -15,6 +15,8 @@ export type RawCountyFlows = {
   crop_name?: string;
   crop_category: Category,
   value: number,
+  value_drought: number,
+  value_heat_stress: number,
 }
   
 export type RawFlowStats = {

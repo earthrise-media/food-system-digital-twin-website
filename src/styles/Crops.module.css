@@ -17,25 +17,29 @@
 
 .crops > li > dl::before,
 .crops > li > dl > dt::before,
-.crops > li > dl > dd::before {
+.crops > li > dl > dd::before,
+.crops > li > dl > dd::after {
   height: 5px;
   content: " ";
   border-radius: 99px;
 }
 
 .crops > li > dl::before,
-.crops > li > dl > dd::before {
+.crops > li > dl > dd::before,
+.crops > li > dl > dd::after {
   position: absolute;
   display: block;
   left: 0;
   top: 20px;
 }
 
+/* Bar background */
 .crops > li > dl::before {
   width: 100%;
   background: var(--background-2);
 }
 
+/* Colored dot */
 .crops > li > dl > dt::before {
   display: inline-block;
   width: 5px;
@@ -44,16 +48,34 @@
   margin-bottom: 2px;
 }
 
+/* Background bar color - adverse conditions */
 .crops > li > dl > dd::before {
-  width: var(--width);
+  display: none;
+}
+.crops.showBackground > li > dl > dd::before {
+  display: block;
+  width: var(--widthBackground);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color),
+    var(--color) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  transition: width 0.5s ease;
+}
+
+/* Bar color */
+.crops > li > dl > dd::after {
+  width: var(--widthForeground);
   background: var(--color);
   transition: width 0.5s ease;
 }
 
-.loading .crops > li > dl > dd::before {
+/* .loading .crops > li > dl > dd::before {
   animation: fade 1s linear infinite;
   width: 100%;
-}
+} */
 
 .detail {
   margin-left: 30px;
