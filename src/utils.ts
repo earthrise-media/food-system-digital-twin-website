@@ -62,7 +62,6 @@ export const getStats = (
   return {
     total,
     formattedTotal: {
-      rawValue: total,
       value: new Intl.NumberFormat("en-US", {
         maximumSignificantDigits: 3,
       }).format(total / (formattedTotalUnit === "B" ? 1000000000 : 1000000)),
