@@ -4,9 +4,14 @@ import classNames from "classnames";
 import { useAtom } from "jotai";
 import { adverseConditionsAtom } from "@/atoms";
 import { useCallback } from "react";
+import Tabs from "../common/_tabs";
+import { ADVERSE_CONDITIONS_OPTIONS } from "@/constants";
+import { AdverseConditions } from "@/types";
 
 export default function AdverseConditions() {
-  const [adverseConditions, setAdverseConditions] = useAtom(adverseConditionsAtom);
+  const [adverseConditions, setAdverseConditions] = useAtom(
+    adverseConditionsAtom
+  );
   const onToggle = useCallback(() => {
     if (adverseConditions === null) {
       setAdverseConditions("drought");
@@ -15,9 +20,23 @@ export default function AdverseConditions() {
     }
   }, [adverseConditions, setAdverseConditions]);
 
-  return <div className={classNames(styles.subBlock, { [styles.active]: adverseConditions !== null })}>
-  <h4>
-    Simulate adverse conditions <Toggle checked={adverseConditions !== null} onChange={onToggle} />
-  </h4>
-</div>
+  return (
+    <div
+      className={classNames(styles.subBlock, {
+        [styles.active]: adverseConditions !== null,
+      })}
+    >
+      <h4>
+        Simulate stress conditions{" "}
+        <Toggle checked={adverseConditions !== null} onChange={onToggle} />
+      </h4>
+      {adverseConditions && (
+        <Tabs
+          options={ADVERSE_CONDITIONS_OPTIONS}
+          selectedOption={adverseConditions || undefined}
+          onChange={(value) => setAdverseConditions(value as AdverseConditions)}
+        />
+      )}
+    </div>
+  );
 }

@@ -3,7 +3,7 @@ import styles from "@/styles/Tabs.module.css";
 import { useAtom } from "jotai";
 import { flowTypeAtom } from "@/atoms";
 
-export default function Tabs() {
+export default function FlowTypeTabs() {
   const [flowType, setFlowType] = useAtom(flowTypeAtom);
   return (
     <div className={styles.tabBar}>

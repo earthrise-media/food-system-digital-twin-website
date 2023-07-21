@@ -1,4 +1,4 @@
-import { Category } from "./types";
+import { AdverseConditions, Category } from "./types";
 
 export const CATEGORIES: Category[] = [
   "Grain",
@@ -35,3 +35,11 @@ export const CATEGORIES_PROPS: Record<
 };
 
 export const TOP_COUNTIES_NUMBER = 5;
+
+export const ADVERSE_CONDITIONS_OPTIONS: {
+  value: AdverseConditions;
+  label: string;
+}[] = [
+  { value: "drought", label: "Drought" },
+  { value: "heatStress", label: "Heat stress" },
+];

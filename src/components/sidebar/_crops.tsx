@@ -2,7 +2,7 @@ import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
 import { Stats } from "@/utils";
 import styles from "@/styles/Crops.module.css";
 import { useAtom, useAtomValue } from "jotai";
-import { adverseConditionsAtom, flowTypeAtom, foodGroupAtom } from "@/atoms";
+import { adverseConditionsAtom, foodGroupAtom } from "@/atoms";
 import { useCallback } from "react";
 import { Category } from "@/types";
 import { useFlowsData } from "@/hooks/useAPI";
@@ -22,13 +22,23 @@ export default function Crops({ stats }: { stats: Stats | null }) {
   return (
     <>
       {stats && stats.total > 0 && (
-        <ul className={classNames(styles.crops, { [styles.showBackground]: adverseConditions }) }>
+        <ul
+          className={classNames(styles.crops, {
+            [styles.showBackground]: adverseConditions,
+          })}
+        >
           {CATEGORIES.map((category) => {
             if (!isLoading && !stats?.byCropGroup[category]) {
               return null;
             }
-            // console.log(stats?.byCropGroup[category]?.value_drought , stats?.byCropGroup[category]?.value)
-            const widthForeground = (adverseConditions ? stats?.byCropGroup[category]?.pct_drought : stats?.byCropGroup[category]?.pct) || 0;
+            const widthForeground =
+              (adverseConditions
+                ? stats?.byCropGroup[category]?.[
+                    adverseConditions === "drought"
+                      ? "pct_drought"
+                      : "pct_heat_stress"
+                  ]
+                : stats?.byCropGroup[category]?.pct) || 0;
             const widthBackground = stats?.byCropGroup[category]?.pct || 0;
 
             return (

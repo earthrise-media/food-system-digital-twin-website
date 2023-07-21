@@ -12,7 +12,7 @@ import Crops from "./_crops";
 import CountiesList from "./_countiesList";
 import Roads from "./_roads";
 import AdverseConditions from "./_adverseConditions";
-import Tabs from "./_tabs";
+import FlowTypeTabs from "./_flowTypeTabs";
 
 type FlowInfoProps = {};
 
@@ -46,7 +46,7 @@ function FlowInfo({}: FlowInfoProps) {
               </h2>
             </button>
 
-            <Tabs />
+            <FlowTypeTabs />
           </nav>
           <div className={styles.content}>
             <section>
