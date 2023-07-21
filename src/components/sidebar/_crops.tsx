@@ -31,15 +31,16 @@ export default function Crops({ stats }: { stats: Stats | null }) {
             if (!isLoading && !stats?.byCropGroup[category]) {
               return null;
             }
-            const widthForeground =
-              (adverseConditions
-                ? stats?.byCropGroup[category]?.[
-                    adverseConditions === "drought"
-                      ? "pct_drought"
-                      : "pct_heat_stress"
-                  ]
-                : stats?.byCropGroup[category]?.pct) || 0;
-            const widthBackground = stats?.byCropGroup[category]?.pct || 0;
+            const pct = stats?.byCropGroup[category]?.pct;
+            const pctAdverse = adverseConditions
+              ? stats?.byCropGroup[category]?.[
+                  adverseConditions === "drought"
+                    ? "pct_drought"
+                    : "pct_heat_stress"
+                ]
+              : 0;
+            const widthForeground = (adverseConditions ? pctAdverse : pct) || 0;
+            const widthBackground = pct || 0;
 
             return (
               <li
@@ -55,7 +56,17 @@ export default function Crops({ stats }: { stats: Stats | null }) {
               >
                 <dl>
                   <dt>{CATEGORIES_PROPS[category].name}</dt>
-                  <dd>{stats?.byCropGroup[category]?.pct}%</dd>
+                  <dd>
+                    {pct}%
+                    <span
+                      className={classNames(styles.variation, {
+                        [styles.negative]: pct - pctAdverse > 1,
+                        [styles.equal]: pct - pctAdverse <= 1,
+                      })}
+                    >
+                      {pctAdverse}%
+                    </span>
+                  </dd>
                 </dl>
                 {foodGroup === category && (
                   <ul className={styles.detail}>
