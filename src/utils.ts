@@ -57,16 +57,11 @@ export const getStats = (
     })
   );
 
-  const formattedTotalUnit = total > 1000000000 ? "B" : "M";
-
   return {
     total,
-    formattedTotal: {
-      value: new Intl.NumberFormat("en-US", {
-        maximumSignificantDigits: 3,
-      }).format(total / (formattedTotalUnit === "B" ? 1000000000 : 1000000)),
-      unit: formattedTotalUnit,
-    },
+    formattedTotal: new Intl.NumberFormat("en-US", {
+      maximumSignificantDigits: 3,
+    }).format(total / 1000000),
     byCropGroup,
     byCropGroupCumulative,
     byCrop,
@@ -93,4 +88,4 @@ export const getDistances = (coordinates: Position[]) => {
     distances,
     totalDistance,
   };
-};
+}

@@ -13,6 +13,7 @@ import CountiesList from "./_countiesList";
 import Roads from "./_roads";
 import Drought from "./_drought";
 import Tabs from "./_tabs";
+import SentenceCounty from "./_sentenceCounty";
 
 type FlowInfoProps = {};
 
@@ -54,7 +55,7 @@ function FlowInfo({}: FlowInfoProps) {
               <div className={styles.summary}>
                 <Summary stats={stats} />
               </div>
-
+              <SentenceCounty stats={stats} selectedCounty={selectedCounty} rank={flowsData?.rank} topCrop={flowsData?.topCrop} />
               <div className={styles.crops}>
                 <Crops stats={stats} />
               </div>
