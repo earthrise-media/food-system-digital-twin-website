@@ -1,0 +1,33 @@
+.countiesList {
+  list-style: none;
+  counter-reset: item;
+}
+
+.countiesList li::before {
+  counter-increment: item;
+  content: counter(item);
+  background: var(--foreground);
+  color: var(--background);
+  margin-right: 10px;
+  border-radius: 100%;
+  min-width: 18px;
+  min-height: 18px;
+  text-align: center;
+  display: inline-block;
+  font-size: var(--font-size-caption);
+}
+
+.countiesList li,
+.showAll {
+  margin-bottom: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.countiesList li:hover,
+.showAll:hover {
+}
+
+.countiesList li.highlighted {
+  font-weight: var(--font-weight-bold);
+}

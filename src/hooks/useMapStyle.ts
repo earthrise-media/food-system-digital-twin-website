@@ -1,13 +1,19 @@
+import { roadsAtom, searchAtom } from "@/atoms";
 import { Flow } from "@/types";
 import { featureCollection } from "@turf/helpers";
-import { Feature, LineString } from "geojson";
+import { useAtomValue } from "jotai";
 import { Style } from "mapbox-gl";
 import { feature } from "turf";
 
 export default function useMapStyle(
   initialMapStyle: Style,
   flows: Flow[] = []
-):Style {
+): Style {
+  const roads = useAtomValue(roadsAtom);
+  const search = useAtomValue(searchAtom);
+
+  if (!roads || !!search) return initialMapStyle;
+
   const routes = flows
     .filter((flow) => flow.routeGeometry)
     .map((flow) => feature(flow.routeGeometry));

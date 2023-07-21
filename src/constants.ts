@@ -33,3 +33,5 @@ export const CATEGORIES_PROPS: Record<
     color: "#7E84FA",
   },
 };
+
+export const TOP_COUNTIES_NUMBER = 5;

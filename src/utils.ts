@@ -65,3 +65,5 @@ export const getStats = (
     byCrop,
   };
 };
+
+export type Stats = ReturnType<typeof getStats>;

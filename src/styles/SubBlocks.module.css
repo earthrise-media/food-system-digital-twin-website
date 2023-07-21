@@ -1,0 +1,16 @@
+.subBlock {
+  margin-top: 16px;
+  border: 1px solid var(--foreground-10);
+  padding: 0 10px 16px;
+}
+
+.subBlock > h4 {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  color: var(--foreground-50);
+}
+
+.subBlock.active > h4 {
+  color: var(--foreground);
+}

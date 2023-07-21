@@ -1,0 +1,32 @@
+.popup {
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.mainPopup {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.popupContent {
+  padding: 4px 8px;
+}
+
+.fixed {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+}
+
+.rank {
+  /* left: calc(50% - 10px); */
+  width: 20px;
+  height: 20px;
+  background: var(--foreground);
+  color: var(--background);
+  border-radius: 50%;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
