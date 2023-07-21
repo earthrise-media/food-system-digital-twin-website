@@ -1,5 +1,7 @@
+import { Position } from "geojson";
 import { CATEGORIES } from "./constants";
 import { Category, RawCountyFlows } from "./types";
+import { distance, point } from "turf";
 
 export const hexToRgb = (hex: string): number[] => {
   const r = parseInt(hex.substring(1, 3), 16);
@@ -73,3 +75,23 @@ export const getStats = (
 };
 
 export type Stats = ReturnType<typeof getStats>;
+
+export const getDistances = (coordinates: Position[]) => {
+  const distances = [];
+  for (
+    let waypointIndex = 1;
+    waypointIndex < coordinates.length;
+    waypointIndex++
+  ) {
+    const waypoint = coordinates[waypointIndex];
+    const prevWaypoint = coordinates[waypointIndex - 1];
+    const dist = distance(point(prevWaypoint), point(waypoint));
+    distances.push(dist);
+  }
+
+  const totalDistance = distances.reduce((a, b) => a + b, 0);
+  return {
+    distances,
+    totalDistance,
+  };
+}

@@ -35,11 +35,15 @@ export default async function handler(req, res) {
   }));
 
   return res.status(200).json({
-    inbound: groupFlowsByCounty(inboundWithAdverseConditions).map((f) => ({
-      ...f,
-      county_centroid: JSON.parse(f.county_centroid),
-      route_geometry: routes.find((r) => r.origin_id === f.county_id)?.polyline,
-    })),
+    inbound: groupFlowsByCounty(inboundWithAdverseConditions).map((f) => {
+      const route = routes.find((r) => r.origin_id === f.county_id);
+      return {
+        ...f,
+        county_centroid: JSON.parse(f.county_centroid),
+        route_geometry: route?.polyline,
+        route_direction: route?.direction,
+      };
+    }),
     stats: getStats(inboundWithAdverseConditions),
   });
 }

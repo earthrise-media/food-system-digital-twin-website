@@ -122,7 +122,12 @@ export function getStats(flows) {
  */
 export async function getSymmetricRoutes(countyId, originsIds) {
   const routesForward = await db("routes")
-    .select("routes.origin_id", "routes.destination_id", "polyline")
+    .select(
+      "routes.origin_id",
+      "routes.destination_id",
+      "polyline",
+      db.raw('\'forward\' as direction')
+    )
     .where("routes.origin_id", "in", originsIds)
     .andWhere("routes.destination_id", countyId);
 
@@ -130,7 +135,8 @@ export async function getSymmetricRoutes(countyId, originsIds) {
     .select(
       "routes.origin_id as destination_id",
       "routes.destination_id as origin_id",
-      "polyline"
+      "polyline",
+      db.raw('\'backward\' as direction')
     )
     .where("routes.destination_id", "in", originsIds)
     .andWhere("routes.origin_id", countyId);

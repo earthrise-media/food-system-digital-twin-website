@@ -16,6 +16,7 @@ import { Style } from "mapbox-gl";
 import useLayers from "@/hooks/useLayers";
 import useFlows, {
   useFlowsWithCurvedPaths,
+  useFlowsWithRoadPaths,
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
 import {
@@ -66,8 +67,10 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
 
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowsWithCurvedPaths = useFlowsWithCurvedPaths(selectedFlows);
-  const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths);
+  const flowsWithRoadPaths = useFlowsWithRoadPaths(selectedFlows);
+  const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths, flowsWithRoadPaths);
   const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
@@ -75,7 +78,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const flowType = useAtomValue(flowTypeAtom);
 
   const linkedCounties = useLinkedCounties();
-  const selectedCounty = useAtomValue(selectedCountyAtom);
+
 
   const topCounties = useMemo(() => {
     if (!linkedCounties) return [];
