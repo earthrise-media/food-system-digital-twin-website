@@ -20,12 +20,12 @@ export default function Stats({ stats }: { stats: Stats | null } ) {
         </dt>
       );
     }
-  
+
     return (
       <>
         <dt>Calories {flowType === "consumer" ? "consumed" : "produced"}:</dt>
         <dd>
-          <b>~{stats?.formattedTotal}</b> million kcal
+          <b>~{stats?.formattedTotal.value}{stats?.formattedTotal.unit}</b> Cal
         </dd>
       </>
     );
