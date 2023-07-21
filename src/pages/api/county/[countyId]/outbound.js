@@ -28,14 +28,14 @@ export default async function handler(req, res) {
   const routes = await getSymmetricRoutes(countyId, destinationIds);
 
   // TODO replace with real values
-  const outboundsWithAdverseConditions = outbound.map((f) => ({
+  const outboundWithAdverseConditions = outbound.map((f) => ({
     ...f,
     value_drought:  Math.round(f.value * (0.5 + 0.5 * Math.random())),
     value_heat_stress:  Math.round(f.value * (0.5 + 0.5 * Math.random()))
   }));
 
   return res.status(200).json({
-    outbound: groupFlowsByCounty(outboundsWithAdverseConditions).map((f) => ({
+    outbound: groupFlowsByCounty(outboundWithAdverseConditions).map((f) => ({
       ...f,
       county_centroid: JSON.parse(f.county_centroid),
       route_geometry: routes.find((r) => r.destination_id === f.county_id)
