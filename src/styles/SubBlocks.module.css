@@ -13,4 +13,5 @@
 
 .subBlock.active > h4 {
   color: var(--foreground);
+  margin-bottom: 10px;
 }

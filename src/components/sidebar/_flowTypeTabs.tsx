@@ -1,5 +1,5 @@
 import cx from "classnames";
-import styles from "@/styles/Tabs.module.css";
+import styles from "@/styles/FlowTypeTabs.module.css";
 import { useAtom } from "jotai";
 import { flowTypeAtom } from "@/atoms";
 

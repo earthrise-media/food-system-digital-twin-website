@@ -1,0 +1,25 @@
+.tabBar > button {
+  margin-right: 20px;
+  color: var(--background);
+  padding: 6px 0 6px 32px;
+  font-weight: var(--font-weight-bold);
+  background-repeat: no-repeat;
+  background-size: 26px;
+  opacity: 0.5;
+}
+
+.tabBar > button:hover,
+.tabBar > button.selected {
+  opacity: 1;
+}
+
+.tabBar > button.selected {
+  border-bottom: 2px solid var(--background);
+}
+
+.consumer {
+  background: url("/icons/consumer.svg");
+}
+.producer {
+  background: url("/icons/producer.svg");
+}
