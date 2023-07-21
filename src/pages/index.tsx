@@ -1,17 +1,19 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import cx from "classnames";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { FeatureCollection, Geometry } from "geojson";
 import { Style } from "mapbox-gl";
 import { useAtomValue, useSetAtom } from "jotai";
 import styles from "@/styles/Home.module.css";
 import { getLocalData } from "../lib/getLocalData";
-import FlowInfo from "@/components/sidebar/_sidebar";
+import Sidebar from "@/components/sidebar/_sidebar";
 import { Kumbh_Sans } from "next/font/google";
 import Search from "@/components/_search";
 import { countiesAtom, searchAtom } from "@/atoms";
 import { County } from "@/types";
+import Roads from "@/components/sidebar/_roads";
+import AdverseConditions from "@/components/sidebar/_adverseConditions";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
@@ -44,7 +46,11 @@ export default function Home({
       </Head>
       <main className={cx(styles.main, kumbhSans.className)}>
         <DeckMap initialMapStyle={mapStyle} />
-        <FlowInfo />
+        <Sidebar />
+        <div className={styles.mapParamsCards}>
+          <Roads />
+          <AdverseConditions />
+        </div>
         {search && <Search />}
       </main>
     </>

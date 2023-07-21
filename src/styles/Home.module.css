@@ -1,3 +1,11 @@
 .main {
   height: 100vh;
 }
+
+.mapParamsCards {
+  position: absolute;
+  z-index: var(--z-flow-info);
+  right: 40px;
+  bottom: 40px;
+  width: 320px;
+}

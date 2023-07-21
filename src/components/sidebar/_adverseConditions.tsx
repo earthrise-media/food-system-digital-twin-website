@@ -1,4 +1,4 @@
-import styles from "@/styles/SubBlocks.module.css";
+import styles from "@/styles/MapParamsCard.module.css";
 import Toggle from "../common/_toggle";
 import classNames from "classnames";
 import { useAtom } from "jotai";
@@ -22,7 +22,7 @@ export default function AdverseConditions() {
 
   return (
     <div
-      className={classNames(styles.subBlock, {
+      className={classNames(styles.card, {
         [styles.active]: adverseConditions !== null,
       })}
     >

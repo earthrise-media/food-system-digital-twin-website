@@ -1,17 +1,20 @@
-.subBlock {
+.card {
   margin-top: 16px;
   border: 1px solid var(--foreground-10);
   padding: 0 10px 16px;
+  background: var(--background);
+  border: 1px solid var(--foreground-10);
+  filter: var(--shadow);
 }
 
-.subBlock > h4 {
+.card > h4 {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   color: var(--foreground-50);
 }
 
-.subBlock.active > h4 {
+.card.active > h4 {
   color: var(--foreground);
   margin-bottom: 10px;
 }

@@ -10,8 +10,6 @@ import { getStats, Stats } from "@/utils";
 import Summary from "./_summary";
 import Crops from "./_crops";
 import CountiesList from "./_countiesList";
-import Roads from "./_roads";
-import AdverseConditions from "./_adverseConditions";
 import FlowTypeTabs from "./_flowTypeTabs";
 
 type FlowInfoProps = {};
@@ -58,15 +56,12 @@ function FlowInfo({}: FlowInfoProps) {
               <div className={styles.crops}>
                 <Crops stats={stats} />
               </div>
-
-              {flowType === "producer" && <AdverseConditions />}
             </section>
             <section>
               <h3>
                 {flowType === "consumer" ? "Sourcing" : "Destination"} counties{" "}
               </h3>
               <CountiesList />
-              <Roads />
             </section>
           </div>
         </>
