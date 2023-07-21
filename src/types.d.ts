@@ -27,6 +27,7 @@ export type RawCountyWithFlows = {
   county_name: string;
   county_centroid: Geometry<Point>;
   route_geometry?: string;
+  route_direction?: 'forward' | 'backward';
   flowsByCrop: RawCountyFlows[];
   flowsByCropGroup: RawCountyFlows[];
 };

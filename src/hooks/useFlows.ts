@@ -1,7 +1,7 @@
-import { distance, point, lineString } from "@turf/turf";
+import { distance, point, lineString, circle, centroid } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
 import polyline from "google-polyline";
-import { Geometry } from "geojson";
+import { LineString } from "geojson";
 import {
   Flow,
   FlowWithPaths,
@@ -11,14 +11,19 @@ import {
   RawFlowsInbound,
   RawFlowsOutbound,
   Trip,
+  Waypoint,
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
-import { getStats, hexToRgb } from "@/utils";
-import { countiesAtom, flowTypeAtom, selectedCountyAtom } from "@/atoms";
+import { getDistances, getStats, hexToRgb } from "@/utils";
+import {
+  countiesAtom,
+  flowTypeAtom,
+  roadsAtom,
+  selectedCountyAtom,
+} from "@/atoms";
 import { useControls } from "leva";
-import { centroid } from "turf";
 import { useFlowsData } from "./useAPI";
 
 export default function useFlows(): Flow[] {
@@ -48,6 +53,7 @@ export default function useFlows(): Flow[] {
           county_id,
           county_centroid,
           route_geometry,
+          route_direction,
           flowsByCrop,
           flowsByCropGroup,
         }: RawCountyWithFlows) => {
@@ -81,8 +87,13 @@ export default function useFlows(): Flow[] {
                 coordinates: polyline
                   .decode(route_geometry)
                   .map(([lng, lat]) => [lat, lng]),
-              } as Geometry)
+              } as LineString)
             : undefined;
+
+          // Works in consumer, probably the opposite in producer
+          if (route_direction === "backward") {
+            routeGeometry?.coordinates.reverse();
+          }
 
           return {
             source,
@@ -157,24 +168,13 @@ const getCurvedPaths = (
 
     const allWaypoints = [link.source, ...waypoints, link.target];
 
-    const distances = [];
-    for (
-      let waypointIndex = 1;
-      waypointIndex < allWaypoints.length;
-      waypointIndex++
-    ) {
-      const waypoint = allWaypoints[waypointIndex];
-      const prevWaypoint = allWaypoints[waypointIndex - 1];
-      const dist = distance(point(prevWaypoint), point(waypoint));
-      distances.push(dist);
-    }
-
-    const totalDistance = distances.reduce((a, b) => a + b, 0);
-
     let feature = lineString(allWaypoints);
     if (smooth) {
-      feature = bezierSpline(feature, { resolution: 200 });
+      feature = bezierSpline(feature, { resolution: 500 });
     }
+
+    const allWaypointsCoords = feature.geometry.coordinates;
+    const { distances, totalDistance } = getDistances(allWaypointsCoords);
 
     paths.push({
       coordinates: feature.geometry.coordinates,
@@ -185,7 +185,7 @@ const getCurvedPaths = (
   return paths;
 };
 
-export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
+export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
     linesPerLinkMultiplicator: 3,
     maxLinesPerLink: 30,
@@ -196,11 +196,49 @@ export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
     smooth: false,
   });
   return useMemo(() => {
-    return links.map((l) => {
-      const paths = getCurvedPaths(l, params);
+    return flows.map((l) => {
+      const isSelf = l.sourceId === l.targetId;
+      const paths = isSelf ? getSelfPath(l) : getCurvedPaths(l, params);
       return { ...l, paths };
     });
-  }, [links, params]);
+  }, [flows, params]);
+}
+
+const getSelfPath = (link: Flow): Path[] => {
+  const circleFeature = circle(point(link.source), 30, 20, "kilometers")
+  const circleCoords = circleFeature.geometry.coordinates[0];
+  const { distances, totalDistance } = getDistances(
+    circleCoords
+  );
+  return [{
+    coordinates: circleCoords,
+    distances,
+    totalDistance,
+  }]
+}
+
+
+const getRoadPaths = (link: Flow): Path[] => {
+  const { distances, totalDistance } = getDistances(
+    link.routeGeometry?.coordinates || []
+  );
+  return [
+    {
+      coordinates: link.routeGeometry?.coordinates || [],
+      distances,
+      totalDistance,
+    },
+  ];
+};
+
+export function useFlowsWithRoadPaths(flows: Flow[]): FlowWithPaths[] {
+  return useMemo(() => {
+    return flows.map((l, i) => {
+      const isSelf = l.sourceId === l.targetId;
+      const paths = isSelf ? getSelfPath(l) : getRoadPaths(l);
+      return { ...l, paths };
+    });
+  }, [flows]);
 }
 
 const getPathTrips = (
@@ -243,11 +281,22 @@ const getPathTrips = (
     const timestampEnd = timestampStart + baseDuration;
 
     const timestampDelta = timestampEnd - timestampStart;
-    const waypoints = path.coordinates.map((c, i) => {
-      const timestamp =
-        timestampStart + (i / (path.coordinates.length - 1)) * timestampDelta;
-      return { coordinates: c, timestamp: timestamp };
-    });
+    const waypointsAccumulator = path.coordinates.reduce(
+      (accumulator, currentCoords, currentIndex) => {
+        const accDistance = accumulator.accDistance;
+        const accDistanceRatio = accDistance / path.totalDistance;
+        const timestamp = timestampStart + accDistanceRatio * timestampDelta;
+
+        return {
+          accDistance: accDistance + path.distances[currentIndex],
+          waypoints: [
+            ...accumulator.waypoints,
+            { coordinates: currentCoords, timestamp: timestamp },
+          ],
+        };
+      },
+      { waypoints: [] as Waypoint[], accDistance: 0 }
+    );
 
     if (!flow.valuesRatiosByFoodGroup) continue;
     const randomCategoryRatio = Math.random();
@@ -260,9 +309,9 @@ const getPathTrips = (
     const category = CATEGORIES[categoryIndex];
     const categoryColor = CATEGORIES_PROPS[category].color;
     const color = hexToRgb(categoryColor);
-
+    // console.log(waypoints)
     trips.push({
-      waypoints,
+      waypoints: waypointsAccumulator.waypoints,
       color: [...color, 255],
       foodGroup: category,
     });
@@ -271,10 +320,12 @@ const getPathTrips = (
 };
 
 export function useFlowsWithTrips(
-  flowsWithPaths: FlowWithPaths[]
+  flowsWithCurvedPaths: FlowWithPaths[],
+  flowsWithRoadPaths: FlowWithPaths[]
 ): FlowWithTrips[] {
   const params = useControls("trips", {
-    numParticlesMultiplicator: 10,
+    numParticlesCurvedPathsMultiplicator: 10,
+    numParticlesRoadsMultiplicator: 100,
     fromTimestamp: 0,
     toTimeStamp: 100,
     intervalHumanize: 0.5,
@@ -283,15 +334,23 @@ export function useFlowsWithTrips(
     maxParticles: 100,
   });
 
+  const roads = useAtomValue(roadsAtom);
+
   return useMemo(() => {
+    const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths;
     return flowsWithPaths.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p, l, params);
+          return getPathTrips(p, l, {
+            ...params,
+            numParticlesMultiplicator: roads
+              ? params.numParticlesRoadsMultiplicator
+              : params.numParticlesCurvedPathsMultiplicator,
+          });
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [flowsWithPaths, params]);
+  }, [flowsWithCurvedPaths, flowsWithRoadPaths, params, roads]);
 }
