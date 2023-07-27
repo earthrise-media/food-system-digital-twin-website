@@ -35,11 +35,13 @@ export type RawCountyWithFlows = {
 export type RawFlowsInbound = {
   inbound: RawCountyWithFlows[];
   stats: RawFlowStats;
+  rank: number
 };
 
 export type RawFlowsOutbound = {
   outbound: RawCountyWithFlows[];
   stats: RawFlowStats;
+  rank: number
 };
 
 export type RawFlows = RawFlowsInbound & RawFlowsOutbound;

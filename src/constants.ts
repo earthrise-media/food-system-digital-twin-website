@@ -35,3 +35,5 @@ export const CATEGORIES_PROPS: Record<
 };
 
 export const TOP_COUNTIES_NUMBER = 5;
+
+export const NUM_COUNTIES = 3108;

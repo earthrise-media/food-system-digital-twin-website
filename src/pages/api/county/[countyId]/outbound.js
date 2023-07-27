@@ -23,6 +23,42 @@ export default async function handler(req, res) {
     .join("crops", "kcal_flows.crop_id", "=", "crops.id")
     .orderBy("kcal_flows.value", "desc");
 
+  const rank = await db.raw(`
+    SELECT origin_id, total_production, rank
+    FROM (
+        SELECT origin_id, SUM(value) as total_production, 
+              RANK() OVER(ORDER BY SUM(value) DESC) as rank
+        FROM kcal_flows
+        GROUP BY origin_id
+    ) as subquery
+    WHERE origin_id = '${countyId}'
+`);
+
+  const topCrop = await db.raw(`
+    WITH crop_ranks AS (
+      SELECT 
+            crop_id,
+            origin_id, 
+            RANK() OVER(PARTITION BY crop_id ORDER BY SUM(value) DESC) as rank
+        FROM 
+            kcal_flows
+        GROUP BY 
+            crop_id, origin_id
+      )
+    
+    SELECT 
+        crop_ranks.crop_id, crop_ranks.rank, crops.name
+    FROM 
+        crop_ranks
+    INNER JOIN
+        crops ON crop_ranks.crop_id = crops.id
+    WHERE 
+        origin_id = '${countyId}'
+    ORDER BY 
+        rank ASC
+    LIMIT 1;
+  `);
+
   const destinationIds = [...new Set(outbound.map((f) => f.county_id))];
 
   const routes = await getSymmetricRoutes(countyId, destinationIds);
@@ -38,5 +74,7 @@ export default async function handler(req, res) {
       };
     }),
     stats: getStats(outbound),
+    rank: parseInt(rank.rows[0].rank),
+    topCrop: topCrop.rows[0],
   });
 }
