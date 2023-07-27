@@ -58,14 +58,16 @@ export default function Crops({ stats }: { stats: Stats | null }) {
                   <dt>{CATEGORIES_PROPS[category].name}</dt>
                   <dd>
                     {pct}%
-                    <span
-                      className={classNames(styles.variation, {
-                        [styles.negative]: pct - pctAdverse > 1,
-                        [styles.equal]: pct - pctAdverse <= 1,
-                      })}
-                    >
-                      {pctAdverse}%
-                    </span>
+                    {adverseConditions && (
+                      <span
+                        className={classNames(styles.variation, {
+                          [styles.negative]: pct - pctAdverse > 1,
+                          [styles.equal]: pct - pctAdverse <= 1,
+                        })}
+                      >
+                        {pctAdverse}%
+                      </span>
+                    )}
                   </dd>
                 </dl>
                 {foodGroup === category && (
