@@ -8,7 +8,7 @@ import Tabs from "../common/_tabs";
 import { ADVERSE_CONDITIONS_OPTIONS } from "@/constants";
 import { AdverseConditions } from "@/types";
 
-export default function AdverseConditions() {
+export default function StressConditions() {
   const [adverseConditions, setAdverseConditions] = useAtom(
     adverseConditionsAtom
   );
@@ -22,7 +22,7 @@ export default function AdverseConditions() {
 
   return (
     <div
-      className={classNames(styles.card, {
+      className={classNames(styles.card, styles.stressConditions, {
         [styles.active]: adverseConditions !== null,
       })}
     >

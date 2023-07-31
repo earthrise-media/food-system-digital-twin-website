@@ -15,6 +15,28 @@
 }
 
 .card.active > h4 {
+  position: relative;
+  padding-left: 28px;
   color: var(--foreground);
   margin-bottom: 10px;
+}
+
+.card h4::before {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 0;
+  background-repeat: no-repeat;
+}
+
+.stressConditions h4::before {
+  background-image: url("/icons/stress.svg");
+  top: 12px;
+}
+
+.roads h4::before {
+  background-image: url("/icons/road.svg");
+  top: 14px;
 }

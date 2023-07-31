@@ -13,7 +13,7 @@ import Search from "@/components/_search";
 import { countiesAtom, searchAtom } from "@/atoms";
 import { County } from "@/types";
 import Roads from "@/components/sidebar/_roads";
-import AdverseConditions from "@/components/sidebar/_adverseConditions";
+import AdverseConditions from "@/components/sidebar/_stressConditions";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {

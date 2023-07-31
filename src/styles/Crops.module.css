@@ -107,13 +107,35 @@
 }
 
 .variation {
-  margin-left: 8px;
+  margin-left: 24px;
+  position: relative;
+}
+
+.variation::before {
+  content: " ";
+  display: inline-block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
 }
 
 .negative {
   color: var(--value-negative);
 }
 
+.negative::before {
+  background-image: url("/icons/down.svg");
+  left: -15px;
+  top: 2px;
+}
+
 .equal {
   color: var(--value-equal);
+}
+
+.equal::before {
+  background-image: url("/icons/equal.svg");
+  left: -12px;
+  top: 5px;
 }
