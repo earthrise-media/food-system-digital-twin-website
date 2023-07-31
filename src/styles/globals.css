@@ -18,6 +18,7 @@
   --background-50: rgba(var(--background-rgb), 0.5);
   --background-80: rgba(var(--background-rgb), 0.85);
   --background-2: rgb(var(--background-2-rgb));
+  --background-2-50: rgba(var(--background-2-rgb), .5);
   --value-negative: rgb(var(--value-negative-rgb));
   --value-equal: rgb(var(--value-equal-rgb));
 
@@ -103,8 +104,7 @@ ul {
 .mapboxgl-popup-content {
   padding: 0 !important;
   font-size: var(--font-size-body);
-
-  /* pointer-events: none !important; */
+  pointer-events: none !important;
 }
 
 .noTip .mapboxgl-popup-tip {
