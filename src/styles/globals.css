@@ -103,9 +103,15 @@ ul {
 .mapboxgl-popup-content {
   padding: 0 !important;
   font-size: var(--font-size-body);
-  pointer-events: none !important;
+
+  /* pointer-events: none !important; */
 }
 
 .noTip .mapboxgl-popup-tip {
   display: none;
+}
+
+.noBackground .mapboxgl-popup-content {
+  background: none !important;
+  box-shadow: none !important;
 }

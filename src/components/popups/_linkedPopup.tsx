@@ -35,7 +35,7 @@ function LinkedPopup({
     popupOptions: {
       anchor: "center",
     },
-    className: "noTip",
+    className: "noTip noBackground",
     children: (
       <div className={cx(styles.rank, styles.fixed)}>
         {county.properties.rank}
