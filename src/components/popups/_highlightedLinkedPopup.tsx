@@ -1,21 +1,19 @@
 import cx from "classnames";
 import { useMap } from "react-map-gl";
 import { Feature, Geometry } from "geojson";
-import { County } from "@/types";
+import { County, CountyWithRank } from "@/types";
 import styles from "@/styles/Popups.module.css";
 import { usePopup } from "@/hooks/usePopup";
 
-export type LinkedPopupCounty = {
-  rank: number;
-} & County;
-
-function LinkedPopup({
+function HighlightedLinkedPopup({
   county,
 }: {
-  county: Feature<Geometry, LinkedPopupCounty>;
+  county: Feature<Geometry, CountyWithRank>;
 }) {
   const { current: map } = useMap();
   const { name, stusps } = county.properties;
+
+  // County name
   usePopup({
     county,
     popupOptions: {
@@ -26,10 +24,12 @@ function LinkedPopup({
     }),
     children: (
       <div className={cx(styles.popupContent, styles.fixed)}>
-        {name}, {stusps}
+        A lot more data {name}, {stusps}
       </div>
     ),
   });
+
+  // County rank
   usePopup({
     county,
     popupOptions: {
@@ -46,4 +46,4 @@ function LinkedPopup({
   return null;
 }
 
-export default LinkedPopup;
+export default HighlightedLinkedPopup;

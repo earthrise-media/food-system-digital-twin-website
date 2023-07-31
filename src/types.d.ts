@@ -8,6 +8,10 @@ export type County = {
   stusps: string;
 };
 
+export type CountyWithRank = {
+  rank: number;
+} & County;
+
 export type Category = "Vegetables" | "Nuts" | "Grain" | "Fruits" | "Potatoes";
 
 export type RawCountyFlows = {
