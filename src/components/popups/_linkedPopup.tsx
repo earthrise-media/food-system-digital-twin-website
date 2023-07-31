@@ -20,7 +20,7 @@ function LinkedPopup({
       offset: 20,
     },
     className: cx("noTip", {
-      [styles.hidden]: map ? map?.getZoom() < 5 : false,
+      [styles.hidden]: map ? map?.getZoom() < 5.5: false,
     }),
     children: (
       <div className={cx(styles.popupContent, styles.fixed)}>
