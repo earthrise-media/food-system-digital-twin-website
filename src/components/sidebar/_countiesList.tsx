@@ -10,8 +10,14 @@ import { Feature, Geometry } from "geojson";
 import { useAtom, useSetAtom } from "jotai";
 import styles from "@/styles/CountiesList.module.css";
 import { TOP_COUNTIES_NUMBER } from "@/constants";
+import Tabs from "../common/_tabs";
 
-export default function CountiesList() {
+const TAB_OPTIONS = [
+  { label: `Top ${TOP_COUNTIES_NUMBER}`, value: false },
+  { label: "All", value: true },
+];
+
+export default function CountiesList({ title }: { title: string }) {
   const setCounty = useSetAtom(countyAtom);
   const [countyHiglighted, setCountyHighlighted] = useAtom(
     countyHighlightedAtom
@@ -26,6 +32,16 @@ export default function CountiesList() {
   if (!linkedCounties) return null;
   return (
     <>
+      <div className={styles.titleSection}>
+        <h3>{title}</h3>
+        {linkedCounties.length > TOP_COUNTIES_NUMBER && (
+          <Tabs
+            options={TAB_OPTIONS}
+            selectedOption={allLinkedCounties}
+            onChange={(value) => setAllLinkedCounties(value)}
+          />
+        )}
+      </div>
       <ol className={styles.countiesList}>
         {linkedCounties
           .slice(
@@ -50,16 +66,6 @@ export default function CountiesList() {
             </li>
           ))}
       </ol>
-      {linkedCounties.length > TOP_COUNTIES_NUMBER && (
-        <button
-          onClick={() => setAllLinkedCounties(!allLinkedCounties)}
-          className={styles.showAll}
-        >
-          {allLinkedCounties
-            ? `Show top ${TOP_COUNTIES_NUMBER} counties`
-            : `+ ${linkedCounties.length - TOP_COUNTIES_NUMBER} more`}
-        </button>
-      )}
     </>
   );
 }

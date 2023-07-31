@@ -1,9 +1,9 @@
 import styles from "@/styles/Tabs.module.css";
 import classNames from "classnames";
 export interface TabsProps {
-  options: { value: string; label: string }[];
-  selectedOption?: string;
-  onChange: (value: string) => void;
+  options: { value: any; label: string }[];
+  selectedOption?: any;
+  onChange: (value: any) => void;
 }
 
 export default function Tabs({ options, selectedOption, onChange }: TabsProps) {

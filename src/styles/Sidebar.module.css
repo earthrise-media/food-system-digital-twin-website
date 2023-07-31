@@ -50,8 +50,7 @@
 }
 
 .content {
-  background: var(--background-80);
-  /* border-radius: 0 0 var(--border-radius) var(--border-radius); */
+  background: var(--background);
   max-height: 55vh;
   overflow-x: hidden;
   overflow-y: auto;

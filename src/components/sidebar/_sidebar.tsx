@@ -58,10 +58,7 @@ function FlowInfo({}: FlowInfoProps) {
               </div>
             </section>
             <section>
-              <h3>
-                {flowType === "consumer" ? "Sourcing" : "Destination"} counties{" "}
-              </h3>
-              <CountiesList />
+              <CountiesList title={flowType === "consumer" ? "Sourcing counties" : "Destination counties"} />
             </section>
           </div>
         </>
