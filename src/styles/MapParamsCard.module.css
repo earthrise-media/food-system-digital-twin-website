@@ -1,22 +1,21 @@
 .card {
+  background: var(--background);
   margin-top: 16px;
   border: 1px solid var(--foreground-10);
-  padding: 0 10px 16px;
-  background: var(--background);
-  border: 1px solid var(--foreground-10);
+  padding: 0 12px 16px;
   filter: var(--shadow);
 }
 
 .card > h4 {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   color: var(--foreground-50);
+  padding-left: 28px;
 }
 
 .card.active > h4 {
-  position: relative;
-  padding-left: 28px;
   color: var(--foreground);
   margin-bottom: 10px;
 }
@@ -29,6 +28,11 @@
   height: 20px;
   left: 0;
   background-repeat: no-repeat;
+  opacity: 0.7;
+}
+
+.card.active > h4::before {
+  opacity: 1;
 }
 
 .stressConditions h4::before {
