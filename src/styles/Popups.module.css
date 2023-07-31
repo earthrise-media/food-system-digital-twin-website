@@ -30,3 +30,28 @@
 .hidden {
   display: none;
 }
+
+.highlightedLinked {
+  padding: 1rem;
+  display: flex;
+}
+
+.highlightedLinked .rank {
+  margin-right: .5rem;
+}
+
+.highlightedLinked ul {
+  margin-top: .5rem;
+  font-weight: var(--font-weight-normal);
+}
+
+.highlightedLinked li::before {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  content: " ";
+  border-radius: 99px;
+  background: var(--color);
+  margin-right: 5px;
+  margin-bottom: 2px;
+}

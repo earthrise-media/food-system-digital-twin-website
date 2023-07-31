@@ -35,10 +35,10 @@ export function usePopup({
     const popup = new MapboxPopup({
       closeOnClick: false,
       closeButton: false,
+      offset: 20,
       ...popupOptions,
       // className: classNames(styles.popup, kumbhSans.className, "noTip"),
       className: classNames(styles.popup, kumbhSans.className, className),
-      offset: 20,
     })
       .setLngLat(centroid(county).geometry.coordinates as any)
       .setDOMContent(rootElement)

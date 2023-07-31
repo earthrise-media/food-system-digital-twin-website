@@ -1,44 +1,59 @@
 import cx from "classnames";
-import { useMap } from "react-map-gl";
 import { Feature, Geometry } from "geojson";
-import { County, CountyWithRank } from "@/types";
+import { Category, CountyWithRank } from "@/types";
 import styles from "@/styles/Popups.module.css";
 import { usePopup } from "@/hooks/usePopup";
+import { useMemo } from "react";
+import { useLinkedFlows } from "@/hooks/useLinkedCounties";
+import { CATEGORIES_PROPS } from "@/constants";
 
 function HighlightedLinkedPopup({
   county,
 }: {
   county: Feature<Geometry, CountyWithRank>;
 }) {
-  const { current: map } = useMap();
   const { name, stusps } = county.properties;
+  const flows = useLinkedFlows();
 
-  // County name
+  const cropGroupsInLinkedCounty = useMemo(() => {
+    if (!flows) return null;
+    const flowsForCounty = flows.find(
+      (flow) => flow.county_id === county.properties.geoid
+    );
+    if (!flowsForCounty) return null;
+    const cropGroupsIds = flowsForCounty?.flowsByCropGroup.map(
+      (c) => c.crop_category
+    );
+    return cropGroupsIds;
+  }, [flows, county]);
+
   usePopup({
     county,
     popupOptions: {
-      offset: 20,
+      offset: 0,
     },
-    className: cx("noTip", {
-      [styles.hidden]: map ? map?.getZoom() < 5 : false,
-    }),
+    className: "",
     children: (
-      <div className={cx(styles.popupContent, styles.fixed)}>
-        A lot more data {name}, {stusps}
-      </div>
-    ),
-  });
-
-  // County rank
-  usePopup({
-    county,
-    popupOptions: {
-      anchor: "center",
-    },
-    className: "noTip",
-    children: (
-      <div className={cx(styles.rank, styles.fixed)}>
-        {county.properties.rank}
+      <div className={cx(styles.popupContent, styles.fixed, styles.highlightedLinked)}>
+        <div className={styles.rank}>{county.properties.rank}</div>
+        <div>
+          {" "}
+          {name}, {stusps}
+          <ul>
+            {cropGroupsInLinkedCounty?.map((cropGroup) => (
+              <li
+                key={cropGroup}
+                style={
+                  {
+                    "--color": CATEGORIES_PROPS[cropGroup].color,
+                  } as React.CSSProperties
+                }
+              >
+                {cropGroup}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     ),
   });
