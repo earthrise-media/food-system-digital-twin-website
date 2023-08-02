@@ -18,9 +18,13 @@ function FlowInfo({}: FlowInfoProps) {
   const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
   const { data: flowsData, error, isLoading } = useFlowsData();
-  
+
   const [search, setSearch] = useAtom(searchAtom);
-  const { className, style, shouldMount } = useHideable(!search, styles.flowInfo, styles.hidden)
+  const { className, style, shouldMount } = useHideable(
+    !search,
+    styles.flowInfo,
+    styles.hidden
+  );
 
   const stats: Stats | null = useMemo(() => {
     if (!flowsData) return null;
@@ -28,10 +32,7 @@ function FlowInfo({}: FlowInfoProps) {
   }, [flowsData]);
 
   return (
-    <div
-      className={className}
-      style={style}
-    >
+    <div className={className} style={style}>
       <div className={styles.logoWrapper}>
         <Logo />
       </div>
@@ -56,13 +57,23 @@ function FlowInfo({}: FlowInfoProps) {
                 <Summary stats={stats} />
               </div>
 
-              <div className={styles.crops}>
-                <Crops stats={stats} />
-              </div>
+              {!!stats?.total && (
+                <div className={styles.crops}>
+                  <Crops stats={stats} />
+                </div>
+              )}
             </section>
-            <section>
-              <CountiesList title={flowType === "consumer" ? "Sourcing counties" : "Destination counties"} />
-            </section>
+            {!!stats?.total && (
+              <section>
+                <CountiesList
+                  title={
+                    flowType === "consumer"
+                      ? "Sourcing counties"
+                      : "Destination counties"
+                  }
+                />
+              </section>
+            )}
           </div>
         </>
       )}

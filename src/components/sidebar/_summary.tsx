@@ -23,7 +23,7 @@ export default function Stats({ stats }: { stats: Stats | null }) {
             <LineLoader height={24} width={120} />
           ) : (
             <>
-              <b>~{stats?.formattedTotal}</b> million kcal
+              <b>~{stats?.formattedTotal}</b> {stats?.total === 0 ? '' : 'million'} kcal
             </>
           )}
         </dd>
