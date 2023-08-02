@@ -8,7 +8,7 @@
   right: 40px;
   bottom: 40px;
   width: 320px;
-  transition: right var(--transition) ease-in-out;
+  transition: right var(--transition) ease-out;
 }
 
 .mapParamsCardsHidden {

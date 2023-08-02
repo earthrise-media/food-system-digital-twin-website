@@ -41,11 +41,8 @@ export default function useFlows(): Flow[] {
     if (!selectedCounty || !counties || !flowsData) return [];
     const { geoid: selectedId } = selectedCounty.properties;
     const selectedCentroid = centroid(selectedCounty);
-    const flows =
-      flowType === "consumer"
-        ? (flowsData as RawFlowsInbound).inbound
-        : (flowsData as RawFlowsOutbound).outbound;
 
+    const flows = (flowsData as RawFlowsInbound).inbound || (flowsData as RawFlowsOutbound).outbound;
     let selectedLinks: Flow[] = flows
       .slice(0, maxTargetCounties)
       .map(

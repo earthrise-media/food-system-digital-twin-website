@@ -14,8 +14,8 @@ export default function LineLoader(
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ecebeb"
+      backgroundColor="var(--background-2)"
+      foregroundColor="var(--background-2-50)"
     >
       <rect x="0" y="2" rx="3" ry="3" width={width - 2} height={height -2} />
     </ContentLoader>
