@@ -32,18 +32,14 @@ import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
 import { centroid } from "turf";
 import { useFlowsData } from "@/hooks/useAPI";
-import {
-  County,
-  CountyWithRank,
-  RawFlowsInbound,
-  RawFlowsOutbound,
-} from "@/types";
+import { CountyWithRank, RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
 import useMapStyle from "@/hooks/useMapStyle";
 import useLinkedCounties from "@/hooks/useLinkedCounties";
 import { TOP_COUNTIES_NUMBER } from "@/constants";
 import { Feature, Geometry } from "geojson";
 import HighlightedLinkedPopup from "./popups/_highlightedLinkedPopup";
+import { useHideable } from "@/hooks/useHideable";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -86,6 +82,8 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
   const search = useAtomValue(searchAtom);
+  const { className, style } = useHideable(!search, styles.container, styles.hidden)
+
   const flowType = useAtomValue(flowTypeAtom);
 
   const linkedCounties = useLinkedCounties();
@@ -165,7 +163,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     linkedCounties,
     flowsWithTrips,
     Math.floor(viewState.zoom),
-    !search
+    true
   );
 
   const [uiVisible, setUiVisible] = useState(false);
@@ -204,7 +202,10 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   }, [flowsData, isLoading, error, currentCountyId, flowType]);
 
   return (
-    <>
+    <div
+      className={className}
+      style={style}
+    >
       {bannerError && <div className={styles.banner}>{bannerError}</div>}
       <Map
         {...viewState}
@@ -239,7 +240,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         )}
       </Map>
       <Leva oneLineLabels={true} hidden={!uiVisible} />
-    </>
+    </div>
   );
 }
 

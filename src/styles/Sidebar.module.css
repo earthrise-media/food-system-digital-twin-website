@@ -5,6 +5,11 @@
   left: 40px;
   filter: var(--shadow);
   width: 368px;
+  transition: left var(--transition) ease-in-out;
+}
+
+.hidden {
+  left: -368px;
 }
 
 .logoWrapper {

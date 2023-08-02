@@ -42,6 +42,7 @@
     "swagger-ui-react": "^4.18.3",
     "swr": "^2.1.5",
     "topojson-client": "^3.1.0",
+    "transition-hook": "^1.5.2",
     "turf": "^3.0.14",
     "typescript": "5.0.4",
     "yup": "^1.1.1"
