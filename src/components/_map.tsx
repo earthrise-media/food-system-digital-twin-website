@@ -86,7 +86,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
 
   const flowType = useAtomValue(flowTypeAtom);
 
-  const linkedCounties = useLinkedCounties();
+  const { linkedCounties } = useLinkedCounties();
   const allLinkedCounties = useAtomValue(allLinkedCountiesAtom);
 
   const linkedCountiesWithRank = useMemo<

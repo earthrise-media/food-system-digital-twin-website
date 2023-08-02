@@ -6,28 +6,27 @@ import { RawFlows } from "@/types";
 
 
 export function useLinkedFlows() {
-  const { data: flowsData } = useFlowsData();
+  const { data: flowsData, isLoading } = useFlowsData();
   const flowType = useAtomValue(flowTypeAtom);
 
   return useMemo(() => {
-    if (!flowsData) return null;
-    const type = flowType === "consumer" ? "inbound" : "outbound";
-    return (flowsData as RawFlows)[type]
-  }, [flowsData, flowType]);
+    if (!flowsData) return { isLoading, flows: [] };
+    return { isLoading, flows: (flowsData as RawFlows).inbound || (flowsData as RawFlows).outbound };
+  }, [flowsData, isLoading]);
 }
 
 export default function useLinkedCounties() {
   const counties = useAtomValue(countiesAtom);
-  const linkedFlows = useLinkedFlows();
+  const { flows: linkedFlows, isLoading } = useLinkedFlows();
 
   return useMemo(() => {
-    if (!linkedFlows || !counties) return null;
+    if (!counties) return { isLoading, linkedCounties: [] };
     const linkedCountiesIds = linkedFlows.map(
       (c) => c.county_id
     );
     const linkedCounties = counties?.features.filter((c) =>
       linkedCountiesIds.includes(c.properties.geoid)
     );
-    return linkedCounties;
-  }, [linkedFlows, counties]);
+    return { isLoading, linkedCounties };
+  }, [linkedFlows, counties, isLoading]);
 }

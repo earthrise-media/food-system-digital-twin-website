@@ -11,6 +11,7 @@ import { useAtom, useSetAtom } from "jotai";
 import styles from "@/styles/CountiesList.module.css";
 import { TOP_COUNTIES_NUMBER } from "@/constants";
 import Tabs from "../common/_tabs";
+import LineLoader from "../common/_loader";
 
 const TAB_OPTIONS = [
   { label: `Top ${TOP_COUNTIES_NUMBER}`, value: false },
@@ -26,10 +27,8 @@ export default function CountiesList({ title }: { title: string }) {
     allLinkedCountiesAtom
   );
 
-  const linkedCounties = useLinkedCounties();
+  const { linkedCounties, isLoading } = useLinkedCounties();
 
-  // TODO add loading state
-  if (!linkedCounties) return null;
   return (
     <>
       <div className={styles.titleSection}>
@@ -62,7 +61,14 @@ export default function CountiesList({ title }: { title: string }) {
                 setCountyHighlighted(null);
               }}
             >
-              {county.properties.name}, {county.properties.stusps}
+              {isLoading ? (
+                <LineLoader width={130} />
+              ) : (
+                <>
+                  {" "}
+                  {county.properties.name}, {county.properties.stusps}
+                </>
+              )}
             </li>
           ))}
       </ol>

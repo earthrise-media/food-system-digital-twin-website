@@ -41,6 +41,9 @@ function Crop({
     styles.hidden
   );
 
+  const negative = (pct && pctAdverse) ? pct - pctAdverse > 1 : false;
+  const equal = (pct && pctAdverse) ? pct - pctAdverse <= 1 : false;
+
   return (
     <li
       key={category}
@@ -66,8 +69,8 @@ function Crop({
               {adverseConditions && (
                 <span
                   className={classNames(styles.variation, {
-                    [styles.negative]: pct - pctAdverse > 1,
-                    [styles.equal]: pct - pctAdverse <= 1,
+                    [styles.negative]: negative,
+                    [styles.equal]: equal,
                   })}
                 >
                   {pctAdverse}%

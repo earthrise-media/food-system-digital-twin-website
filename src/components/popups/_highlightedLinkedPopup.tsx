@@ -1,6 +1,6 @@
 import cx from "classnames";
 import { Feature, Geometry } from "geojson";
-import { Category, CountyWithRank } from "@/types";
+import { CountyWithRank } from "@/types";
 import styles from "@/styles/Popups.module.css";
 import { usePopup } from "@/hooks/usePopup";
 import { useMemo } from "react";
@@ -13,7 +13,7 @@ function HighlightedLinkedPopup({
   county: Feature<Geometry, CountyWithRank>;
 }) {
   const { name, stusps } = county.properties;
-  const flows = useLinkedFlows();
+  const { flows } = useLinkedFlows();
 
   const cropGroupsInLinkedCounty = useMemo(() => {
     if (!flows) return null;
