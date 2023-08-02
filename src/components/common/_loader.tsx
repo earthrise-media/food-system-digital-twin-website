@@ -15,7 +15,7 @@ export default function LineLoader(
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       backgroundColor="var(--background-2)"
-      foregroundColor="var(--background-2-50)"
+      foregroundColor="var(--background-3)"
     >
       <rect x="0" y="2" rx="3" ry="3" width={width - 2} height={height -2} />
     </ContentLoader>
