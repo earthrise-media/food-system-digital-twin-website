@@ -1,3 +1,11 @@
+.titleSection {
+  display: flex;
+  width: 100%;
+  margin-bottom: 2rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .countiesList {
   list-style: none;
   counter-reset: item;
@@ -6,28 +14,25 @@
 .countiesList li::before {
   counter-increment: item;
   content: counter(item);
-  background: var(--foreground);
-  color: var(--background);
+  background: var(--background-2-50);
+  border: 1px solid var(--background-2);
+  font-weight: var(--font-weight-bold);
   margin-right: 10px;
   border-radius: 100%;
-  min-width: 18px;
-  min-height: 18px;
+  min-width: 20px;
+  min-height: 20px;
   text-align: center;
   display: inline-block;
   font-size: var(--font-size-caption);
+  line-height: 1.5rem;
 }
 
-.countiesList li,
-.showAll {
-  margin-bottom: 14px;
-  text-decoration: underline;
+.countiesList li {
+  margin-bottom: 12px;
   cursor: pointer;
-}
-
-.countiesList li:hover,
-.showAll:hover {
 }
 
 .countiesList li.highlighted {
   font-weight: var(--font-weight-bold);
+  text-decoration: underline;
 }

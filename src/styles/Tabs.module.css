@@ -1,25 +1,29 @@
-.tabBar > button {
-  margin-right: 20px;
+.tabs {
+  display: inline-block;
+  border: 1px solid var(--foreground);
+}
+
+.tabs li {
+  display: inline-block;
+  list-style: none;
+
+}
+
+.tabs li.active {
+  background-color: var(--foreground);
   color: var(--background);
-  padding: 6px 0 6px 32px;
-  font-weight: var(--font-weight-bold);
-  background-repeat: no-repeat;
-  background-size: 26px;
-  opacity: 0.5;
 }
 
-.tabBar > button:hover,
-.tabBar > button.selected {
-  opacity: 1;
+.tabs li.active button {
+  cursor: default;
 }
 
-.tabBar > button.selected {
-  border-bottom: 2px solid var(--background);
+.tabs li:not(.active) {
+  cursor: pointer;
 }
 
-.consumer {
-  background: url("/icons/consumer.svg");
-}
-.producer {
-  background: url("/icons/producer.svg");
+.tabs button {
+  width: 100%;
+  height: 100%;
+  padding: 4px 10px;
 }

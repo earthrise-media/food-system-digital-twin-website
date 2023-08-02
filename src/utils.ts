@@ -19,21 +19,27 @@ export const getStats = (
   byCropGroupRaw: RawCountyFlows[],
   byCropRaw: RawCountyFlows[]
 ) => {
+  const getPct = (v: number) => Math.round(v * 1000) / 10;
   const total = byCropGroupRaw.reduce((acc, curr) => acc + curr.value, 0);
 
   const byCropGroup = Object.fromEntries(
-    byCropGroupRaw.map(({ value, ...rest }) => [
-      rest.crop_category,
-      {
-        value: Math.round((value / total) * 1000) / 10,
-        ...rest,
-      },
-    ])
+    byCropGroupRaw.map(
+      ({ value, value_drought, value_heat_stress, ...rest }) => [
+        rest.crop_category,
+        {
+          pct: getPct(value / total),
+          pct_drought: getPct((value / total) * (value_drought / value)),
+          pct_heat_stress: getPct(
+            (value / total) * (value_heat_stress / value)
+          ),
+        },
+      ]
+    )
   );
 
   const byCropGroupCumulative = CATEGORIES.reduce((acc, curr) => {
     const prev = acc[acc.length - 1];
-    const value = (byCropGroup[curr]?.value || 0) / 100 + (prev ? prev : 0);
+    const value = (byCropGroup[curr]?.pct || 0) / 100 + (prev ? prev : 0);
     return [...acc, value];
   }, [] as number[]);
 

@@ -8,6 +8,10 @@ export type County = {
   stusps: string;
 };
 
+export type CountyWithRank = {
+  rank: number;
+} & County;
+
 export type Category = "Vegetables" | "Nuts" | "Grain" | "Fruits" | "Potatoes";
 
 export type RawCountyFlows = {
@@ -15,6 +19,8 @@ export type RawCountyFlows = {
   crop_name?: string;
   crop_category: Category,
   value: number,
+  value_drought: number,
+  value_heat_stress: number,
 }
   
 export type RawFlowStats = {
@@ -81,3 +87,5 @@ export type FlowWithTrips = FlowWithPaths & {
 };
 
 export type FlowType = "producer" | "consumer";
+
+export type AdverseConditions = 'drought' | 'heatStress'

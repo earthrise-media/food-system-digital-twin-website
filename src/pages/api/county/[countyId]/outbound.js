@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       "kcal_flows.crop_id as crop_id",
       "crops.name as crop_name",
       "crops.category as crop_category",
-      "kcal_flows.value"
+      "kcal_flows.value"  
     )
     .where("kcal_flows.origin_id", countyId)
     .join("counties", "kcal_flows.destination_id", "=", "counties.id")
@@ -27,8 +27,15 @@ export default async function handler(req, res) {
 
   const routes = await getSymmetricRoutes(countyId, destinationIds);
 
+  // TODO replace with real values
+  const outboundWithAdverseConditions = outbound.map((f) => ({
+    ...f,
+    value_drought:  Math.round(f.value * (0.5 + 0.5 * Math.random())),
+    value_heat_stress:  Math.round(f.value * (0.5 + 0.5 * Math.random()))
+  }));
+
   return res.status(200).json({
-    outbound: groupFlowsByCounty(outbound).map((f) => {
+    outbound: groupFlowsByCounty(outboundWithAdverseConditions).map((f) => {
       const route = routes.find((r) => r.origin_id === f.county_id);
       return {
         ...f,
@@ -37,6 +44,6 @@ export default async function handler(req, res) {
         route_direction: route?.direction,
       };
     }),
-    stats: getStats(outbound),
+    stats: getStats(outboundWithAdverseConditions),
   });
 }
