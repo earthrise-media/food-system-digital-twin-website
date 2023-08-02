@@ -38,7 +38,7 @@ export default function useFlows(): Flow[] {
   });
 
   return useMemo(() => {
-    if (!selectedCounty || !counties || !flowsData) return [];
+    if (!selectedCounty || !counties || !flowsData || isLoading) return [];
     const { geoid: selectedId } = selectedCounty.properties;
     const selectedCentroid = centroid(selectedCounty);
 
@@ -105,7 +105,7 @@ export default function useFlows(): Flow[] {
       );
 
     return selectedLinks;
-  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties]);
+  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties, isLoading]);
 }
 
 const getCurvedPaths = (

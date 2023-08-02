@@ -41,7 +41,7 @@ export default function useLayers(
   );
   const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
-  const roads = useAtomValue(roadsAtom)
+  const roads = useAtomValue(roadsAtom);
 
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
@@ -116,7 +116,7 @@ export default function useLayers(
         pickable: true,
       }),
     ];
-    if (selectedCounty && showAnimatedLayers) {
+    if (selectedCounty) {
       layers = [
         ...layers,
         new GeoJsonLayer({
@@ -128,6 +128,11 @@ export default function useLayers(
           lineWidthMinPixels: 1,
           lineWidthMaxPixels: 3,
         }),
+      ];
+    }
+    if (selectedCounty && showAnimatedLayers) {
+      layers = [
+        ...layers,
         new GeoJsonLayer({
           id: "counties-targets",
           data: targetCounties || [],
