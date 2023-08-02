@@ -1,3 +1,7 @@
+.logoWrapper {
+  position: relative;
+}
+
 .logo {
   display: block;
   font-size: var(--font-size-logo);
