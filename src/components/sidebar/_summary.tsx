@@ -1,31 +1,31 @@
-import styles from "@/styles/Summary.module.css";
 import { useMemo } from "react";
+
+import styles from "@/styles/Summary.module.css";
 import { Stats } from "@/utils";
 import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 import { useAtomValue } from "jotai";
 import { flowTypeAtom } from "@/atoms";
+import LineLoader from "../common/_loader";
 
-export default function Stats({ stats }: { stats: Stats | null } ) {
+export default function Stats({ stats }: { stats: Stats | null }) {
   const CropsTotalPanel = () => {
-    if (!stats || isLoading)
-      return (
-        <dt>Calories {flowType === "consumer" ? "consumed" : "produced"}:</dt>
-      );
-  
-    if (stats.total === 0) {
-      return (
-        <dt>
-          No crops were {flowType === "consumer" ? "consumed" : "produced"} by
-          this county.
-        </dt>
-      );
-    }
-  
+    const dt =
+      stats?.total === 0
+        ? `No crops were ${flowType === "consumer" ? "consumed" : "produced"} by
+    this county.`
+        : `Calories ${flowType === "consumer" ? "consumed" : "produced"}:`;
+
     return (
       <>
-        <dt>Calories {flowType === "consumer" ? "consumed" : "produced"}:</dt>
+        <dt>{isLoading ? <LineLoader /> : dt}</dt>
         <dd>
-          <b>~{stats?.formattedTotal}</b> million kcal
+          {isLoading ? (
+            <LineLoader height={24} width={120} />
+          ) : (
+            <>
+              <b>~{stats?.formattedTotal}</b> million kcal
+            </>
+          )}
         </dd>
       </>
     );
@@ -52,13 +52,18 @@ export default function Stats({ stats }: { stats: Stats | null } ) {
     };
   }, [countyData]);
 
-
   return (
     <div className={styles.summary}>
       <dl>
         <dt>Population:</dt>
         <dd>
-          <b>{totalPopulation?.pop}</b> {totalPopulation?.unit}
+          {isCountyLoading ? (
+            <LineLoader height={24} width={80} />
+          ) : (
+            <>
+              <b>{totalPopulation?.pop}</b> {totalPopulation?.unit}
+            </>
+          )}
         </dd>
       </dl>
       <dl>
