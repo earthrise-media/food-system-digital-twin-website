@@ -10,9 +10,8 @@ export default function useMapStyle(
   flows: Flow[] = []
 ): Style {
   const roads = useAtomValue(roadsAtom);
-  const search = useAtomValue(searchAtom);
 
-  if (!roads || !!search) return initialMapStyle;
+  if (!roads) return initialMapStyle;
 
   const routes = flows
     .filter((flow) => flow.routeGeometry)

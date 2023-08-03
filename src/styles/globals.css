@@ -8,6 +8,7 @@
   /* --background-rgb: 246, 243, 238; */
   --background-rgb: 255, 255, 255;
   --background-2-rgb: 239, 233, 223;
+  --background-3-rgb: 246, 243, 238;
   --value-negative-rgb: 235, 48, 87;
   --value-equal-rgb: 99, 176, 65;
 
@@ -18,7 +19,7 @@
   --background-50: rgba(var(--background-rgb), 0.5);
   --background-80: rgba(var(--background-rgb), 0.85);
   --background-2: rgb(var(--background-2-rgb));
-  --background-2-50: rgba(var(--background-2-rgb), .5);
+  --background-3: rgb(var(--background-3-rgb));
   --value-negative: rgb(var(--value-negative-rgb));
   --value-equal: rgb(var(--value-equal-rgb));
 
@@ -36,7 +37,8 @@
   --z-popup-selected: 3;
   --z-popup-highlighted: 4;
   --z-flow-info: 5;
-  --z-search: 5;
+  --z-search: 6;
+  --z-loader: 7;
 
   --shadow: drop-shadow(0px 0px 10px rgba(41, 41, 41, 0.1));
 }

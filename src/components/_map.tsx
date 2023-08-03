@@ -32,18 +32,14 @@ import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
 import { centroid } from "turf";
 import { useFlowsData } from "@/hooks/useAPI";
-import {
-  County,
-  CountyWithRank,
-  RawFlowsInbound,
-  RawFlowsOutbound,
-} from "@/types";
+import { CountyWithRank, RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
 import useMapStyle from "@/hooks/useMapStyle";
 import useLinkedCounties from "@/hooks/useLinkedCounties";
 import { TOP_COUNTIES_NUMBER } from "@/constants";
 import { Feature, Geometry } from "geojson";
 import HighlightedLinkedPopup from "./popups/_highlightedLinkedPopup";
+import { useHideable } from "@/hooks/useHideable";
 
 const INITIAL_VIEW_STATE = {
   longitude: -98,
@@ -86,9 +82,15 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
   const search = useAtomValue(searchAtom);
+  const { className, style } = useHideable(
+    !search,
+    styles.container,
+    styles.hidden
+  );
+
   const flowType = useAtomValue(flowTypeAtom);
 
-  const linkedCounties = useLinkedCounties();
+  const { linkedCounties } = useLinkedCounties();
   const allLinkedCounties = useAtomValue(allLinkedCountiesAtom);
 
   const linkedCountiesWithRank = useMemo<
@@ -159,13 +161,13 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     return highlightedCounty;
   }, [highlightedCounty, linkedCountiesSliced, linkedHighlightedCounty]);
 
-  const [viewState, setViewState] = React.useState(INITIAL_VIEW_STATE);
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
   const layers = useLayers(
     linkedCounties,
     flowsWithTrips,
     Math.floor(viewState.zoom),
-    !search
+    !isLoading
   );
 
   const [uiVisible, setUiVisible] = useState(false);
@@ -204,7 +206,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   }, [flowsData, isLoading, error, currentCountyId, flowType]);
 
   return (
-    <>
+    <div className={className} style={style}>
       {bannerError && <div className={styles.banner}>{bannerError}</div>}
       <Map
         {...viewState}
@@ -221,16 +223,24 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
           <>
             {/* Fixed selected county */}
             {selectedCounty && <MainPopup county={selectedCounty} />}
-            {/* Highlighted county that is a linked county */}
-            {linkedHighlightedCounty && (
-              <HighlightedLinkedPopup county={linkedHighlightedCounty} />
+            {!isLoading && (
+              <>
+                {/* Highlighted county that is a linked county */}
+                {linkedHighlightedCounty && (
+                  <HighlightedLinkedPopup county={linkedHighlightedCounty} />
+                )}
+                {/* Linked counties (top or all depending on selection) */}
+                {linkedCountiesWithoutHighlightedLinked.map((county) => {
+                  return (
+                    <LinkedPopup
+                      key={county.properties.geoid}
+                      county={county}
+                    />
+                  );
+                })}
+              </>
             )}
-            {/* Linked counties (top or all depending on selection) */}
-            {linkedCountiesWithoutHighlightedLinked.map((county) => {
-              return (
-                <LinkedPopup key={county.properties.geoid} county={county} />
-              );
-            })}
+
             {/* Counties highlighted on mouse hover */}
             {simpleHighlightedCounty && (
               <HighlightPopup county={simpleHighlightedCounty} />
@@ -239,7 +249,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         )}
       </Map>
       <Leva oneLineLabels={true} hidden={!uiVisible} />
-    </>
+    </div>
   );
 }
 

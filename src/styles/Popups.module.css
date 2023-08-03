@@ -18,13 +18,13 @@
 }
 
 .rank {
-  width: 20px;
-  height: 20px;
-  background: var(--background-2-50);
+  width: 24px;
+  height: 24px;
+  background: var(--background-3);
   border: 1px solid var(--background-2);
   border-radius: 100%;
   text-align: center;
-  line-height: 1.5rem;
+  line-height: 1.8rem;
 }
 
 .hidden {

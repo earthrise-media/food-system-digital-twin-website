@@ -1,22 +1,25 @@
 import { useAtomValue } from "jotai";
 import useSWR from "swr";
-import { fetcher} from "@/utils";
+import { fetcher } from "@/utils";
 import { flowTypeAtom, selectedCountyAtom } from "@/atoms";
 import { RawFlowsInbound, RawFlowsOutbound } from "@/types";
 
 export function useFlowsData() {
-  const selectedCounty = useAtomValue(selectedCountyAtom)
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
-  const direction = flowType === 'consumer' ? 'inbound' : 'outbound';
+  const direction = flowType === "consumer" ? "inbound" : "outbound";
   return useSWR<RawFlowsInbound | RawFlowsOutbound>(
     `/api/county/${selectedCounty?.properties.geoid}/${direction}`,
-    fetcher
+    fetcher,
+    {
+      keepPreviousData: true,
+    }
   );
 }
 
 export function useCountyData() {
-  const selectedCounty = useAtomValue(selectedCountyAtom)
-  return useSWR<{ properties: Record<string, any>}>(
+  const selectedCounty = useAtomValue(selectedCountyAtom);
+  return useSWR<{ properties: Record<string, any> }>(
     `/api/county/${selectedCounty?.properties.geoid}`,
     fetcher
   );

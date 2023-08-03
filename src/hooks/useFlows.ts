@@ -38,14 +38,11 @@ export default function useFlows(): Flow[] {
   });
 
   return useMemo(() => {
-    if (!selectedCounty || !counties || !flowsData) return [];
+    if (!selectedCounty || !counties || !flowsData || isLoading) return [];
     const { geoid: selectedId } = selectedCounty.properties;
     const selectedCentroid = centroid(selectedCounty);
-    const flows =
-      flowType === "consumer"
-        ? (flowsData as RawFlowsInbound).inbound
-        : (flowsData as RawFlowsOutbound).outbound;
 
+    const flows = (flowsData as RawFlowsInbound).inbound || (flowsData as RawFlowsOutbound).outbound;
     let selectedLinks: Flow[] = flows
       .slice(0, maxTargetCounties)
       .map(
@@ -108,7 +105,7 @@ export default function useFlows(): Flow[] {
       );
 
     return selectedLinks;
-  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties]);
+  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties, isLoading]);
 }
 
 const getCurvedPaths = (

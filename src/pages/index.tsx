@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import cx from "classnames";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FeatureCollection, Geometry } from "geojson";
 import { Style } from "mapbox-gl";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -14,6 +14,10 @@ import { countiesAtom, searchAtom } from "@/atoms";
 import { County } from "@/types";
 import Roads from "@/components/sidebar/_roads";
 import AdverseConditions from "@/components/sidebar/_stressConditions";
+import { useHideable } from "@/hooks/useHideable";
+import { useCountyData, useFlowsData } from "@/hooks/useAPI";
+import Logo from "@/components/_logo";
+import Loader from "@/components/_loader";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
@@ -36,6 +40,13 @@ export default function Home({
     setCounties(counties as FeatureCollection<Geometry, County>);
   }, [setCounties, counties]);
 
+  const { shouldMount: shouldSearchMount } = useHideable(search);
+  const {
+    shouldMount: shouldMapParamsMount,
+    className,
+    style,
+  } = useHideable(!search, styles.mapParamsCards, styles.mapParamsCardsHidden);
+
   return (
     <>
       <Head>
@@ -44,14 +55,18 @@ export default function Home({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className={cx(styles.main, kumbhSans.className)}>
+        <Loader />
         <DeckMap initialMapStyle={mapStyle} />
         <Sidebar />
-        <div className={styles.mapParamsCards}>
-          <Roads />
-          <AdverseConditions />
-        </div>
-        {search && <Search />}
+        {shouldMapParamsMount && (
+          <div className={className} style={style}>
+            <Roads />
+            <AdverseConditions />
+          </div>
+        )}
+        {shouldSearchMount && <Search />}
       </main>
     </>
   );

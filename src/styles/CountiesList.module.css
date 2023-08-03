@@ -14,7 +14,7 @@
 .countiesList li::before {
   counter-increment: item;
   content: counter(item);
-  background: var(--background-2-50);
+  background: var(--background-3);
   border: 1px solid var(--background-2);
   font-weight: var(--font-weight-bold);
   margin-right: 10px;
