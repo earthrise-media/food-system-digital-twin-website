@@ -11,7 +11,7 @@ export default function Stats({ stats }: { stats: Stats | null }) {
   const CropsTotalPanel = () => {
     const dt =
       stats?.total === 0
-        ? `No crops were ${flowType === "consumer" ? "consumed" : "produced"} by
+        ? `No crops were ${flowType === "consumer" ? "consumed" : "produced"} in
     this county.`
         : `Calories ${flowType === "consumer" ? "consumed" : "produced"}:`;
 
@@ -23,7 +23,14 @@ export default function Stats({ stats }: { stats: Stats | null }) {
             <LineLoader height={24} width={120} />
           ) : (
             <>
-              <b>~{stats?.formattedTotal}</b> {stats?.total === 0 ? '' : 'million'} kcal
+              {stats?.total === 0 ? (
+                ""
+              ) : (
+                <>
+                  <b>~{stats?.formattedTotal}</b>{" "}
+                  {stats?.total === 0 ? "" : "million"} kcal
+                </>
+              )}
             </>
           )}
         </dd>
