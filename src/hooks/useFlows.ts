@@ -196,8 +196,8 @@ const getCurvedPaths = (
 
 export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
-    linesPerLinkMultiplicator: 3,
-    maxLinesPerLink: 30,
+    linesPerLinkMultiplicator: 2,
+    maxLinesPerLink: 10,
     minWaypointsPer1000km: 4,
     maxWaypointsPer1000km: 8,
     minDeviationDegrees: 0,
@@ -339,12 +339,12 @@ export function useFlowsWithTrips(
   flowsWithRoadPaths: FlowWithPaths[]
 ): FlowWithTrips[] {
   const params = useControls("trips", {
-    numParticlesCurvedPathsMultiplicator: 10,
+    numParticlesCurvedPathsMultiplicator: 8,
     numParticlesRoadsMultiplicator: 100,
     fromTimestamp: 0,
     toTimeStamp: 100,
     intervalHumanize: 0.5,
-    speedKps: 100,
+    speedKps: 80,
     speedKpsHumanize: 0.5,
     maxParticles: 100,
   });

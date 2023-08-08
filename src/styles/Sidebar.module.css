@@ -1,8 +1,8 @@
 .flowInfo {
   position: absolute;
   z-index: var(--z-flow-info);
-  top: 10px;
-  left: 40px;
+  top: 25px;
+  left: 20px;
   filter: var(--shadow);
   width: 368px;
   transition: left var(--transition) ease-out;
@@ -10,10 +10,6 @@
 
 .hidden {
   left: -368px;
-}
-
-.logoWrapper {
-  transform: scale(0.5) translateX(-50%);
 }
 
 .flowInfo > nav {
@@ -56,7 +52,7 @@
 
 .content {
   background: var(--background);
-  max-height: 55vh;
+  max-height: calc(100vh - 230px);
   overflow-x: hidden;
   overflow-y: auto;
 }

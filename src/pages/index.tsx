@@ -43,7 +43,7 @@ export default function Home({
   const { shouldMount: shouldSearchMount } = useHideable(search);
   const {
     shouldMount: shouldMapParamsMount,
-    className,
+    className: mapParamsClassName,
     style,
   } = useHideable(!search, styles.mapParamsCards, styles.mapParamsCardsHidden);
 
@@ -59,9 +59,13 @@ export default function Home({
       <main className={cx(styles.main, kumbhSans.className)}>
         <Loader />
         <DeckMap initialMapStyle={mapStyle} />
+        <div className={styles.logoWrapper}>
+          <Logo />
+        </div>
+
         <Sidebar />
         {shouldMapParamsMount && (
-          <div className={className} style={style}>
+          <div className={mapParamsClassName} style={style}>
             <Roads />
             <AdverseConditions />
           </div>

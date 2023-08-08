@@ -33,10 +33,6 @@ function FlowInfo({}: FlowInfoProps) {
 
   return (
     <div className={className} style={style}>
-      <div className={styles.logoWrapper}>
-        <Logo />
-      </div>
-
       {shouldMount && (
         <>
           <nav>
