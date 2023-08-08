@@ -1948,19 +1948,6 @@
             }
         },
         {
-            "id": "admin-2-boundary",
-            "type": "line",
-            "source": "composite",
-            "source-layer": "admin",
-            "filter": [
-                "all",
-                ["==", ["get", "admin_level"], 2],
-                ["==", ["get", "maritime"], "false"],
-                ["match", ["get", "worldview"], ["all", "US"], true, false]
-            ],
-            "paint": {"line-dasharray": [10, 0], "line-color": "#eae3d7"}
-        },
-        {
             "id": "admin-1-boundary",
             "type": "line",
             "source": "composite",

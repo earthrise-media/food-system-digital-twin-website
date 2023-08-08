@@ -104,7 +104,7 @@ export default function useLayers(
         id: "counties",
         data: counties as any,
         getFillColor: [0, 0, 0, 0],
-        getLineColor: [0, 0, 0, 0],
+        getLineColor: [0, 0, 0, 10],
         lineWidthMinPixels: 1,
         lineWidthMaxPixels: 5,
         onClick: ({ object }) => {
