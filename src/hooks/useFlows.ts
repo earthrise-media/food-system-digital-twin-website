@@ -15,9 +15,10 @@ import {
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
+import { CATEGORIES, CATEGORIES_PROPS, TOP_COUNTIES_NUMBER } from "@/constants";
 import { getDistances, getStats, hexToRgb } from "@/utils";
 import {
+  allLinkedCountiesAtom,
   countiesAtom,
   flowTypeAtom,
   roadsAtom,
@@ -26,42 +27,42 @@ import {
 import { useControls } from "leva";
 import { useFlowsData } from "./useAPI";
 import { along } from "turf";
+import { useLinkedFlows } from "./useLinkedCounties";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
+  const allLinkedCounties = useAtomValue(allLinkedCountiesAtom);
 
-  const { data: flowsData, error, isLoading } = useFlowsData();
+  const { flows, isLoading } = useLinkedFlows();
 
   const { maxTargetCounties } = useControls("filtering", {
     maxTargetCounties: 100,
   });
 
   return useMemo(() => {
-    if (!selectedCounty || !counties || !flowsData || isLoading) return [];
+    if (!selectedCounty || !counties || !flows || isLoading) return [];
     const { geoid: selectedId } = selectedCounty.properties;
     const selectedCentroid = centroid(selectedCounty);
 
-    const flows =
-      (flowsData as RawFlowsInbound).inbound ||
-      (flowsData as RawFlowsOutbound).outbound;
     let selectedLinks: Flow[] = flows
-      .slice(0, maxTargetCounties)
+      .slice(
+        0,
+        Math.min(
+          maxTargetCounties,
+          allLinkedCounties ? Number.POSITIVE_INFINITY : TOP_COUNTIES_NUMBER
+        )
+      )
       .map(
         ({
           county_id,
           county_centroid,
           route_geometry,
           route_direction,
-          flowsByCrop,
-          flowsByCropGroup,
-        }: RawCountyWithFlows) => {
-          const { total, byCropGroupCumulative } = getStats(
-            flowsByCropGroup,
-            flowsByCrop
-          );
-
+          total,
+          byCropGroupCumulative,
+        }) => {
           // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
           // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
           // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
@@ -112,11 +113,12 @@ export default function useFlows(): Flow[] {
     return selectedLinks;
   }, [
     counties,
-    flowsData,
+    flows,
     selectedCounty,
     flowType,
     maxTargetCounties,
     isLoading,
+    allLinkedCounties,
   ]);
 }
 
