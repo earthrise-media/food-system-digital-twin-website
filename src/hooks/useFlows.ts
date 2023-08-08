@@ -25,6 +25,7 @@ import {
 } from "@/atoms";
 import { useControls } from "leva";
 import { useFlowsData } from "./useAPI";
+import { along } from "turf";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
@@ -42,7 +43,9 @@ export default function useFlows(): Flow[] {
     const { geoid: selectedId } = selectedCounty.properties;
     const selectedCentroid = centroid(selectedCounty);
 
-    const flows = (flowsData as RawFlowsInbound).inbound || (flowsData as RawFlowsOutbound).outbound;
+    const flows =
+      (flowsData as RawFlowsInbound).inbound ||
+      (flowsData as RawFlowsOutbound).outbound;
     let selectedLinks: Flow[] = flows
       .slice(0, maxTargetCounties)
       .map(
@@ -87,8 +90,10 @@ export default function useFlows(): Flow[] {
               } as LineString)
             : undefined;
 
-          // Works in consumer, probably the opposite in producer
-          if (route_direction === "backward") {
+          if (
+            (flowType === "consumer" && route_direction === "backward") ||
+            (flowType === "producer" && route_direction === "forward")
+          ) {
             routeGeometry?.coordinates.reverse();
           }
 
@@ -105,7 +110,14 @@ export default function useFlows(): Flow[] {
       );
 
     return selectedLinks;
-  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties, isLoading]);
+  }, [
+    counties,
+    flowsData,
+    selectedCounty,
+    flowType,
+    maxTargetCounties,
+    isLoading,
+  ]);
 }
 
 const getCurvedPaths = (
@@ -202,18 +214,24 @@ export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
 }
 
 const getSelfPath = (link: Flow): Path[] => {
-  const circleFeature = circle(point(link.source), 30, 20, "kilometers")
+  const RADIUS = 10;
+  const lineAlong = lineString([
+    link.source,
+    [link.source[0] + 10, link.source[1] - 10],
+  ]);
+  const center = along(lineAlong, RADIUS, "kilometers");
+  // const center = lineOffset(point(link.source), RADIUS / 2, { units: "kilometers" })
+  const circleFeature = circle(center, RADIUS, 20, "kilometers");
   const circleCoords = circleFeature.geometry.coordinates[0];
-  const { distances, totalDistance } = getDistances(
-    circleCoords
-  );
-  return [{
-    coordinates: circleCoords,
-    distances,
-    totalDistance,
-  }]
-}
-
+  const { distances, totalDistance } = getDistances(circleCoords);
+  return [
+    {
+      coordinates: circleCoords,
+      distances,
+      totalDistance,
+    },
+  ];
+};
 
 const getRoadPaths = (link: Flow): Path[] => {
   const { distances, totalDistance } = getDistances(

@@ -28,7 +28,7 @@ export default function Loader() {
     <div className={className} style={style}>
       <div className={styles.logoWrapper}>
         <Logo />
-        <div className={styles.loaderText}>Loading...</div>
+        <div className={styles.loaderText}>loading...</div>
       </div>
     </div>
   );
