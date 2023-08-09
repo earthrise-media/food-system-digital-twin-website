@@ -69,6 +69,7 @@ type MapWrapperProps = {
 
 function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+  console.log(viewState)
 
   const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();

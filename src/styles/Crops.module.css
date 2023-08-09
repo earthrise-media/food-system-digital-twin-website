@@ -1,15 +1,15 @@
 .crops > li {
   margin-bottom: 30px;
-  height: auto;
+  max-height: 30px;
   cursor: pointer;
   transition-duration: var(--transition);
   transition-property: ease-out;
-  transition-property: margin-bottom, height, opacity;
+  transition-property: margin-bottom, max-height, opacity;
 }
 
 .crops > li.hidden {
   margin-bottom: 0;
-  height: 0;
+  max-height: 0;
   opacity: 0;
 }
 

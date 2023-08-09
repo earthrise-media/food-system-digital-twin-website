@@ -60,17 +60,21 @@ export default function Home({
         <main className={cx(styles.main, kumbhSans.className)}>
           <Loader />
           <DeckMap initialMapStyle={mapStyle} />
-          <div className={styles.logoWrapper}>
-            <Logo />
-          </div>
-
-          <Sidebar />
-          {shouldMapParamsMount && (
-            <div className={mapParamsClassName} style={style}>
-              <Roads />
-              <AdverseConditions />
+          {!search && (
+            <div className={styles.logoWrapper}>
+              <Logo />
             </div>
           )}
+
+          <Sidebar />
+          <div className={mapParamsClassName} style={style}>
+            {shouldMapParamsMount && (
+              <>
+                <Roads />
+                <AdverseConditions />
+              </>
+            )}
+          </div>
           {shouldSearchMount && <Search />}
         </main>
       </MapProvider>
