@@ -132,19 +132,11 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     return linkedHighlightedCounty;
   }, [highlightedCounty, linkedCountiesWithRank]);
 
-  // Linked counties excluding linkedHighlightedCounty (if any) and excluding selected ---> Number + name depending on zoom
+  // Linked counties but only when no linkedHighlightedCounty is selected (Number + name depending on zoom)
   const linkedCountiesWithoutHighlightedLinked = useMemo(() => {
-    if (!linkedCountiesSliced) return [];
-    const linkedCountiesWithoutHighlightedLinked = linkedCountiesSliced.filter(
-      (county) =>
-        (!linkedHighlightedCounty ||
-          county.properties.geoid !==
-            linkedHighlightedCounty.properties.geoid) &&
-        (!selectedCounty ||
-          county.properties.geoid !== selectedCounty.properties.geoid)
-    );
-    return linkedCountiesWithoutHighlightedLinked;
-  }, [linkedCountiesSliced, linkedHighlightedCounty, selectedCounty]);
+    if (!linkedCountiesSliced || linkedHighlightedCounty) return [];
+    return linkedCountiesSliced
+  }, [linkedCountiesSliced, linkedHighlightedCounty]);
 
   // Highlighted county excluding linked counties --> Simple hover popup
   const simpleHighlightedCounty = useMemo(() => {

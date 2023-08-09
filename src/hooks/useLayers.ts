@@ -79,7 +79,7 @@ export default function useLayers(
     );
   }, [flows]);
 
-  const targetCountyHiglighted = useMemo(() => {
+  const targetCountyHighlighted = useMemo(() => {
     if (!countyHiglighted) return null;
     const targetCountiesIds = (targetCounties || []).map(
       (c) => c.properties.geoid
@@ -160,30 +160,30 @@ export default function useLayers(
           getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
           getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
           getColor: (d) => {
-            if (!targetCountyHiglighted && !foodGroup) return d.color;
+            if (!targetCountyHighlighted && !foodGroup) return d.color;
             const isSelectedCounty =
               flowType === "consumer"
-                ? targetCountyHiglighted === d.sourceId
-                : targetCountyHiglighted === d.targetId;
+                ? targetCountyHighlighted === d.sourceId
+                : targetCountyHighlighted === d.targetId;
 
             const isSelectedFoodGroup = d.foodGroup === foodGroup;
 
             if (
-              targetCountyHiglighted &&
+              targetCountyHighlighted &&
               isSelectedCounty &&
               (!foodGroup || isSelectedFoodGroup)
             ) {
               return d.color;
             }
 
-            if (!targetCountyHiglighted && foodGroup && isSelectedFoodGroup) {
+            if (!targetCountyHighlighted && foodGroup && isSelectedFoodGroup) {
               return d.color;
             }
 
-            return [...d.color.slice(0, 3), 55];
+            return [0,0,0,0];
           },
           updateTriggers: {
-            getColor: [targetCountyHiglighted, foodGroup],
+            getColor: [targetCountyHighlighted, foodGroup],
           },
           widthMinPixels: 2.5,
           getWidth: (d) => {
@@ -227,7 +227,7 @@ export default function useLayers(
     setCounty,
     setCountyHighlighted,
     setFoodGroup,
-    targetCountyHiglighted,
+    targetCountyHighlighted,
     highlightedCounty,
     linesColor,
     showAnimatedLayers,
