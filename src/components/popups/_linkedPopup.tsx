@@ -15,8 +15,11 @@ function LinkedPopup({
   const { current: map } = useMap();
   const { name, stusps } = county.properties;
 
-  const zoomThreshold = numPopups > 10 ? 7 : 5.5;
-  const showLabel = map ? map?.getZoom() > zoomThreshold : false;
+  const zoomLabelThreshold = numPopups > 10 ? 7 : 5.5;
+  const showLabel = map ? map?.getZoom() > zoomLabelThreshold : false;
+
+  const zoomRankThreshold = numPopups > 10 ? 4.5 : 3.5;
+  const hideRank = map ? map?.getZoom() < zoomRankThreshold : false;
 
   // With county name
   usePopup({
@@ -44,7 +47,7 @@ function LinkedPopup({
       offset: 0,
     },
     className: cx("noTip noBackground", styles.linked, {
-      [styles.hidden]: showLabel,
+      [styles.hidden]: showLabel || hideRank,
     }),
     children: (
       <div className={cx(styles.rankWrapper, styles.rank, styles.fixed)}>
