@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import styles from "@/styles/Summary.module.css";
 import { Stats } from "@/utils";
@@ -8,36 +8,6 @@ import { flowTypeAtom } from "@/atoms";
 import LineLoader from "../common/_loader";
 
 export default function Stats({ stats }: { stats: Stats | null }) {
-  const CropsTotalPanel = () => {
-    const dt =
-      stats?.total === 0
-        ? `No crops were ${flowType === "consumer" ? "consumed" : "produced"} in
-    this county.`
-        : `Calories ${flowType === "consumer" ? "consumed" : "produced"}:`;
-
-    return (
-      <>
-        <dt>{isLoading ? <LineLoader /> : dt}</dt>
-        <dd>
-          {isLoading ? (
-            <LineLoader height={24} width={120} />
-          ) : (
-            <>
-              {stats?.total === 0 ? (
-                ""
-              ) : (
-                <>
-                  <b>~{stats?.formattedTotal}</b>{" "}
-                  {stats?.total === 0 ? "" : "million"} kcal
-                </>
-              )}
-            </>
-          )}
-        </dd>
-      </>
-    );
-  };
-
   const flowType = useAtomValue(flowTypeAtom);
   const { data: flowsData, error, isLoading } = useFlowsData();
   const { data: countyData, isLoading: isCountyLoading } = useCountyData();
@@ -59,23 +29,77 @@ export default function Stats({ stats }: { stats: Stats | null }) {
     };
   }, [countyData]);
 
+  const calPerCapita = useMemo(() => {
+    if (!countyData || !stats) return null;
+    const pop = countyData.properties.total_population;
+    const perCapita = stats?.total / pop;
+    const perCapitaFormatted = new Intl.NumberFormat("en-US", {
+      maximumSignificantDigits: 3,
+    }).format(perCapita);
+    return perCapitaFormatted;
+  }, [countyData, stats]);
+
+  const [displayPerCapita, setDisplayPerCapita] = useState(true);
+
+  const dt =
+    stats?.total === 0
+      ? `No crops were ${flowType === "consumer" ? "consumed" : "produced"} in
+this county.`
+      : `Calories ${flowType === "consumer" ? "consumed" : "produced"}:`;
+
   return (
     <div className={styles.summary}>
       <dl>
-        <dt>Population:</dt>
+        <dt>{isLoading ? <LineLoader /> : dt}</dt>
         <dd>
-          {isCountyLoading ? (
-            <LineLoader height={24} width={80} />
+          {isLoading ? (
+            <LineLoader height={24} width={120} />
           ) : (
             <>
-              <b>{totalPopulation?.pop}</b> {totalPopulation?.unit}
+              {stats?.total === 0 ? (
+                ""
+              ) : (
+                <><b>
+                  ~{stats?.formattedTotal.value}
+                  {stats?.formattedTotal.unit}
+                </b> Cal</>
+              )}
             </>
           )}
         </dd>
       </dl>
-      <dl>
-        <CropsTotalPanel />
-      </dl>
+
+      {flowType === "consumer" && (
+        <dl
+          className={styles.toggleDisplay}
+          onClick={() => setDisplayPerCapita(!displayPerCapita)}
+        >
+          {displayPerCapita ? (
+            <>
+              <dt>Calories per capita:</dt>
+              <dd>
+                <b>~{calPerCapita}</b> Cal
+              </dd>
+            </>
+          ) : (
+            <>
+              <dt>Population:</dt>
+              <dd>
+                <b>{totalPopulation?.pop}</b> {totalPopulation?.unit}
+              </dd>
+            </>
+          )}
+        </dl>
+      )}
+
+      {flowType === "producer" && (
+        <dl>
+          <dt>Agriculture sector in GDP</dt>
+          <dd>
+            <b>{countyData?.properties.agriculture_sector_gdp || '?'} %</b>
+          </dd>
+        </dl>
+      )}
     </div>
   );
 }

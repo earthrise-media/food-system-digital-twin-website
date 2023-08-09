@@ -63,11 +63,16 @@ export const getStats = (
     })
   );
 
+  const unit = total < 1000000000 ? "M" : "B";
+
   return {
     total,
-    formattedTotal: new Intl.NumberFormat("en-US", {
-      maximumSignificantDigits: 3,
-    }).format(total / 1000000),
+    formattedTotal: {
+      unit,
+      value: new Intl.NumberFormat("en-US", {
+        maximumSignificantDigits: 3,
+      }).format(total / (unit === "M" ? 1000000 : 1000000000)),
+    },
     byCropGroup,
     byCropGroupCumulative,
     byCrop,
@@ -94,8 +99,8 @@ export const getDistances = (coordinates: Position[]) => {
     distances,
     totalDistance,
   };
-}
+};
 
 export const toDecimalPlaces = (value: number, decimalPlaces: number = 3) => {
   return Math.round(value * 10 ** decimalPlaces) / 10 ** decimalPlaces;
-}
+};
