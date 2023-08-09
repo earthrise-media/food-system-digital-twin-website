@@ -19,6 +19,7 @@ export default function Loader() {
     !initiallyLoaded,
     styles.loader,
     styles.loaderHidden,
+    undefined,
     1000
   );
 
