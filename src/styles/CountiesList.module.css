@@ -36,3 +36,14 @@
   font-weight: var(--font-weight-bold);
   text-decoration: underline;
 }
+
+.center {
+  color: var(--dark);
+  opacity: .5;
+  background-image: url("/icons/center.svg");
+  background-repeat: no-repeat;
+  background-position: 0 2px;
+  padding-left: 16px;
+  margin-left: 10px;
+  font-weight: normal;
+}

@@ -11,6 +11,7 @@
   --background-3-rgb: 246, 243, 238;
   --value-negative-rgb: 235, 48, 87;
   --value-equal-rgb: 99, 176, 65;
+  --dark-rgb: 41, 41, 41;
 
   --foreground: rgb(var(--foreground-rgb));
   --foreground-50: rgba(var(--foreground-rgb), 0.5);
@@ -22,6 +23,7 @@
   --background-3: rgb(var(--background-3-rgb));
   --value-negative: rgb(var(--value-negative-rgb));
   --value-equal: rgb(var(--value-equal-rgb));
+  --dark: rgb(var(--dark-rgb));
 
   --font-weight-normal: 400;
   --font-weight-bold: 600;

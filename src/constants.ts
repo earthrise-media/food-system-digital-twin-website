@@ -1,5 +1,7 @@
 import { AdverseConditions, Category } from "./types";
 
+export const SIDEBAR_WIDTH = 368;
+
 export const CATEGORIES: Category[] = [
   "Grain",
   "Nuts",

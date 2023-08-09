@@ -4,16 +4,15 @@
   top: 25px;
   left: 20px;
   filter: var(--shadow);
-  width: 368px;
+  width: var(--width);
   transition: left var(--transition) ease-out;
 }
 
 .hidden {
-  left: -368px;
+  left: calc(0px - var(--width));
 }
 
 .flowInfo > nav {
-  /* border-radius: var(--border-radius) var(--border-radius) 0 0; */
   background: var(--foreground);
   color: var(--background);
   padding: var(--padding);

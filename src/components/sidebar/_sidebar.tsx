@@ -11,6 +11,7 @@ import Crops from "./_crops";
 import CountiesList from "./_countiesList";
 import FlowTypeTabs from "./_flowTypeTabs";
 import { useHideable } from "@/hooks/useHideable";
+import { SIDEBAR_WIDTH } from "@/constants";
 
 type FlowInfoProps = {};
 
@@ -32,7 +33,12 @@ function FlowInfo({}: FlowInfoProps) {
   }, [flowsData]);
 
   return (
-    <div className={className} style={style}>
+    <div
+      className={className}
+      style={
+        { ...style, "--width": `${SIDEBAR_WIDTH}px` } as React.CSSProperties
+      }
+    >
       {shouldMount && (
         <>
           <nav>

@@ -36,7 +36,7 @@ import { CountyWithRank, RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
 import useMapStyle from "@/hooks/useMapStyle";
 import useLinkedCounties from "@/hooks/useLinkedCounties";
-import { TOP_COUNTIES_NUMBER } from "@/constants";
+import { SIDEBAR_WIDTH, TOP_COUNTIES_NUMBER } from "@/constants";
 import { Feature, Geometry } from "geojson";
 import HighlightedLinkedPopup from "./popups/_highlightedLinkedPopup";
 import { useHideable } from "@/hooks/useHideable";
@@ -176,7 +176,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     if (!selectedCounty) return;
     mapRef.current?.flyTo({
       center: centroid(selectedCounty).geometry.coordinates as any,
-      padding: { left: 200, top: 0, right: 0, bottom: 0 },
+      padding: { left: SIDEBAR_WIDTH, top: 0, right: 0, bottom: 0 },
     });
   }, [selectedCounty]);
 
@@ -205,6 +205,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
       {bannerError && <div className={styles.banner}>{bannerError}</div>}
       <Map
         {...viewState}
+        id="map"
         onMove={(evt) => setViewState(evt.viewState)}
         ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
