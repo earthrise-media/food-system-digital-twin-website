@@ -13,6 +13,10 @@
   opacity: 0;
 }
 
+.crops > li.detailOpen {
+  max-height: 400px;
+}
+
 .crops dl {
   display: flex;
   justify-content: space-between;
