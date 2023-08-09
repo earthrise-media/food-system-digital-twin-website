@@ -15,6 +15,7 @@ import { useMemo } from "react";
 import { CATEGORIES, CATEGORIES_PROPS, TOP_COUNTIES_NUMBER } from "@/constants";
 import { getDistances, getStats, hexToRgb } from "@/utils";
 import {
+  adverseConditionsAtom,
   allLinkedCountiesAtom,
   countiesAtom,
   flowTypeAtom,
@@ -274,8 +275,8 @@ const getPathTrips = (
     maxParticles
   );
 
-  const speedZoomMultiplier = ((3 - zoomMultiplier) + 2) / 3
-  const baseSpeedKps = speedKps * speedZoomMultiplier
+  const speedZoomMultiplier = (3 - zoomMultiplier + 2) / 3;
+  const baseSpeedKps = speedKps * speedZoomMultiplier;
 
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
@@ -343,7 +344,8 @@ export function useFlowsWithTrips(
 ): FlowWithTrips[] {
   const params = useControls("trips", {
     numParticlesCurvedPathsMultiplicator: 8,
-    numParticlesRoadsMultiplicator: 100,
+    numParticlesRoadsMultiplicator: 20,
+    numParticlesStressMultiplicator: 0.5,
     fromTimestamp: 0,
     toTimeStamp: 100,
     intervalHumanize: 1,
@@ -353,22 +355,38 @@ export function useFlowsWithTrips(
   });
 
   const roads = useAtomValue(roadsAtom);
+  const adverseConditions = useAtomValue(adverseConditionsAtom);
 
   return useMemo(() => {
     const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths;
+    const numParticlesMultiplicator =
+      (roads
+        ? params.numParticlesRoadsMultiplicator
+        : params.numParticlesCurvedPathsMultiplicator) *
+      (adverseConditions ? params.numParticlesStressMultiplicator : 1);
     return flowsWithPaths.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p, l, {
-            ...params,
-            numParticlesMultiplicator: roads
-              ? params.numParticlesRoadsMultiplicator
-              : params.numParticlesCurvedPathsMultiplicator,
-          }, zoomMultiplier);
+          return getPathTrips(
+            p,
+            l,
+            {
+              ...params,
+              numParticlesMultiplicator,
+            },
+            zoomMultiplier
+          );
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [flowsWithCurvedPaths, flowsWithRoadPaths, params, roads, zoomMultiplier]);
+  }, [
+    flowsWithCurvedPaths,
+    flowsWithRoadPaths,
+    params,
+    roads,
+    zoomMultiplier,
+    adverseConditions,
+  ]);
 }
