@@ -68,6 +68,8 @@ type MapWrapperProps = {
 };
 
 function MapWrapper({ initialMapStyle }: MapWrapperProps) {
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+
   const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
 
@@ -76,7 +78,8 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const flowsWithRoadPaths = useFlowsWithRoadPaths(selectedFlows);
   const flowsWithTrips = useFlowsWithTrips(
     flowsWithCurvedPaths,
-    flowsWithRoadPaths
+    flowsWithRoadPaths,
+    Math.floor(viewState.zoom / 2)
   );
   const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
@@ -153,7 +156,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     return highlightedCounty;
   }, [highlightedCounty, linkedCountiesSliced, linkedHighlightedCounty]);
 
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+
 
   const layers = useLayers(
     linkedCounties,

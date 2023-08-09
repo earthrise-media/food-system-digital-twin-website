@@ -7,9 +7,6 @@ import {
   FlowWithPaths,
   FlowWithTrips,
   Path,
-  RawCountyWithFlows,
-  RawFlowsInbound,
-  RawFlowsOutbound,
   Trip,
   Waypoint,
 } from "@/types";
@@ -25,7 +22,6 @@ import {
   selectedCountyAtom,
 } from "@/atoms";
 import { useControls } from "leva";
-import { useFlowsData } from "./useAPI";
 import { along } from "turf";
 import { useLinkedFlows } from "./useLinkedCounties";
 
@@ -270,12 +266,16 @@ const getPathTrips = (
     speedKps = 100, // Speed in km per second
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
     maxParticles = 500,
-  } = {}
+  } = {},
+  zoomMultiplier: number
 ): Trip[] => {
   const numParticles = Math.min(
     flow.value * numParticlesMultiplicator,
     maxParticles
   );
+
+  const speedZoomMultiplier = ((3 - zoomMultiplier) + 2) / 3
+  const baseSpeedKps = speedKps * speedZoomMultiplier
 
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
@@ -285,8 +285,8 @@ const getPathTrips = (
 
   for (let i = 0; i < numParticles; i++) {
     const humanizeSpeedKps =
-      (Math.random() - 0.5) * 2 * speedKps * speedKpsHumanize;
-    const humanizedSpeedKps = speedKps + humanizeSpeedKps;
+      (Math.random() - 0.5) * 2 * baseSpeedKps * speedKpsHumanize;
+    const humanizedSpeedKps = baseSpeedKps + humanizeSpeedKps;
 
     const baseDuration = path.totalDistance / humanizedSpeedKps;
 
@@ -338,16 +338,17 @@ const getPathTrips = (
 
 export function useFlowsWithTrips(
   flowsWithCurvedPaths: FlowWithPaths[],
-  flowsWithRoadPaths: FlowWithPaths[]
+  flowsWithRoadPaths: FlowWithPaths[],
+  zoomMultiplier: number
 ): FlowWithTrips[] {
   const params = useControls("trips", {
     numParticlesCurvedPathsMultiplicator: 8,
     numParticlesRoadsMultiplicator: 100,
     fromTimestamp: 0,
     toTimeStamp: 100,
-    intervalHumanize: 0.5,
-    speedKps: 80,
-    speedKpsHumanize: 0.5,
+    intervalHumanize: 1,
+    speedKps: 100,
+    speedKpsHumanize: 0.2,
     maxParticles: 100,
   });
 
@@ -363,11 +364,11 @@ export function useFlowsWithTrips(
             numParticlesMultiplicator: roads
               ? params.numParticlesRoadsMultiplicator
               : params.numParticlesCurvedPathsMultiplicator,
-          });
+          }, zoomMultiplier);
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [flowsWithCurvedPaths, flowsWithRoadPaths, params, roads]);
+  }, [flowsWithCurvedPaths, flowsWithRoadPaths, params, roads, zoomMultiplier]);
 }

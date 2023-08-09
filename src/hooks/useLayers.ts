@@ -7,6 +7,7 @@ import { County, FlowWithTrips } from "@/types";
 import { featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
 import {
+  adverseConditionsAtom,
   countiesAtom,
   countyAtom,
   countyHighlightedAtom,
@@ -17,7 +18,6 @@ import {
   selectedCountyAtom,
 } from "@/atoms";
 import { useControls } from "leva";
-import { MAX_ZOOM, MIN_ZOOM } from "@/components/_map";
 
 const BASE_LINE_LAYERS_OPTIONS = {
   stroked: true,
@@ -45,11 +45,15 @@ export default function useLayers(
 
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
+
+  const adverseConditions = useAtomValue(adverseConditionsAtom);
+  
   const { linesColor, baseAnimationSpeed } = useControls("layers", {
     linesColor: { r: 0, b: 0, g: 0, a: 0.05 },
-    baseAnimationSpeed: 3,
+    baseAnimationSpeed: 1,
   });
-
+  const baseAnimationSpeedMultiplier = adverseConditions ? 1 : 2;
+  
   const linksAsGeoJSON = useMemo(() => {
     if (!flows.length) return null;
     const features = flows
@@ -93,10 +97,12 @@ export default function useLayers(
   const loopLength = 100;
 
   const currentFrame = useMemo(() => {
-    const animationSpeed = (1 + MAX_ZOOM - zoom) / (1 + MAX_ZOOM - MIN_ZOOM);
-    const speed = animationSpeed * baseAnimationSpeed;
+    const animationSpeed = baseAnimationSpeedMultiplier * baseAnimationSpeed;
+    // const animationSpeedZoom = (1 + MAX_ZOOM - zoom) / (1 + MAX_ZOOM - MIN_ZOOM);
+    const animationSpeedZoom = 1;
+    const speed = animationSpeed * animationSpeedZoom;
     return (currentTime * speed) % loopLength;
-  }, [currentTime, baseAnimationSpeed, zoom]);
+  }, [currentTime, baseAnimationSpeed, baseAnimationSpeedMultiplier, zoom]);
 
   const layers = useMemo(() => {
     let layers: (GeoJsonLayer | TripsLayer)[] = [
