@@ -10,6 +10,7 @@
 
 .popupContent {
   padding: 4px 8px;
+  box-shadow: var(--map-box-shadow);
 }
 
 .fixed {
@@ -17,14 +18,19 @@
   font-weight: var(--font-weight-bold);
 }
 
+.rankWrapper {
+  box-shadow: var(--map-box-shadow);
+}
+
 .rank {
   width: 24px;
   height: 24px;
-  background: var(--background-3);
+  background: var(--background);
   border: 1px solid var(--background-2);
   border-radius: 100%;
   text-align: center;
   line-height: 1.8rem;
+  display: inline-block;
 }
 
 .hidden {
@@ -54,4 +60,8 @@
   background: var(--color);
   margin-right: 5px;
   margin-bottom: 2px;
+}
+
+.label {
+  margin-left: 4PX;
 }

@@ -115,10 +115,9 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     Feature<Geometry, CountyWithRank>[]
   >(() => {
     if (!linkedCountiesWithRank) return [];
-    const topCounties = linkedCountiesWithRank.slice(
-      0,
-      allLinkedCounties ? Number.MAX_VALUE : TOP_COUNTIES_NUMBER
-    );
+    const topCounties = linkedCountiesWithRank
+      .slice(0, allLinkedCounties ? Number.MAX_VALUE : TOP_COUNTIES_NUMBER)
+      .reverse();
     return topCounties;
   }, [linkedCountiesWithRank, allLinkedCounties]);
 
@@ -138,7 +137,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   // Linked counties but only when no linkedHighlightedCounty is selected (Number + name depending on zoom)
   const linkedCountiesWithoutHighlightedLinked = useMemo(() => {
     if (!linkedCountiesSliced || linkedHighlightedCounty) return [];
-    return linkedCountiesSliced
+    return linkedCountiesSliced;
   }, [linkedCountiesSliced, linkedHighlightedCounty]);
 
   // Highlighted county excluding linked counties --> Simple hover popup
@@ -155,8 +154,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
       return;
     return highlightedCounty;
   }, [highlightedCounty, linkedCountiesSliced, linkedHighlightedCounty]);
-
-
 
   const layers = useLayers(
     linkedCounties,
@@ -217,8 +214,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         {!search && (
           <>
-            {/* Fixed selected county */}
-            {selectedCounty && <MainPopup county={selectedCounty} />}
             {!isLoading && (
               <>
                 {/* Highlighted county that is a linked county */}
@@ -231,11 +226,15 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
                     <LinkedPopup
                       key={county.properties.geoid}
                       county={county}
+                      numPopups={linkedCountiesWithoutHighlightedLinked.length}
                     />
                   );
                 })}
               </>
             )}
+
+            {/* Fixed selected county */}
+            {selectedCounty && <MainPopup county={selectedCounty} />}
 
             {/* Counties highlighted on mouse hover */}
             {simpleHighlightedCounty && (
