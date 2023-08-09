@@ -8,7 +8,7 @@ import React, {
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, MapRef, useControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import SelectedPopup from "./popups/_selectedPopup";
 import HighlightPopup from "./popups/_highlightPopup";
 import LinkedPopup from "./popups/_linkedPopup";
@@ -27,6 +27,7 @@ import {
   highlightedCountyAtom,
   searchAtom,
   selectedCountyAtom,
+  viewportAtom,
 } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
@@ -36,18 +37,11 @@ import { CountyWithRank, RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
 import useMapStyle from "@/hooks/useMapStyle";
 import useLinkedCounties from "@/hooks/useLinkedCounties";
-import { SIDEBAR_WIDTH, TOP_COUNTIES_NUMBER } from "@/constants";
+import { INITIAL_VIEW_STATE, SIDEBAR_WIDTH, TOP_COUNTIES_NUMBER } from "@/constants";
 import { Feature, Geometry } from "geojson";
 import HighlightedLinkedPopup from "./popups/_highlightedLinkedPopup";
 import { useHideable } from "@/hooks/useHideable";
 
-const INITIAL_VIEW_STATE = {
-  longitude: -98,
-  latitude: 37,
-  zoom: 4,
-  pitch: 30,
-  bearing: 0,
-};
 
 const MAX_BOUNDS = [
   [-160, 0],
@@ -69,7 +63,7 @@ type MapWrapperProps = {
 
 function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-  console.log(viewState)
+  const [viewport, setViewport] = useAtom(viewportAtom)
 
   const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
@@ -205,9 +199,11 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     <div className={className} style={style}>
       {bannerError && <div className={styles.banner}>{bannerError}</div>}
       <Map
-        {...viewState}
+        {...viewport}
+        pitch={INITIAL_VIEW_STATE.pitch}
+        bearing={INITIAL_VIEW_STATE.bearing}
         id="map"
-        onMove={(evt) => setViewState(evt.viewState)}
+        onMove={(evt) =>  { setViewState(evt.viewState); setViewport(evt.viewState)}}
         ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}

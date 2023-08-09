@@ -95,3 +95,7 @@ export const getDistances = (coordinates: Position[]) => {
     totalDistance,
   };
 }
+
+export const toDecimalPlaces = (value: number, decimalPlaces: number = 3) => {
+  return Math.round(value * 10 ** decimalPlaces) / 10 ** decimalPlaces;
+}

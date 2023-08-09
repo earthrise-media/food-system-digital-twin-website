@@ -45,3 +45,12 @@ export const ADVERSE_CONDITIONS_OPTIONS: {
   { value: "drought", label: "Drought" },
   { value: "heatStress", label: "Heat stress" },
 ];
+
+export const INITIAL_VIEW_STATE = {
+  longitude: -98,
+  latitude: 37,
+  zoom: 4,
+  pitch: 30,
+  bearing: 0,
+};
+
