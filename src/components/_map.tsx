@@ -9,7 +9,7 @@ import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import { Map, MapRef, useControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useAtomValue } from "jotai";
-import MainPopup from "./popups/_mainPopup";
+import SelectedPopup from "./popups/_selectedPopup";
 import HighlightPopup from "./popups/_highlightPopup";
 import LinkedPopup from "./popups/_linkedPopup";
 import styles from "@/styles/Map.module.css";
@@ -115,9 +115,10 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     Feature<Geometry, CountyWithRank>[]
   >(() => {
     if (!linkedCountiesWithRank) return [];
-    const topCounties = linkedCountiesWithRank
-      .slice(0, allLinkedCounties ? Number.MAX_VALUE : TOP_COUNTIES_NUMBER)
-      .reverse();
+    const topCounties = linkedCountiesWithRank.slice(
+      0,
+      allLinkedCounties ? Number.MAX_VALUE : TOP_COUNTIES_NUMBER
+    ).reverse();
     return topCounties;
   }, [linkedCountiesWithRank, allLinkedCounties]);
 
@@ -137,7 +138,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   // Linked counties but only when no linkedHighlightedCounty is selected (Number + name depending on zoom)
   const linkedCountiesWithoutHighlightedLinked = useMemo(() => {
     if (!linkedCountiesSliced || linkedHighlightedCounty) return [];
-    return linkedCountiesSliced;
+    return linkedCountiesSliced
   }, [linkedCountiesSliced, linkedHighlightedCounty]);
 
   // Highlighted county excluding linked counties --> Simple hover popup
@@ -154,6 +155,8 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
       return;
     return highlightedCounty;
   }, [highlightedCounty, linkedCountiesSliced, linkedHighlightedCounty]);
+
+
 
   const layers = useLayers(
     linkedCounties,
@@ -214,6 +217,9 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         {!search && (
           <>
+            {/* Fixed selected county */}
+            {selectedCounty && <SelectedPopup county={selectedCounty} />}
+
             {!isLoading && (
               <>
                 {/* Highlighted county that is a linked county */}
@@ -232,9 +238,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
                 })}
               </>
             )}
-
-            {/* Fixed selected county */}
-            {selectedCounty && <MainPopup county={selectedCounty} />}
 
             {/* Counties highlighted on mouse hover */}
             {simpleHighlightedCounty && (

@@ -7,10 +7,10 @@ import { usePopup } from "@/hooks/usePopup";
 
 function LinkedPopup({
   county,
-  numPopups
+  numPopups,
 }: {
-  county: Feature<Geometry, CountyWithRank>,
-  numPopups: number
+  county: Feature<Geometry, CountyWithRank>;
+  numPopups: number;
 }) {
   const { current: map } = useMap();
   const { name, stusps } = county.properties;
@@ -22,9 +22,9 @@ function LinkedPopup({
   usePopup({
     county,
     popupOptions: {
-      offset: 20,
+      offset: 0,
     },
-    className: cx("noTip", {
+    className: cx("noTip", styles.linked, {
       [styles.hidden]: !showLabel,
     }),
     children: (
@@ -41,14 +41,14 @@ function LinkedPopup({
   usePopup({
     county,
     popupOptions: {
-      offset: 20,
+      offset: 0,
     },
-    className: cx("noTip noBackground", {
+    className: cx("noTip noBackground", styles.linked, {
       [styles.hidden]: showLabel,
     }),
     children: (
       <div className={cx(styles.rankWrapper, styles.rank, styles.fixed)}>
-       {county.properties.rank}
+        {county.properties.rank}
       </div>
     ),
   });

@@ -32,7 +32,7 @@ function HighlightedLinkedPopup({
     popupOptions: {
       offset: 0,
     },
-    className: "",
+    className: styles.highlightedLinked,
     children: (
       <div className={cx(styles.popupContent, styles.fixed, styles.highlightedLinked)}>
         <div className={styles.rank}>{county.properties.rank}</div>

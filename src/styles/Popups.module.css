@@ -1,8 +1,3 @@
-.popup {
-  border-radius: 2px;
-  pointer-events: none;
-}
-
 .mainPopup {
   background: var(--foreground);
   color: var(--background);
@@ -64,4 +59,20 @@
 
 .label {
   margin-left: 4PX;
+}
+
+.linked {
+  z-index: var(--z-popup-linked);
+}
+
+.selected {
+  z-index: var(--z-popup-selected);
+}
+
+.highlightedLinked {
+  z-index: var(--z-popup-highlightedLinked);
+}
+
+.highlighted {
+  z-index: var(--z-popup-highlighted);
 }
