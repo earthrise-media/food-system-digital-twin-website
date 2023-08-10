@@ -50,7 +50,7 @@ this county.`
   return (
     <div className={styles.summary}>
       <dl>
-        <dt>{isLoading ? <LineLoader /> : dt}</dt>
+        <dt>{dt}</dt>
         <dd>
           {isLoading ? (
             <LineLoader height={24} width={120} />
@@ -59,10 +59,13 @@ this county.`
               {stats?.total === 0 ? (
                 ""
               ) : (
-                <><b>
-                  ~{stats?.formattedTotal.value}
-                  {stats?.formattedTotal.unit}
-                </b> Cal</>
+                <>
+                  <b>
+                    ~{stats?.formattedTotal.value}
+                    {stats?.formattedTotal.unit}
+                  </b>{" "}
+                  Cal
+                </>
               )}
             </>
           )}
@@ -78,7 +81,13 @@ this county.`
             <>
               <dt>Calories per capita:</dt>
               <dd>
-                <b>~{calPerCapita}</b> Cal
+                {isLoading || isCountyLoading ? (
+                  <LineLoader height={24} width={120} />
+                ) : (
+                  <>
+                    <b>~{calPerCapita}</b> Cal
+                  </>
+                )}
               </dd>
             </>
           ) : (
@@ -96,7 +105,7 @@ this county.`
         <dl>
           <dt>Agriculture sector in GDP</dt>
           <dd>
-            <b>{countyData?.properties.agriculture_sector_gdp || '?'} %</b>
+            <b>{countyData?.properties.agriculture_sector_gdp || "?"} %</b>
           </dd>
         </dl>
       )}

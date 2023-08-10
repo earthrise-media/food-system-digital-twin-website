@@ -344,7 +344,7 @@ export function useFlowsWithTrips(
 ): FlowWithTrips[] {
   const params = useControls("trips", {
     numParticlesCurvedPathsMultiplicator: 8,
-    numParticlesRoadsMultiplicator: 20,
+    numParticlesRoadsMultiplicator: 50,
     numParticlesStressMultiplicator: 0.5,
     fromTimestamp: 0,
     toTimeStamp: 100,
