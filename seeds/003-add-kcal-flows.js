@@ -68,7 +68,7 @@ exports.seed = async function (knex) {
     // Extract id from filename
     const crop_name = file
       .replace("kcal_produced_", "")
-      .replace("_results_df.csv", "");
+      .replace("_impacted_results_df.csv", "");
 
     const { id: crop_id } = await knex("crops")
       .where("name", crop_name)
@@ -93,8 +93,14 @@ exports.seed = async function (knex) {
       await knex.batchInsert(
         "kcal_flows",
         rows
-          .map((row) => {
-            const [origin_id, destination_id, value] = row.split(",");
+          .map((line) => {
+            if (line === "") return;
+
+            const row = line.split(",");
+
+            const origin_id = row[0].padStart(5, "0");
+            const destination_id = row[1].padStart(5, "0");
+            const value = row[2];
 
             if (!origin_id || !destination_id || !value) {
               console.log("Skipping row", row);
@@ -106,9 +112,13 @@ exports.seed = async function (knex) {
               destination_id,
               crop_id,
               value,
+              impact_ratios: {
+                heat: parseFloat(row[3]),
+                drought: parseFloat(row[5]),
+              },
             };
           })
-          .filter((row) => row.origin_id !== "Dade"),
+          .filter((row) => row.origin_id !== "0Dade"), // Discard rows with invalid origin_id
         500
       );
     } catch (error) {
