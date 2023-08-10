@@ -1,16 +1,20 @@
 .crops > li {
   margin-bottom: 30px;
-  height: auto;
+  max-height: 30px;
   cursor: pointer;
   transition-duration: var(--transition);
   transition-property: ease-out;
-  transition-property: margin-bottom, height, opacity;
+  transition-property: margin-bottom, max-height, opacity;
 }
 
 .crops > li.hidden {
   margin-bottom: 0;
-  height: 0;
+  max-height: 0;
   opacity: 0;
+}
+
+.crops > li.detailOpen {
+  max-height: 400px;
 }
 
 .crops dl {
@@ -28,9 +32,8 @@
 .crops > li > dl > dt::before,
 .crops > li > dl > dd::before,
 .crops > li > dl > dd::after {
-  height: 5px;
+  height: 6px;
   content: " ";
-  border-radius: 99px;
 }
 
 .crops > li > dl::before,
@@ -52,9 +55,11 @@
 .crops > li > dl > dt::before {
   display: inline-block;
   width: 5px;
+  height: 5px;
   background: var(--color);
   margin-right: 5px;
   margin-bottom: 2px;
+  border-radius: 99px;
 }
 
 /* Background bar color - adverse conditions */
@@ -67,9 +72,9 @@
   background: repeating-linear-gradient(
     -45deg,
     var(--color),
-    var(--color) 2px,
-    transparent 2px,
-    transparent 4px
+    var(--color) 1px,
+    transparent 1px,
+    transparent 3px
   );
   transition: width 0.5s ease;
 }

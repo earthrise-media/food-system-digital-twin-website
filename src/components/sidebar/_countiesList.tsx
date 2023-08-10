@@ -9,9 +9,12 @@ import { County } from "@/types";
 import { Feature, Geometry } from "geojson";
 import { useAtom, useSetAtom } from "jotai";
 import styles from "@/styles/CountiesList.module.css";
-import { TOP_COUNTIES_NUMBER } from "@/constants";
+import { SIDEBAR_WIDTH, TOP_COUNTIES_NUMBER } from "@/constants";
 import Tabs from "../common/_tabs";
 import LineLoader from "../common/_loader";
+import { useCallback } from "react";
+import { useMap } from "react-map-gl";
+import { centroid } from "turf";
 
 const TAB_OPTIONS = [
   { label: `Top ${TOP_COUNTIES_NUMBER}`, value: false },
@@ -28,6 +31,17 @@ export default function CountiesList({ title }: { title: string }) {
   );
 
   const { linkedCounties, isLoading } = useLinkedCounties();
+
+  const { map } = useMap();
+  const centerMap = useCallback(
+    (county: Feature) => {
+      map?.flyTo({
+        center: centroid(county).geometry.coordinates as any,
+        padding: { left: SIDEBAR_WIDTH, top: 0, right: 0, bottom: 0 },
+      });
+    },
+    [map]
+  );
 
   return (
     <>
@@ -67,6 +81,17 @@ export default function CountiesList({ title }: { title: string }) {
                 <>
                   {" "}
                   {county.properties.name}, {county.properties.stusps}
+                  {countyHiglighted === county.properties.geoid && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        centerMap(county);
+                      }}
+                      className={styles.center}
+                    >
+                      Center on map
+                    </button>
+                  )}
                 </>
               )}
             </li>

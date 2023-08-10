@@ -11,7 +11,7 @@ function HighlightPopup({ county }: { county: Feature<Geometry, County> }) {
     popupOptions: {
       offset: 2,
     },
-    className: "",
+    className: styles.highlighted,
     children: (
       <div className={classNames(styles.popupContent)}>
         {name}, {stusps}
