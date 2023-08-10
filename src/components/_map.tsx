@@ -154,9 +154,8 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
 
 
   const layers = useLayers(
-    linkedCounties,
+    linkedCountiesSliced,
     flowsWithTrips,
-    Math.floor(viewState.zoom),
     !isLoading
   );
 

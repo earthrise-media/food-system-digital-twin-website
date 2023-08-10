@@ -1,12 +1,22 @@
 .tabs {
   display: inline-block;
-  border: 1px solid var(--foreground);
+  /* border: 1px solid var(--foreground); */
 }
 
 .tabs li {
   display: inline-block;
   list-style: none;
+  border: 1px solid var(--foreground); 
+}
 
+.tabs li:first-child {
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+.tabs li:last-child {
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
 
 .tabs li.active {
@@ -26,4 +36,5 @@
   width: 100%;
   height: 100%;
   padding: 4px 10px;
+
 }

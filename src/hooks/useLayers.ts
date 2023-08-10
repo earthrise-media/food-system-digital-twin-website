@@ -31,7 +31,6 @@ const BASE_LINE_LAYERS_OPTIONS = {
 export default function useLayers(
   targetCounties: Feature<Geometry, County>[] | null,
   flows: FlowWithTrips[],
-  zoom: number,
   showAnimatedLayers = true
 ) {
   const setCounty = useSetAtom(countyAtom);
@@ -98,11 +97,10 @@ export default function useLayers(
 
   const currentFrame = useMemo(() => {
     const animationSpeed = baseAnimationSpeedMultiplier * baseAnimationSpeed;
-    // const animationSpeedZoom = (1 + MAX_ZOOM - zoom) / (1 + MAX_ZOOM - MIN_ZOOM);
     const animationSpeedZoom = 1;
     const speed = animationSpeed * animationSpeedZoom;
     return (currentTime * speed) % loopLength;
-  }, [currentTime, baseAnimationSpeed, baseAnimationSpeedMultiplier, zoom]);
+  }, [currentTime, baseAnimationSpeed, baseAnimationSpeedMultiplier]);
 
   const layers = useMemo(() => {
     let layers: (GeoJsonLayer | TripsLayer)[] = [
@@ -130,7 +128,7 @@ export default function useLayers(
           data: [selectedCounty],
           ...BASE_LINE_LAYERS_OPTIONS,
           getFillColor: [0, 0, 0, 0],
-          getLineColor: [0, 0, 0, 255],
+          getLineColor: [0, 0, 0, 128],
           lineWidthMinPixels: 1,
           lineWidthMaxPixels: 3,
         }),
@@ -144,7 +142,7 @@ export default function useLayers(
           data: targetCounties || [],
           ...BASE_LINE_LAYERS_OPTIONS,
           getFillColor: [0, 0, 0, 0],
-          getLineColor: [0, 0, 0, 150],
+          getLineColor: [0, 0, 0, 128],
           lineWidthMinPixels: 1,
           lineWidthMaxPixels: 2,
           getLineWidth: 0.01,
