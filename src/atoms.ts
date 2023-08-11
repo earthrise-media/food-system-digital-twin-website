@@ -7,6 +7,7 @@ import {
   Category,
   AdverseConditions,
   MapViewport,
+  MapViewportProp,
 } from "./types";
 import { INITIAL_VIEW_STATE } from "./constants";
 import { deserialize } from "v8";
@@ -33,17 +34,29 @@ export const viewportAtom = atomWithHash<MapViewport>(
   "viewport",
   INITIAL_VIEW_STATE,
   {
-    serialize: (value) => {
-      return `${toDecimalPlaces(value.longitude)}~${toDecimalPlaces(
-        value.latitude
-      )}~${toDecimalPlaces(value.zoom)}`;
+    serialize: (viewport) => {
+      return (
+        [
+          "longitude",
+          "latitude",
+          "zoom",
+          "pitch",
+          "bearing",
+        ] as MapViewportProp[]
+      )
+        .map((key) => toDecimalPlaces(viewport[key]))
+        .join("~");
     },
-    deserialize: (value) => {
-      const [longitude, latitude, zoom] = value.split("~").map(parseFloat);
+    deserialize: (viewportStr) => {
+      const [longitude, latitude, zoom, pitch, bearing] = viewportStr
+        .split("~")
+        .map(parseFloat);
       return {
         longitude,
         latitude,
         zoom,
+        pitch,
+        bearing,
       };
     },
   }

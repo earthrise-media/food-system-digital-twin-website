@@ -53,4 +53,3 @@ export const INITIAL_VIEW_STATE = {
   pitch: 30,
   bearing: 0,
 };
-

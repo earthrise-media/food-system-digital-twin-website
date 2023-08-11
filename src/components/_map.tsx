@@ -37,11 +37,10 @@ import { CountyWithRank, RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
 import useMapStyle from "@/hooks/useMapStyle";
 import useLinkedCounties from "@/hooks/useLinkedCounties";
-import { INITIAL_VIEW_STATE, SIDEBAR_WIDTH, TOP_COUNTIES_NUMBER } from "@/constants";
+import { SIDEBAR_WIDTH, TOP_COUNTIES_NUMBER } from "@/constants";
 import { Feature, Geometry } from "geojson";
 import HighlightedLinkedPopup from "./popups/_highlightedLinkedPopup";
 import { useHideable } from "@/hooks/useHideable";
-
 
 const MAX_BOUNDS = [
   [-160, 0],
@@ -62,8 +61,7 @@ type MapWrapperProps = {
 };
 
 function MapWrapper({ initialMapStyle }: MapWrapperProps) {
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-  const [viewport, setViewport] = useAtom(viewportAtom)
+  const [viewport, setViewport] = useAtom(viewportAtom);
 
   const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
@@ -74,7 +72,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const flowsWithTrips = useFlowsWithTrips(
     flowsWithCurvedPaths,
     flowsWithRoadPaths,
-    Math.floor(viewState.zoom / 2)
+    Math.floor(viewport.zoom / 2)
   );
   const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
@@ -110,10 +108,9 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     Feature<Geometry, CountyWithRank>[]
   >(() => {
     if (!linkedCountiesWithRank) return [];
-    const topCounties = linkedCountiesWithRank.slice(
-      0,
-      allLinkedCounties ? Number.MAX_VALUE : TOP_COUNTIES_NUMBER
-    ).reverse();
+    const topCounties = linkedCountiesWithRank
+      .slice(0, allLinkedCounties ? Number.MAX_VALUE : TOP_COUNTIES_NUMBER)
+      .reverse();
     return topCounties;
   }, [linkedCountiesWithRank, allLinkedCounties]);
 
@@ -133,7 +130,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   // Linked counties but only when no linkedHighlightedCounty is selected (Number + name depending on zoom)
   const linkedCountiesWithoutHighlightedLinked = useMemo(() => {
     if (!linkedCountiesSliced || linkedHighlightedCounty) return [];
-    return linkedCountiesSliced
+    return linkedCountiesSliced;
   }, [linkedCountiesSliced, linkedHighlightedCounty]);
 
   // Highlighted county excluding linked counties --> Simple hover popup
@@ -151,13 +148,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     return highlightedCounty;
   }, [highlightedCounty, linkedCountiesSliced, linkedHighlightedCounty]);
 
-
-
-  const layers = useLayers(
-    linkedCountiesSliced,
-    flowsWithTrips,
-    !isLoading
-  );
+  const layers = useLayers(linkedCountiesSliced, flowsWithTrips, !isLoading);
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {
@@ -199,10 +190,10 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
       {bannerError && <div className={styles.banner}>{bannerError}</div>}
       <Map
         {...viewport}
-        pitch={INITIAL_VIEW_STATE.pitch}
-        bearing={INITIAL_VIEW_STATE.bearing}
         id="map"
-        onMove={(evt) =>  { setViewState(evt.viewState); setViewport(evt.viewState)}}
+        onMove={(evt) => {
+          setViewport(evt.viewState);
+        }}
         ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}

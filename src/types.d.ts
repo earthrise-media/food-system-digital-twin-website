@@ -17,23 +17,23 @@ export type Category = "Vegetables" | "Nuts" | "Grain" | "Fruits" | "Potatoes";
 export type RawCountyFlows = {
   crop_id?: number;
   crop_name?: string;
-  crop_category: Category,
-  value: number,
-  value_drought: number,
-  value_heat_stress: number,
-}
-  
+  crop_category: Category;
+  value: number;
+  value_drought: number;
+  value_heat_stress: number;
+};
+
 export type RawFlowStats = {
   byCrop: RawCountyFlows[];
   byCropGroup: RawCountyFlows[];
 };
 
-export type RawCountyWithFlows = { 
+export type RawCountyWithFlows = {
   county_id: string;
   county_name: string;
   county_centroid: Geometry<Point>;
   route_geometry?: string;
-  route_direction?: 'forward' | 'backward';
+  route_direction?: "forward" | "backward";
   flowsByCrop: RawCountyFlows[];
   flowsByCropGroup: RawCountyFlows[];
 };
@@ -88,12 +88,15 @@ export type FlowWithTrips = FlowWithPaths & {
 
 export type FlowType = "producer" | "consumer";
 
-export type AdverseConditions = 'drought' | 'heatStress'
+export type AdverseConditions = "drought" | "heatStress";
+
+export type MapViewportProp =
+  | "latitude"
+  | "longitude"
+  | "zoom"
+  | "pitch"
+  | "bearing";
 
 export type MapViewport = {
-  latitude: number;
-  longitude: number;
-  zoom: number;
-  bearing?: number;
-  pitch?: number;
+  [key in MapViewportProp]: number;
 };
