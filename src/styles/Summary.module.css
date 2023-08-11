@@ -15,6 +15,10 @@
 
 .summary > dl:first-child {
   margin-right: 15px;
-  width: 40%;
+  width: 50%;
   border-right: 1px solid var(--foreground-10);
+}
+
+.toggleDisplay {
+  cursor: pointer;
 }

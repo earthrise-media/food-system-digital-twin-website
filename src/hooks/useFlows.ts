@@ -7,58 +7,59 @@ import {
   FlowWithPaths,
   FlowWithTrips,
   Path,
-  RawCountyWithFlows,
-  RawFlowsInbound,
-  RawFlowsOutbound,
   Trip,
   Waypoint,
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
+import { CATEGORIES, CATEGORIES_PROPS, TOP_COUNTIES_NUMBER } from "@/constants";
 import { getDistances, getStats, hexToRgb } from "@/utils";
 import {
+  adverseConditionsAtom,
+  allLinkedCountiesAtom,
   countiesAtom,
   flowTypeAtom,
   roadsAtom,
   selectedCountyAtom,
 } from "@/atoms";
 import { useControls } from "leva";
-import { useFlowsData } from "./useAPI";
+import { along } from "turf";
+import { useLinkedFlows } from "./useLinkedCounties";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
+  const allLinkedCounties = useAtomValue(allLinkedCountiesAtom);
 
-  const { data: flowsData, error, isLoading } = useFlowsData();
+  const { flows, isLoading } = useLinkedFlows();
 
   const { maxTargetCounties } = useControls("filtering", {
     maxTargetCounties: 100,
   });
 
   return useMemo(() => {
-    if (!selectedCounty || !counties || !flowsData || isLoading) return [];
+    if (!selectedCounty || !counties || !flows || isLoading) return [];
     const { geoid: selectedId } = selectedCounty.properties;
     const selectedCentroid = centroid(selectedCounty);
 
-    const flows = (flowsData as RawFlowsInbound).inbound || (flowsData as RawFlowsOutbound).outbound;
     let selectedLinks: Flow[] = flows
-      .slice(0, maxTargetCounties)
+      .slice(
+        0,
+        Math.min(
+          maxTargetCounties,
+          allLinkedCounties ? Number.POSITIVE_INFINITY : TOP_COUNTIES_NUMBER
+        )
+      )
       .map(
         ({
           county_id,
           county_centroid,
           route_geometry,
           route_direction,
-          flowsByCrop,
-          flowsByCropGroup,
-        }: RawCountyWithFlows) => {
-          const { total, byCropGroupCumulative } = getStats(
-            flowsByCropGroup,
-            flowsByCrop
-          );
-
+          total,
+          byCropGroupCumulative,
+        }) => {
           // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
           // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
           // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
@@ -87,8 +88,10 @@ export default function useFlows(): Flow[] {
               } as LineString)
             : undefined;
 
-          // Works in consumer, probably the opposite in producer
-          if (route_direction === "backward") {
+          if (
+            (flowType === "consumer" && route_direction === "backward") ||
+            (flowType === "producer" && route_direction === "forward")
+          ) {
             routeGeometry?.coordinates.reverse();
           }
 
@@ -105,7 +108,15 @@ export default function useFlows(): Flow[] {
       );
 
     return selectedLinks;
-  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties, isLoading]);
+  }, [
+    counties,
+    flows,
+    selectedCounty,
+    flowType,
+    maxTargetCounties,
+    isLoading,
+    allLinkedCounties,
+  ]);
 }
 
 const getCurvedPaths = (
@@ -184,8 +195,8 @@ const getCurvedPaths = (
 
 export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
-    linesPerLinkMultiplicator: 3,
-    maxLinesPerLink: 30,
+    linesPerLinkMultiplicator: 2,
+    maxLinesPerLink: 10,
     minWaypointsPer1000km: 4,
     maxWaypointsPer1000km: 8,
     minDeviationDegrees: 0,
@@ -202,18 +213,24 @@ export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
 }
 
 const getSelfPath = (link: Flow): Path[] => {
-  const circleFeature = circle(point(link.source), 30, 20, "kilometers")
+  const RADIUS = 10;
+  const lineAlong = lineString([
+    link.source,
+    [link.source[0] + 10, link.source[1] - 10],
+  ]);
+  const center = along(lineAlong, RADIUS, "kilometers");
+  // const center = lineOffset(point(link.source), RADIUS / 2, { units: "kilometers" })
+  const circleFeature = circle(center, RADIUS, 20, "kilometers");
   const circleCoords = circleFeature.geometry.coordinates[0];
-  const { distances, totalDistance } = getDistances(
-    circleCoords
-  );
-  return [{
-    coordinates: circleCoords,
-    distances,
-    totalDistance,
-  }]
-}
-
+  const { distances, totalDistance } = getDistances(circleCoords);
+  return [
+    {
+      coordinates: circleCoords,
+      distances,
+      totalDistance,
+    },
+  ];
+};
 
 const getRoadPaths = (link: Flow): Path[] => {
   const { distances, totalDistance } = getDistances(
@@ -250,12 +267,16 @@ const getPathTrips = (
     speedKps = 100, // Speed in km per second
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
     maxParticles = 500,
-  } = {}
+  } = {},
+  zoomMultiplier: number
 ): Trip[] => {
   const numParticles = Math.min(
     flow.value * numParticlesMultiplicator,
     maxParticles
   );
+
+  const speedZoomMultiplier = (3 - zoomMultiplier + 2) / 3;
+  const baseSpeedKps = speedKps * speedZoomMultiplier;
 
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
@@ -265,8 +286,8 @@ const getPathTrips = (
 
   for (let i = 0; i < numParticles; i++) {
     const humanizeSpeedKps =
-      (Math.random() - 0.5) * 2 * speedKps * speedKpsHumanize;
-    const humanizedSpeedKps = speedKps + humanizeSpeedKps;
+      (Math.random() - 0.5) * 2 * baseSpeedKps * speedKpsHumanize;
+    const humanizedSpeedKps = baseSpeedKps + humanizeSpeedKps;
 
     const baseDuration = path.totalDistance / humanizedSpeedKps;
 
@@ -318,36 +339,54 @@ const getPathTrips = (
 
 export function useFlowsWithTrips(
   flowsWithCurvedPaths: FlowWithPaths[],
-  flowsWithRoadPaths: FlowWithPaths[]
+  flowsWithRoadPaths: FlowWithPaths[],
+  zoomMultiplier: number
 ): FlowWithTrips[] {
   const params = useControls("trips", {
-    numParticlesCurvedPathsMultiplicator: 10,
-    numParticlesRoadsMultiplicator: 100,
+    numParticlesCurvedPathsMultiplicator: 8,
+    numParticlesRoadsMultiplicator: 50,
+    numParticlesStressMultiplicator: 0.5,
     fromTimestamp: 0,
     toTimeStamp: 100,
-    intervalHumanize: 0.5,
+    intervalHumanize: 1,
     speedKps: 100,
-    speedKpsHumanize: 0.5,
+    speedKpsHumanize: 0.2,
     maxParticles: 100,
   });
 
   const roads = useAtomValue(roadsAtom);
+  const adverseConditions = useAtomValue(adverseConditionsAtom);
 
   return useMemo(() => {
     const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths;
+    const numParticlesMultiplicator =
+      (roads
+        ? params.numParticlesRoadsMultiplicator
+        : params.numParticlesCurvedPathsMultiplicator) *
+      (adverseConditions ? params.numParticlesStressMultiplicator : 1);
     return flowsWithPaths.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p, l, {
-            ...params,
-            numParticlesMultiplicator: roads
-              ? params.numParticlesRoadsMultiplicator
-              : params.numParticlesCurvedPathsMultiplicator,
-          });
+          return getPathTrips(
+            p,
+            l,
+            {
+              ...params,
+              numParticlesMultiplicator,
+            },
+            zoomMultiplier
+          );
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [flowsWithCurvedPaths, flowsWithRoadPaths, params, roads]);
+  }, [
+    flowsWithCurvedPaths,
+    flowsWithRoadPaths,
+    params,
+    roads,
+    zoomMultiplier,
+    adverseConditions,
+  ]);
 }

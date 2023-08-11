@@ -17,7 +17,6 @@
 
 .card.active > h4 {
   color: var(--foreground);
-  margin-bottom: 10px;
 }
 
 .card h4::before {
@@ -44,3 +43,16 @@
   background-image: url("/icons/road.svg");
   top: 14px;
 }
+
+.content {
+  transition: all var(--transition) linear;
+  overflow: hidden;
+  max-height: 30px;
+  margin-top: 16px;
+}
+
+.contentHidden {
+  max-height: 0;
+  margin-top: 0;
+}
+

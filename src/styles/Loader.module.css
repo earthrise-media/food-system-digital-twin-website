@@ -22,4 +22,17 @@
 
 .loaderText {
   margin-top: 3rem;
+  opacity: .5;
+  font-weight: var(--font-weight-bold);
+  animation: alternate infinite 1s ease-in-out loaderText;
+}
+
+/* pulse animation */
+@keyframes loaderText {
+  0% {
+    opacity: .5;
+  }
+  100% {
+    opacity: .2;
+  }
 }

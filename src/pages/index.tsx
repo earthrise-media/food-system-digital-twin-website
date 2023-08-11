@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import cx from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FeatureCollection, Geometry } from "geojson";
 import { Style } from "mapbox-gl";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -15,9 +15,9 @@ import { County } from "@/types";
 import Roads from "@/components/sidebar/_roads";
 import AdverseConditions from "@/components/sidebar/_stressConditions";
 import { useHideable } from "@/hooks/useHideable";
-import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 import Logo from "@/components/_logo";
 import Loader from "@/components/_loader";
+import { MapProvider } from "react-map-gl";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
@@ -43,7 +43,7 @@ export default function Home({
   const { shouldMount: shouldSearchMount } = useHideable(search);
   const {
     shouldMount: shouldMapParamsMount,
-    className,
+    className: mapParamsClassName,
     style,
   } = useHideable(!search, styles.mapParamsCards, styles.mapParamsCardsHidden);
 
@@ -56,18 +56,28 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={cx(styles.main, kumbhSans.className)}>
-        <Loader />
-        <DeckMap initialMapStyle={mapStyle} />
-        <Sidebar />
-        {shouldMapParamsMount && (
-          <div className={className} style={style}>
-            <Roads />
-            <AdverseConditions />
+      <MapProvider>
+        <main className={cx(styles.main, kumbhSans.className)}>
+          <Loader />
+          <DeckMap initialMapStyle={mapStyle} />
+          {!search && (
+            <div className={styles.logoWrapper}>
+              <Logo />
+            </div>
+          )}
+
+          <Sidebar />
+          <div className={mapParamsClassName} style={style}>
+            {shouldMapParamsMount && (
+              <>
+                <Roads />
+                <AdverseConditions />
+              </>
+            )}
           </div>
-        )}
-        {shouldSearchMount && <Search />}
-      </main>
+          {shouldSearchMount && <Search />}
+        </main>
+      </MapProvider>
     </>
   );
 }

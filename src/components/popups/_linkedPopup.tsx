@@ -1,43 +1,56 @@
 import cx from "classnames";
 import { useMap } from "react-map-gl";
 import { Feature, Geometry } from "geojson";
-import { County, CountyWithRank } from "@/types";
+import { CountyWithRank } from "@/types";
 import styles from "@/styles/Popups.module.css";
 import { usePopup } from "@/hooks/usePopup";
 
 function LinkedPopup({
   county,
+  numPopups,
 }: {
   county: Feature<Geometry, CountyWithRank>;
+  numPopups: number;
 }) {
   const { current: map } = useMap();
   const { name, stusps } = county.properties;
 
-  // County name
+  const zoomLabelThreshold = numPopups > 10 ? 7 : 5.5;
+  const showLabel = map ? map?.getZoom() > zoomLabelThreshold : false;
+
+  const zoomRankThreshold = numPopups > 10 ? 4.5 : 3.5;
+  const hideRank = map ? map?.getZoom() < zoomRankThreshold : false;
+
+  // With county name
   usePopup({
     county,
     popupOptions: {
-      offset: 20,
+      offset: 0,
     },
-    className: cx("noTip", {
-      [styles.hidden]: map ? map?.getZoom() < 5.5: false,
+    className: cx("noTip", styles.linked, {
+      [styles.hidden]: !showLabel,
     }),
     children: (
       <div className={cx(styles.popupContent, styles.fixed)}>
-        {name}, {stusps}
+        <div className={cx(styles.rank)}>{county.properties.rank}</div>
+        <span className={styles.label}>
+          {name}, {stusps}
+        </span>
       </div>
     ),
   });
 
-  // County rank
+  // Only county rank
   usePopup({
     county,
     popupOptions: {
-      anchor: "center",
+      offset: 0,
     },
-    className: "noTip noBackground",
+    className: cx("noTip noBackground", styles.linked, {
+      [styles.hidden]: showLabel || hideRank,
+    }),
     children: (
-      <div className={cx(styles.rank, styles.fixed)}>
+      <div className={cx(styles.rankWrapper, styles.rank, styles.fixed)}>
         {county.properties.rank}
       </div>
     ),

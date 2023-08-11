@@ -4,14 +4,14 @@ import { County } from "@/types";
 import classNames from "classnames";
 import styles from "@/styles/Popups.module.css";
 
-function MainPopup({ county }: { county: Feature<Geometry, County> }) {
+function SelectedPopup({ county }: { county: Feature<Geometry, County> }) {
   const { name, stusps } = county.properties;
   usePopup({
     county,
     popupOptions: {
       offset: 20,
     },
-    className: "noTip",
+    className: classNames("noTip", styles.selected),
     children: (
       <div
         className={classNames(
@@ -28,4 +28,4 @@ function MainPopup({ county }: { county: Feature<Geometry, County> }) {
   return null;
 }
 
-export default MainPopup;
+export default SelectedPopup;

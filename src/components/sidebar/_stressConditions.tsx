@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import Tabs from "../common/_tabs";
 import { ADVERSE_CONDITIONS_OPTIONS } from "@/constants";
 import { AdverseConditions } from "@/types";
+import { useHideable } from "@/hooks/useHideable";
 
 export default function StressConditions() {
   const [adverseConditions, setAdverseConditions] = useAtom(
@@ -20,6 +21,12 @@ export default function StressConditions() {
     }
   }, [adverseConditions, setAdverseConditions]);
 
+  const { className, style, stage, shouldMount } = useHideable(
+    !!adverseConditions,
+    styles.content,
+    styles.contentHidden,
+  );
+
   return (
     <div
       className={classNames(styles.card, styles.stressConditions, {
@@ -30,13 +37,18 @@ export default function StressConditions() {
         Simulate stress conditions{" "}
         <Toggle checked={adverseConditions !== null} onChange={onToggle} />
       </h4>
-      {adverseConditions && (
-        <Tabs
-          options={ADVERSE_CONDITIONS_OPTIONS}
-          selectedOption={adverseConditions || undefined}
-          onChange={(value) => setAdverseConditions(value as AdverseConditions)}
-        />
-      )}
+
+      <div className={className} style={style}>
+        {shouldMount && (
+          <Tabs
+            options={ADVERSE_CONDITIONS_OPTIONS}
+            selectedOption={adverseConditions || undefined}
+            onChange={(value) =>
+              setAdverseConditions(value as AdverseConditions)
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }

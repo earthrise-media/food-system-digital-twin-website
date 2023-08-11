@@ -2,10 +2,20 @@
   height: 100vh;
 }
 
+.logoWrapper {
+  position: absolute;
+  top: 25px;
+  right: 20px;
+  z-index: var(--z-flow-info);
+  transform: scale(0.5);
+  transform-origin: top right;
+}
+
+
 .mapParamsCards {
   position: absolute;
   z-index: var(--z-flow-info);
-  right: 40px;
+  right: 20px;
   bottom: 40px;
   width: 320px;
   transition: right var(--transition) ease-out;

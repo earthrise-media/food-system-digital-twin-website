@@ -52,7 +52,9 @@ function Crop({
     <li
       key={category}
       onClick={() => onFoodGroupClick(category)}
-      className={className}
+      className={classNames(className, {
+        [styles.detailOpen]: foodGroup === category,
+      })}
       style={
         {
           ...style,
