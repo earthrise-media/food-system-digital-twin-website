@@ -41,8 +41,8 @@ function Crop({
     styles.hidden
   );
 
-  const negative = (pct && pctAdverse) ? pct - pctAdverse > 1 : false;
-  const equal = (pct && pctAdverse) ? pct - pctAdverse <= 1 : false;
+  const negative = (pct && pctAdverse) ? pct - pctAdverse > .1 : false;
+  const equal = (pct && pctAdverse) ? pct - pctAdverse <= .1 : false;
 
   return (
     <li
