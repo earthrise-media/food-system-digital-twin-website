@@ -27,12 +27,17 @@ function Crop({
   );
   const adverseConditions = useAtomValue(adverseConditionsAtom);
   const pct = stats?.byCropGroup[category]?.pct;
-  const pctAdverse = adverseConditions
+  const relAdverse = adverseConditions
     ? stats?.byCropGroup[category]?.[
         adverseConditions === "drought" ? "pct_drought" : "pct_heat_stress"
       ]
     : 0;
-  const widthForeground = (adverseConditions ? pctAdverse : pct) || 0;
+  const varAdverse = adverseConditions
+    ? stats?.byCropGroup[category]?.[
+        adverseConditions === "drought" ? "var_drought" : "var_heat_stress"
+      ]
+    : 0;
+  const widthForeground = (adverseConditions ? relAdverse : pct) || 0;
   const widthBackground = pct || 0;
 
   const { className, style } = useHideable(
@@ -41,8 +46,7 @@ function Crop({
     styles.hidden
   );
 
-  const negative = pct && pctAdverse ? pct - pctAdverse > 1 : false;
-  const equal = pct && pctAdverse ? pct - pctAdverse <= 1 : false;
+  const negative = varAdverse !== undefined && varAdverse < 0;
 
   return (
     <li
@@ -72,10 +76,10 @@ function Crop({
                 <span
                   className={classNames(styles.variation, {
                     [styles.negative]: negative,
-                    [styles.equal]: equal,
+                    [styles.equal]: !negative,
                   })}
                 >
-                  {pctAdverse}%
+                  {negative ? '' : '+'}{varAdverse}%
                 </span>
               )}
             </>
