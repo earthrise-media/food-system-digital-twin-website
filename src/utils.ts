@@ -27,11 +27,16 @@ export const getStats = (
       ({ value, value_drought, value_heat_stress, ...rest }) => [
         rest.crop_category,
         {
+          value,
+          value_drought,
+          value_heat_stress,
           pct: getPct(value / total),
           pct_drought: getPct((value / total) * (value_drought / value)),
           pct_heat_stress: getPct(
             (value / total) * (value_heat_stress / value)
           ),
+          var_drought: getPct((value_drought - value) / value),
+          var_heat_stress: getPct((value_heat_stress - value) / value),
         },
       ]
     )
