@@ -1,7 +1,17 @@
 import { FeatureCollection, Geometry } from "geojson";
 import { atom } from "jotai";
 import { atomWithHash } from "jotai-location";
-import { County, FlowType, Category } from "./types";
+import {
+  County,
+  FlowType,
+  Category,
+  AdverseConditions,
+  MapViewport,
+  MapViewportProp,
+} from "./types";
+import { INITIAL_VIEW_STATE } from "./constants";
+import { deserialize } from "v8";
+import { toDecimalPlaces } from "./utils";
 
 export const countiesAtom = atom<FeatureCollection<Geometry, County> | null>(
   null
@@ -11,6 +21,46 @@ export const countyHighlightedAtom = atom<string | null>(null);
 export const searchAtom = atomWithHash<boolean>("search", false);
 export const flowTypeAtom = atomWithHash<FlowType>("flowType", "consumer");
 export const foodGroupAtom = atomWithHash<Category | null>("foodGroup", null);
+export const roadsAtom = atomWithHash<boolean>("roads", false);
+export const adverseConditionsAtom = atomWithHash<AdverseConditions | null>(
+  "adverseConditions",
+  null
+);
+export const allLinkedCountiesAtom = atomWithHash<boolean>(
+  "allLinkedCounties",
+  false
+);
+export const viewportAtom = atomWithHash<MapViewport>(
+  "viewport",
+  INITIAL_VIEW_STATE,
+  {
+    serialize: (viewport) => {
+      return (
+        [
+          "longitude",
+          "latitude",
+          "zoom",
+          "pitch",
+          "bearing",
+        ] as MapViewportProp[]
+      )
+        .map((key) => toDecimalPlaces(viewport[key]))
+        .join("~");
+    },
+    deserialize: (viewportStr) => {
+      const [longitude, latitude, zoom, pitch, bearing] = viewportStr
+        .split("~")
+        .map(parseFloat);
+      return {
+        longitude,
+        latitude,
+        zoom,
+        pitch,
+        bearing,
+      };
+    },
+  }
+);
 
 export const selectedCountyAtom = atom((get) => {
   const countyId = get(countyAtom);

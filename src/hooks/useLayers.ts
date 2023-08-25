@@ -1,4 +1,4 @@
-import { use, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 import { TripsLayer } from "@deck.gl/geo-layers/typed";
@@ -7,15 +7,17 @@ import { County, FlowWithTrips } from "@/types";
 import { featureCollection } from "@turf/turf";
 import useAnimationFrame from "@/hooks/useAnimationFrame";
 import {
+  adverseConditionsAtom,
   countiesAtom,
   countyAtom,
   countyHighlightedAtom,
   flowTypeAtom,
   foodGroupAtom,
+  highlightedCountyAtom,
+  roadsAtom,
   selectedCountyAtom,
 } from "@/atoms";
 import { useControls } from "leva";
-import { MAX_ZOOM, MIN_ZOOM } from "@/components/_map";
 
 const BASE_LINE_LAYERS_OPTIONS = {
   stroked: true,
@@ -27,26 +29,30 @@ const BASE_LINE_LAYERS_OPTIONS = {
 };
 
 export default function useLayers(
-  targetCounties: Feature<Geometry, County>[],
+  targetCounties: Feature<Geometry, County>[] | null,
   flows: FlowWithTrips[],
-  zoom: number,
-  showAnimatedLayers = true,
+  showAnimatedLayers = true
 ) {
-
   const setCounty = useSetAtom(countyAtom);
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
   const [countyHiglighted, setCountyHighlighted] = useAtom(
     countyHighlightedAtom
   );
+  const highlightedCounty = useAtomValue(highlightedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
+  const roads = useAtomValue(roadsAtom);
 
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
+
+  const adverseConditions = useAtomValue(adverseConditionsAtom);
+  
   const { linesColor, baseAnimationSpeed } = useControls("layers", {
     linesColor: { r: 0, b: 0, g: 0, a: 0.05 },
-    baseAnimationSpeed: 3,
+    baseAnimationSpeed: 1,
   });
-
+  const baseAnimationSpeedMultiplier = adverseConditions ? 1 : 2;
+  
   const linksAsGeoJSON = useMemo(() => {
     if (!flows.length) return null;
     const features = flows
@@ -76,9 +82,11 @@ export default function useLayers(
     );
   }, [flows]);
 
-  const targetCountyHiglighted = useMemo(() => {
+  const targetCountyHighlighted = useMemo(() => {
     if (!countyHiglighted) return null;
-    const targetCountiesIds = targetCounties.map((c) => c.properties.geoid);
+    const targetCountiesIds = (targetCounties || []).map(
+      (c) => c.properties.geoid
+    );
     return targetCountiesIds.find((id) => id === countyHiglighted);
   }, [countyHiglighted, targetCounties]);
 
@@ -88,19 +96,19 @@ export default function useLayers(
   const loopLength = 100;
 
   const currentFrame = useMemo(() => {
-    const animationSpeed = (1 + MAX_ZOOM - zoom) / (1 + MAX_ZOOM - MIN_ZOOM);
-    const speed = animationSpeed * baseAnimationSpeed;
+    const animationSpeed = baseAnimationSpeedMultiplier * baseAnimationSpeed;
+    const animationSpeedZoom = 1;
+    const speed = animationSpeed * animationSpeedZoom;
     return (currentTime * speed) % loopLength;
-  }, [currentTime, baseAnimationSpeed, zoom]);
+  }, [currentTime, baseAnimationSpeed, baseAnimationSpeedMultiplier]);
 
   const layers = useMemo(() => {
     let layers: (GeoJsonLayer | TripsLayer)[] = [
       new GeoJsonLayer({
         id: "counties",
         data: counties as any,
-        ...BASE_LINE_LAYERS_OPTIONS,
         getFillColor: [0, 0, 0, 0],
-        getLineColor: [0, 0, 0, 0],
+        getLineColor: [0, 0, 0, 10],
         lineWidthMinPixels: 1,
         lineWidthMaxPixels: 5,
         onClick: ({ object }) => {
@@ -112,27 +120,43 @@ export default function useLayers(
         pickable: true,
       }),
     ];
-    if (selectedCounty && showAnimatedLayers) {
+    if (selectedCounty) {
       layers = [
         ...layers,
         new GeoJsonLayer({
           id: "counties-selected",
           data: [selectedCounty],
           ...BASE_LINE_LAYERS_OPTIONS,
-          getFillColor: [0, 0, 0, 122],
-          getLineColor: [0, 0, 0, 255],
+          getFillColor: [0, 0, 0, 0],
+          getLineColor: [0, 0, 0, 128],
           lineWidthMinPixels: 1,
           lineWidthMaxPixels: 3,
         }),
+      ];
+    }
+    if (selectedCounty && showAnimatedLayers) {
+      layers = [
+        ...layers,
         new GeoJsonLayer({
           id: "counties-targets",
-          data: targetCounties,
+          data: targetCounties || [],
           ...BASE_LINE_LAYERS_OPTIONS,
-          getFillColor: [0, 0, 0, 50],
+          getFillColor: [0, 0, 0, 0],
+          getLineColor: [0, 0, 0, 128],
+          lineWidthMinPixels: 1,
+          lineWidthMaxPixels: 2,
+          getLineWidth: 0.01,
+        }),
+        new GeoJsonLayer({
+          id: "county-hover",
+          data: highlightedCounty ? [highlightedCounty] : [],
+          ...BASE_LINE_LAYERS_OPTIONS,
+          getFillColor: [0, 0, 0, 0],
           getLineColor: [0, 0, 0, 150],
           lineWidthMinPixels: 0.5,
           lineWidthMaxPixels: 2,
           getLineWidth: 0.01,
+          visible: !!highlightedCounty,
         }),
         new TripsLayer({
           id: "trips-layer",
@@ -140,30 +164,30 @@ export default function useLayers(
           getPath: (d) => d.waypoints.map((p: any) => p.coordinates),
           getTimestamps: (d) => d.waypoints.map((p: any) => p.timestamp),
           getColor: (d) => {
-            if (!targetCountyHiglighted && !foodGroup) return d.color;
+            if (!targetCountyHighlighted && !foodGroup) return d.color;
             const isSelectedCounty =
               flowType === "consumer"
-                ? targetCountyHiglighted === d.sourceId
-                : targetCountyHiglighted === d.targetId;
+                ? targetCountyHighlighted === d.sourceId
+                : targetCountyHighlighted === d.targetId;
 
             const isSelectedFoodGroup = d.foodGroup === foodGroup;
 
             if (
-              targetCountyHiglighted &&
+              targetCountyHighlighted &&
               isSelectedCounty &&
               (!foodGroup || isSelectedFoodGroup)
             ) {
               return d.color;
             }
 
-            if (!targetCountyHiglighted && foodGroup && isSelectedFoodGroup) {
+            if (!targetCountyHighlighted && foodGroup && isSelectedFoodGroup) {
               return d.color;
             }
 
-            return [...d.color.slice(0, 3), 55];
+            return [0,0,0,0];
           },
           updateTriggers: {
-            getColor: [targetCountyHiglighted, foodGroup],
+            getColor: [targetCountyHighlighted, foodGroup],
           },
           widthMinPixels: 2.5,
           getWidth: (d) => {
@@ -177,7 +201,7 @@ export default function useLayers(
         }),
       ];
     }
-    if (linksAsGeoJSON && showAnimatedLayers) {
+    if (linksAsGeoJSON && showAnimatedLayers && !roads) {
       layers.push(
         new GeoJsonLayer({
           id: "lines",
@@ -207,11 +231,13 @@ export default function useLayers(
     setCounty,
     setCountyHighlighted,
     setFoodGroup,
-    targetCountyHiglighted,
+    targetCountyHighlighted,
+    highlightedCounty,
     linesColor,
     showAnimatedLayers,
     flowType,
     foodGroup,
+    roads,
   ]);
   return layers;
 }

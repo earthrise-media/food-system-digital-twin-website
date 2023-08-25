@@ -1,4 +1,4 @@
-import { Point } from "geojson";
+import { Feature, LineString, Point } from "geojson";
 import { Geometry } from "geojson";
 import { Position } from "geojson";
 
@@ -8,24 +8,32 @@ export type County = {
   stusps: string;
 };
 
+export type CountyWithRank = {
+  rank: number;
+} & County;
+
 export type Category = "Vegetables" | "Nuts" | "Grain" | "Fruits" | "Potatoes";
 
 export type RawCountyFlows = {
   crop_id?: number;
   crop_name?: string;
-  crop_category: Category,
-  value: number,
-}
-  
+  crop_category: Category;
+  value: number;
+  value_drought: number;
+  value_heat_stress: number;
+};
+
 export type RawFlowStats = {
   byCrop: RawCountyFlows[];
   byCropGroup: RawCountyFlows[];
 };
 
-export type RawCountyWithFlows = { 
+export type RawCountyWithFlows = {
   county_id: string;
   county_name: string;
   county_centroid: Geometry<Point>;
+  route_geometry?: string;
+  route_direction?: "forward" | "backward";
   flowsByCrop: RawCountyFlows[];
   flowsByCropGroup: RawCountyFlows[];
 };
@@ -40,6 +48,8 @@ export type RawFlowsOutbound = {
   stats: RawFlowStats;
 };
 
+export type RawFlows = RawFlowsInbound & RawFlowsOutbound;
+
 export type Flow = {
   source: Position;
   target: Position;
@@ -47,6 +57,7 @@ export type Flow = {
   targetId: string;
   value: number;
   valuesRatiosByFoodGroup: number[];
+  routeGeometry?: Geometry<LineString>;
 };
 
 export type Path = {
@@ -76,3 +87,16 @@ export type FlowWithTrips = FlowWithPaths & {
 };
 
 export type FlowType = "producer" | "consumer";
+
+export type AdverseConditions = "drought" | "heatStress";
+
+export type MapViewportProp =
+  | "latitude"
+  | "longitude"
+  | "zoom"
+  | "pitch"
+  | "bearing";
+
+export type MapViewport = {
+  [key in MapViewportProp]: number;
+};

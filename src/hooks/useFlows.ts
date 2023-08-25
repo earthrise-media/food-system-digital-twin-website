@@ -1,80 +1,122 @@
-import { distance, point, lineString } from "@turf/turf";
+import { distance, point, lineString, circle, centroid } from "@turf/turf";
 import bezierSpline from "@turf/bezier-spline";
+import polyline from "google-polyline";
+import { LineString } from "geojson";
 import {
   Flow,
   FlowWithPaths,
   FlowWithTrips,
   Path,
-  RawCountyWithFlows,
-  RawFlowsInbound,
-  RawFlowsOutbound,
   Trip,
+  Waypoint,
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { CATEGORIES, CATEGORIES_PROPS } from "@/constants";
-import { getStats, hexToRgb } from "@/utils";
-import { countiesAtom, flowTypeAtom, selectedCountyAtom } from "@/atoms";
+import { CATEGORIES, CATEGORIES_PROPS, TOP_COUNTIES_NUMBER } from "@/constants";
+import { getDistances, getStats, hexToRgb } from "@/utils";
+import {
+  adverseConditionsAtom,
+  allLinkedCountiesAtom,
+  countiesAtom,
+  flowTypeAtom,
+  roadsAtom,
+  selectedCountyAtom,
+} from "@/atoms";
 import { useControls } from "leva";
-import { centroid } from "turf";
-import { useFlowsData } from "./useAPI";
+import { along } from "turf";
+import { useLinkedFlows } from "./useLinkedCounties";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
   const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowType = useAtomValue(flowTypeAtom);
+  const allLinkedCounties = useAtomValue(allLinkedCountiesAtom);
 
-  const { data: flowsData, error, isLoading } = useFlowsData();
+  const { flows, isLoading } = useLinkedFlows();
 
   const { maxTargetCounties } = useControls("filtering", {
     maxTargetCounties: 100,
   });
 
   return useMemo(() => {
-    if (!selectedCounty || !counties || !flowsData) return [];
-    const { geoid: centerId } = selectedCounty.properties;
-    const centerCentroid = centroid(selectedCounty);
-    const flows =
-      flowType === "consumer"
-        ? (flowsData as RawFlowsInbound).inbound
-        : (flowsData as RawFlowsOutbound).outbound;
+    if (!selectedCounty || !counties || !flows || isLoading) return [];
+    const { geoid: selectedId } = selectedCounty.properties;
+    const selectedCentroid = centroid(selectedCounty);
 
-    let selectedLinks: Flow[] = flows.slice(0, maxTargetCounties).map(
-      ({
-        county_id,
-        county_centroid,
-        flowsByCrop,
-        flowsByCropGroup,
-      }: RawCountyWithFlows) => {
-        const { total, byCropGroupCumulative } = getStats(
-          flowsByCropGroup,
-          flowsByCrop
-        );
+    let selectedLinks: Flow[] = flows
+      .slice(
+        0,
+        Math.min(
+          maxTargetCounties,
+          allLinkedCounties ? Number.POSITIVE_INFINITY : TOP_COUNTIES_NUMBER
+        )
+      )
+      .map(
+        ({
+          county_id,
+          county_centroid,
+          route_geometry,
+          route_direction,
+          total,
+          byCropGroupCumulative,
+        }) => {
+          // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
+          // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
+          // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
+          const value = Math.max(1, total / 200000000);
 
-        // const VALUES_RATIOS_BY_FOOD_GROUP = [.1,.2,.3,.35,1]
-        // const VALUES_RATIOS_BY_FOOD_GROUP = [.2,.4,.6,.8,1]
-        // const VALUES_RATIOS_BY_FOOD_GROUP = [0.5, 0.55, 0.6, 0.8, 1];
-        const value = Math.max(1, total / 200000000)
-
-        return {
-          source:
+          const source =
             flowType === "consumer"
               ? county_centroid.coordinates
-              : centerCentroid.geometry.coordinates,
-          target:
+              : selectedCentroid.geometry.coordinates;
+          const target =
             flowType === "consumer"
-              ? centerCentroid.geometry.coordinates
-              : county_centroid.coordinates,
-          sourceId: flowType === "consumer" ? county_id : centerId.toString(),
-          targetId: flowType === "consumer" ? centerId.toString() : county_id,
-          value,
-          valuesRatiosByFoodGroup: byCropGroupCumulative,
-        };
-      }
-    );
+              ? selectedCentroid.geometry.coordinates
+              : county_centroid.coordinates;
+
+          const sourceId =
+            flowType === "consumer" ? county_id : selectedId.toString();
+          const targetId =
+            flowType === "consumer" ? selectedId.toString() : county_id;
+
+          const routeGeometry = route_geometry
+            ? ({
+                type: "LineString",
+                coordinates: polyline
+                  .decode(route_geometry)
+                  .map(([lng, lat]) => [lat, lng]),
+              } as LineString)
+            : undefined;
+
+          if (
+            (flowType === "consumer" && route_direction === "backward") ||
+            (flowType === "producer" && route_direction === "forward")
+          ) {
+            routeGeometry?.coordinates.reverse();
+          }
+
+          return {
+            source,
+            target,
+            sourceId,
+            targetId,
+            routeGeometry,
+            value,
+            valuesRatiosByFoodGroup: byCropGroupCumulative,
+          };
+        }
+      );
 
     return selectedLinks;
-  }, [counties, flowsData, selectedCounty, flowType, maxTargetCounties]);
+  }, [
+    counties,
+    flows,
+    selectedCounty,
+    flowType,
+    maxTargetCounties,
+    isLoading,
+    allLinkedCounties,
+  ]);
 }
 
 const getCurvedPaths = (
@@ -134,24 +176,13 @@ const getCurvedPaths = (
 
     const allWaypoints = [link.source, ...waypoints, link.target];
 
-    const distances = [];
-    for (
-      let waypointIndex = 1;
-      waypointIndex < allWaypoints.length;
-      waypointIndex++
-    ) {
-      const waypoint = allWaypoints[waypointIndex];
-      const prevWaypoint = allWaypoints[waypointIndex - 1];
-      const dist = distance(point(prevWaypoint), point(waypoint));
-      distances.push(dist);
-    }
-
-    const totalDistance = distances.reduce((a, b) => a + b, 0);
-
     let feature = lineString(allWaypoints);
     if (smooth) {
-      feature = bezierSpline(feature, { resolution: 200 });
+      feature = bezierSpline(feature, { resolution: 500 });
     }
+
+    const allWaypointsCoords = feature.geometry.coordinates;
+    const { distances, totalDistance } = getDistances(allWaypointsCoords);
 
     paths.push({
       coordinates: feature.geometry.coordinates,
@@ -162,10 +193,10 @@ const getCurvedPaths = (
   return paths;
 };
 
-export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
+export function useFlowsWithCurvedPaths(flows: Flow[]): FlowWithPaths[] {
   const params = useControls("paths", {
-    linesPerLinkMultiplicator: 3,
-    maxLinesPerLink: 30,
+    linesPerLinkMultiplicator: 2,
+    maxLinesPerLink: 10,
     minWaypointsPer1000km: 4,
     maxWaypointsPer1000km: 8,
     minDeviationDegrees: 0,
@@ -173,11 +204,55 @@ export function useFlowsWithCurvedPaths(links: Flow[]): FlowWithPaths[] {
     smooth: false,
   });
   return useMemo(() => {
-    return links.map((l) => {
-      const paths = getCurvedPaths(l, params);
+    return flows.map((l) => {
+      const isSelf = l.sourceId === l.targetId;
+      const paths = isSelf ? getSelfPath(l) : getCurvedPaths(l, params);
       return { ...l, paths };
     });
-  }, [links, params]);
+  }, [flows, params]);
+}
+
+const getSelfPath = (link: Flow): Path[] => {
+  const RADIUS = 10;
+  const lineAlong = lineString([
+    link.source,
+    [link.source[0] + 10, link.source[1] - 10],
+  ]);
+  const center = along(lineAlong, RADIUS, "kilometers");
+  // const center = lineOffset(point(link.source), RADIUS / 2, { units: "kilometers" })
+  const circleFeature = circle(center, RADIUS, 20, "kilometers");
+  const circleCoords = circleFeature.geometry.coordinates[0];
+  const { distances, totalDistance } = getDistances(circleCoords);
+  return [
+    {
+      coordinates: circleCoords,
+      distances,
+      totalDistance,
+    },
+  ];
+};
+
+const getRoadPaths = (link: Flow): Path[] => {
+  const { distances, totalDistance } = getDistances(
+    link.routeGeometry?.coordinates || []
+  );
+  return [
+    {
+      coordinates: link.routeGeometry?.coordinates || [],
+      distances,
+      totalDistance,
+    },
+  ];
+};
+
+export function useFlowsWithRoadPaths(flows: Flow[]): FlowWithPaths[] {
+  return useMemo(() => {
+    return flows.map((l, i) => {
+      const isSelf = l.sourceId === l.targetId;
+      const paths = isSelf ? getSelfPath(l) : getRoadPaths(l);
+      return { ...l, paths };
+    });
+  }, [flows]);
 }
 
 const getPathTrips = (
@@ -191,10 +266,17 @@ const getPathTrips = (
     intervalHumanize = 0.5, // Randomize particle start time (0: emitted at regular intervals, 1: emitted at "fully" random intervals)
     speedKps = 100, // Speed in km per second
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
-    maxParticles = 500
-  } = {}
+    maxParticles = 500,
+  } = {},
+  zoomMultiplier: number
 ): Trip[] => {
-  const numParticles = Math.min(flow.value * numParticlesMultiplicator, maxParticles);
+  const numParticles = Math.min(
+    flow.value * numParticlesMultiplicator,
+    maxParticles
+  );
+
+  const speedZoomMultiplier = (3 - zoomMultiplier + 2) / 3;
+  const baseSpeedKps = speedKps * speedZoomMultiplier;
 
   const d = toTimeStamp - fromTimestamp;
   // const numParticles = (path.totalDistance / 1000) * numParticlesPer1000K;
@@ -204,8 +286,8 @@ const getPathTrips = (
 
   for (let i = 0; i < numParticles; i++) {
     const humanizeSpeedKps =
-      (Math.random() - 0.5) * 2 * speedKps * speedKpsHumanize;
-    const humanizedSpeedKps = speedKps + humanizeSpeedKps;
+      (Math.random() - 0.5) * 2 * baseSpeedKps * speedKpsHumanize;
+    const humanizedSpeedKps = baseSpeedKps + humanizeSpeedKps;
 
     const baseDuration = path.totalDistance / humanizedSpeedKps;
 
@@ -217,11 +299,22 @@ const getPathTrips = (
     const timestampEnd = timestampStart + baseDuration;
 
     const timestampDelta = timestampEnd - timestampStart;
-    const waypoints = path.coordinates.map((c, i) => {
-      const timestamp =
-        timestampStart + (i / (path.coordinates.length - 1)) * timestampDelta;
-      return { coordinates: c, timestamp: timestamp };
-    });
+    const waypointsAccumulator = path.coordinates.reduce(
+      (accumulator, currentCoords, currentIndex) => {
+        const accDistance = accumulator.accDistance;
+        const accDistanceRatio = accDistance / path.totalDistance;
+        const timestamp = timestampStart + accDistanceRatio * timestampDelta;
+
+        return {
+          accDistance: accDistance + path.distances[currentIndex],
+          waypoints: [
+            ...accumulator.waypoints,
+            { coordinates: currentCoords, timestamp: timestamp },
+          ],
+        };
+      },
+      { waypoints: [] as Waypoint[], accDistance: 0 }
+    );
 
     if (!flow.valuesRatiosByFoodGroup) continue;
     const randomCategoryRatio = Math.random();
@@ -234,9 +327,9 @@ const getPathTrips = (
     const category = CATEGORIES[categoryIndex];
     const categoryColor = CATEGORIES_PROPS[category].color;
     const color = hexToRgb(categoryColor);
-
+    // console.log(waypoints)
     trips.push({
-      waypoints,
+      waypoints: waypointsAccumulator.waypoints,
       color: [...color, 255],
       foodGroup: category,
     });
@@ -245,27 +338,55 @@ const getPathTrips = (
 };
 
 export function useFlowsWithTrips(
-  flowsWithPaths: FlowWithPaths[]
+  flowsWithCurvedPaths: FlowWithPaths[],
+  flowsWithRoadPaths: FlowWithPaths[],
+  zoomMultiplier: number
 ): FlowWithTrips[] {
   const params = useControls("trips", {
-    numParticlesMultiplicator: 10,
+    numParticlesCurvedPathsMultiplicator: 8,
+    numParticlesRoadsMultiplicator: 50,
+    numParticlesStressMultiplicator: 0.5,
     fromTimestamp: 0,
     toTimeStamp: 100,
-    intervalHumanize: 0.5,
+    intervalHumanize: 1,
     speedKps: 100,
-    speedKpsHumanize: 0.5,
+    speedKpsHumanize: 0.2,
     maxParticles: 100,
   });
 
+  const roads = useAtomValue(roadsAtom);
+  const adverseConditions = useAtomValue(adverseConditionsAtom);
+
   return useMemo(() => {
+    const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths;
+    const numParticlesMultiplicator =
+      (roads
+        ? params.numParticlesRoadsMultiplicator
+        : params.numParticlesCurvedPathsMultiplicator) *
+      (adverseConditions ? params.numParticlesStressMultiplicator : 1);
     return flowsWithPaths.map((l) => {
       const trips = l.paths
         .map((p) => {
-          return getPathTrips(p, l, params);
+          return getPathTrips(
+            p,
+            l,
+            {
+              ...params,
+              numParticlesMultiplicator,
+            },
+            zoomMultiplier
+          );
         })
         .flat();
 
       return { ...l, trips };
     });
-  }, [flowsWithPaths, params]);
+  }, [
+    flowsWithCurvedPaths,
+    flowsWithRoadPaths,
+    params,
+    roads,
+    zoomMultiplier,
+    adverseConditions,
+  ]);
 }

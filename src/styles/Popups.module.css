@@ -1,0 +1,79 @@
+.mainPopup {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.popupContent {
+  padding: 4px 8px;
+  box-shadow: var(--map-box-shadow);
+}
+
+.fixed {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+}
+
+.rankWrapper {
+  box-shadow: var(--map-box-shadow);
+}
+
+.rank {
+  width: 24px;
+  height: 24px;
+  background: var(--background);
+  border: 1px solid var(--background-2);
+  border-radius: 100%;
+  text-align: center;
+  line-height: 1.8rem;
+  display: inline-block;
+}
+
+.hidden {
+  display: none;
+}
+
+.highlightedLinked {
+  padding: 1rem;
+  display: flex;
+}
+
+.highlightedLinked .rank {
+  margin-top: -.2rem;
+  margin-right: .5rem;
+}
+
+.highlightedLinked ul {
+  margin-top: .5rem;
+  font-weight: var(--font-weight-normal);
+}
+
+.highlightedLinked li::before {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  content: " ";
+  border-radius: 99px;
+  background: var(--color);
+  margin-right: 5px;
+  margin-bottom: 2px;
+}
+
+.label {
+  margin-left: 4PX;
+}
+
+.linked {
+  z-index: var(--z-popup-linked);
+}
+
+.selected {
+  z-index: var(--z-popup-selected);
+}
+
+.highlightedLinked {
+  z-index: var(--z-popup-highlightedLinked);
+}
+
+.highlighted {
+  z-index: var(--z-popup-highlighted);
+}
