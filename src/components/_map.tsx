@@ -6,40 +6,41 @@ import React, {
   useState,
 } from "react";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
-import { Map, MapRef, useControl, useMap } from "react-map-gl";
+import { Map, MapRef, useControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useAtomValue } from "jotai";
-import Popup from "./_popup";
+import { useAtom, useAtomValue } from "jotai";
+import SelectedPopup from "./popups/_selectedPopup";
+import HighlightPopup from "./popups/_highlightPopup";
+import LinkedPopup from "./popups/_linkedPopup";
 import styles from "@/styles/Map.module.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Style } from "mapbox-gl";
 import useLayers from "@/hooks/useLayers";
 import useFlows, {
   useFlowsWithCurvedPaths,
+  useFlowsWithRoadPaths,
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
 import {
-  countiesAtom,
+  allLinkedCountiesAtom,
   flowTypeAtom,
+  highlightedCountyAtom,
   searchAtom,
   selectedCountyAtom,
+  viewportAtom,
 } from "@/atoms";
 import { Leva } from "leva";
 import useKeyPress from "@/hooks/useKeyPress";
 import { centroid } from "turf";
-import HighlightPopup from "./_highlightPopup";
-import LinkedPopup from "./_linkedPopup";
 import { useFlowsData } from "@/hooks/useAPI";
-import { RawFlowsInbound, RawFlowsOutbound } from "@/types";
+import { CountyWithRank, RawFlowsInbound, RawFlowsOutbound } from "@/types";
 import { countyAtom } from "@/atoms";
-
-const INITIAL_VIEW_STATE = {
-  longitude: -98,
-  latitude: 37,
-  zoom: 4,
-  pitch: 30,
-  bearing: 0,
-};
+import useMapStyle from "@/hooks/useMapStyle";
+import useLinkedCounties from "@/hooks/useLinkedCounties";
+import { SIDEBAR_WIDTH, TOP_COUNTIES_NUMBER } from "@/constants";
+import { Feature, Geometry } from "geojson";
+import HighlightedLinkedPopup from "./popups/_highlightedLinkedPopup";
+import { useHideable } from "@/hooks/useHideable";
 
 const MAX_BOUNDS = [
   [-160, 0],
@@ -56,37 +57,98 @@ function DeckGLOverlay(props: MapboxOverlayProps) {
 }
 
 type MapWrapperProps = {
-  mapStyle: Style;
+  initialMapStyle: Style;
 };
 
-function MapWrapper({ mapStyle }: MapWrapperProps) {
-  const counties = useAtomValue(countiesAtom);
+function MapWrapper({ initialMapStyle }: MapWrapperProps) {
+  const [viewport, setViewport] = useAtom(viewportAtom);
+
+  const { data: flowsData, error, isLoading } = useFlowsData();
   const selectedFlows = useFlows();
+
+  const selectedCounty = useAtomValue(selectedCountyAtom);
   const flowsWithCurvedPaths = useFlowsWithCurvedPaths(selectedFlows);
-  const flowsWithTrips = useFlowsWithTrips(flowsWithCurvedPaths);
+  const flowsWithRoadPaths = useFlowsWithRoadPaths(selectedFlows);
+  const flowsWithTrips = useFlowsWithTrips(
+    flowsWithCurvedPaths,
+    flowsWithRoadPaths,
+    Math.floor(viewport.zoom / 2)
+  );
+  const highlightedCounty = useAtomValue(highlightedCountyAtom);
+  const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
   const search = useAtomValue(searchAtom);
+  const { className, style } = useHideable(
+    !search,
+    styles.container,
+    styles.hidden
+  );
+
   const flowType = useAtomValue(flowTypeAtom);
 
-  const targetCounties = useMemo(() => {
-    if (!counties) return [];
-    return flowsWithTrips.flatMap((l) => {
-      const idToLinkTo = flowType === "consumer" ? l.sourceId : l.targetId;
-      const target = counties.features.find(
-        (county) => county.properties.geoid === idToLinkTo
-      );
-      return target ? [target] : [];
-    });
-  }, [counties, flowsWithTrips, flowType]);
+  const { linkedCounties } = useLinkedCounties();
+  const allLinkedCounties = useAtomValue(allLinkedCountiesAtom);
 
-  const [viewState, setViewState] = React.useState(INITIAL_VIEW_STATE);
+  const linkedCountiesWithRank = useMemo<
+    Feature<Geometry, CountyWithRank>[]
+  >(() => {
+    if (!linkedCounties) return [];
+    const linkedCountiesWithRank = linkedCounties.map((c, i) => ({
+      ...c,
+      properties: {
+        ...c.properties,
+        rank: i + 1,
+      },
+    }));
+    return linkedCountiesWithRank;
+  }, [linkedCounties]);
 
-  const layers = useLayers(
-    targetCounties,
-    flowsWithTrips,
-    Math.floor(viewState.zoom),
-    !search
-  );
+  // Linked counties (top or all depending on selection)
+  const linkedCountiesSliced = useMemo<
+    Feature<Geometry, CountyWithRank>[]
+  >(() => {
+    if (!linkedCountiesWithRank) return [];
+    const topCounties = linkedCountiesWithRank
+      .slice(0, allLinkedCounties ? Number.MAX_VALUE : TOP_COUNTIES_NUMBER)
+      .reverse();
+    return topCounties;
+  }, [linkedCountiesWithRank, allLinkedCounties]);
+
+  // Highlighted county that is a linked county --> full popup
+  const linkedHighlightedCounty = useMemo<Feature<
+    Geometry,
+    CountyWithRank
+  > | null>(() => {
+    if (!highlightedCounty || !linkedCountiesWithRank) return null;
+    const linkedHighlightedCounty = linkedCountiesWithRank.find(
+      (county) => county.properties.geoid === highlightedCounty.properties.geoid
+    );
+    if (!linkedHighlightedCounty) return null;
+    return linkedHighlightedCounty;
+  }, [highlightedCounty, linkedCountiesWithRank]);
+
+  // Linked counties but only when no linkedHighlightedCounty is selected (Number + name depending on zoom)
+  const linkedCountiesWithoutHighlightedLinked = useMemo(() => {
+    if (!linkedCountiesSliced || linkedHighlightedCounty) return [];
+    return linkedCountiesSliced;
+  }, [linkedCountiesSliced, linkedHighlightedCounty]);
+
+  // Highlighted county excluding linked counties --> Simple hover popup
+  const simpleHighlightedCounty = useMemo(() => {
+    if (!highlightedCounty) return;
+    const highlightedTopCounty = linkedCountiesSliced.find(
+      (county) => county.properties.geoid === highlightedCounty.properties.geoid
+    );
+    if (
+      highlightedTopCounty ||
+      linkedHighlightedCounty?.properties.geoid ===
+        highlightedCounty.properties.geoid
+    )
+      return;
+    return highlightedCounty;
+  }, [highlightedCounty, linkedCountiesSliced, linkedHighlightedCounty]);
+
+  const layers = useLayers(linkedCountiesSliced, flowsWithTrips, !isLoading);
 
   const [uiVisible, setUiVisible] = useState(false);
   const toggleUI = useCallback(() => {
@@ -95,16 +157,14 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
   useKeyPress("u", toggleUI);
 
   const mapRef = useRef<MapRef>(null);
-  const selectedCounty = useAtomValue(selectedCountyAtom);
   useEffect(() => {
     if (!selectedCounty) return;
     mapRef.current?.flyTo({
       center: centroid(selectedCounty).geometry.coordinates as any,
-      padding: { left: 200, top: 0, right: 0, bottom: 0 },
+      padding: { left: SIDEBAR_WIDTH, top: 0, right: 0, bottom: 0 },
     });
   }, [selectedCounty]);
 
-  const { data: flowsData, error, isLoading } = useFlowsData();
   const currentCountyId = useAtomValue(countyAtom);
   const bannerError = useMemo(() => {
     if (error) return "Error loading county calories";
@@ -126,11 +186,14 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
   }, [flowsData, isLoading, error, currentCountyId, flowType]);
 
   return (
-    <>
+    <div className={className} style={style}>
       {bannerError && <div className={styles.banner}>{bannerError}</div>}
       <Map
-        {...viewState}
-        onMove={(evt) => setViewState(evt.viewState)}
+        {...viewport}
+        id="map"
+        onMove={(evt) => {
+          setViewport(evt.viewState);
+        }}
         ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
         mapStyle={mapStyle}
@@ -141,18 +204,37 @@ function MapWrapper({ mapStyle }: MapWrapperProps) {
         <DeckGLOverlay layers={layers} />
         {!search && (
           <>
-            {targetCounties.map((county) => {
-              return (
-                <LinkedPopup key={county.properties.geoid} county={county} />
-              );
-            })}
-            <Popup />
-            <HighlightPopup />
+            {/* Fixed selected county */}
+            {selectedCounty && <SelectedPopup county={selectedCounty} />}
+
+            {!isLoading && (
+              <>
+                {/* Highlighted county that is a linked county */}
+                {linkedHighlightedCounty && (
+                  <HighlightedLinkedPopup county={linkedHighlightedCounty} />
+                )}
+                {/* Linked counties (top or all depending on selection) */}
+                {linkedCountiesWithoutHighlightedLinked.map((county) => {
+                  return (
+                    <LinkedPopup
+                      key={county.properties.geoid}
+                      county={county}
+                      numPopups={linkedCountiesWithoutHighlightedLinked.length}
+                    />
+                  );
+                })}
+              </>
+            )}
+
+            {/* Counties highlighted on mouse hover */}
+            {simpleHighlightedCounty && (
+              <HighlightPopup county={simpleHighlightedCounty} />
+            )}
           </>
         )}
       </Map>
       <Leva oneLineLabels={true} hidden={!uiVisible} />
-    </>
+    </div>
   );
 }
 

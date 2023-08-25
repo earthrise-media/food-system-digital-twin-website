@@ -1,21 +1,25 @@
+.logoWrapper {
+  position: relative;
+}
+
 .logo {
   display: block;
   font-size: var(--font-size-logo);
   font-weight: var(--font-weight-bold);
-  padding: 0 0 0 80px;
+  padding: 5px 0 0 80px;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .logo::before {
   content: ' ';
   position: absolute;
   background-image: url("/logo.svg");
-  background-color: var(--background);
   background-size: 55%;
   background-repeat: no-repeat;
   background-position: 20px 12px;
   left: 0;
-  top: 20px;
+  top: 0;
   width: 85px;
   height: 85px;
   display: inline-block;

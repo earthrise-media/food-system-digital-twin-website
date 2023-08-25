@@ -1,12 +1,13 @@
 import { useCallback, useMemo } from "react";
 import Select from "react-select";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import styles from "@/styles/Search.module.css";
 import { countiesAtom, countyAtom, foodGroupAtom, searchAtom } from "@/atoms";
+import { useHideable } from "@/hooks/useHideable";
 
 function Search() {
   const counties = useAtomValue(countiesAtom);
-  const setSearch = useSetAtom(searchAtom);
+  const [search, setSearch] = useAtom(searchAtom);
   const setCounty = useSetAtom(countyAtom);
   const setFoodGroup = useSetAtom(foodGroupAtom);
   const options = useMemo(() => {
@@ -29,8 +30,10 @@ function Search() {
     [setCounty, setSearch, setFoodGroup]
   );
 
+  const { className, style, stage } = useHideable(search, styles.wrapper, styles.hidden)
+
   return (
-    <div className={styles.wrapper} onClick={() => setSearch(false)}>
+    <div className={className} style={style} onClick={() => setSearch(false)}>
       <button className={styles.close} onClick={() => setSearch(false)} />
 
       <div onClick={(e) => e.stopPropagation()}>

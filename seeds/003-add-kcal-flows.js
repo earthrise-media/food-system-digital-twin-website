@@ -1,9 +1,65 @@
 const path = require("path");
 const fs = require("fs-extra");
-const { KCAL_FLOWS_DIR } = require("../config");
+const postgis = require("knex-postgis");
+const { KCAL_FLOWS_DIR, APP_DATA_DIR } = require("../config");
+
+// Generate absolute paths
+const CROPS_CSV_PATH = path.join(APP_DATA_DIR, "crops.csv");
+const COUNTIES_FILE_PATH = path.join(
+  APP_DATA_DIR,
+  "county-population-consumption-production-scaled.geojson"
+);
 
 exports.seed = async function (knex) {
-  // For each csv file in app-data/kcal-flows
+  /**
+   * CLEAR FLOWS, CROPS, AND COUNTIES TABLES
+   */
+  await knex.raw("TRUNCATE TABLE kcal_flows RESTART IDENTITY CASCADE");
+  await knex.raw("TRUNCATE TABLE crops RESTART IDENTITY CASCADE");
+  await knex.raw("TRUNCATE TABLE counties RESTART IDENTITY CASCADE");
+
+  /**
+   * INGEST COUNTIES
+   */
+  const { features: counties } = await fs.readJson(COUNTIES_FILE_PATH);
+  await knex.batchInsert(
+    "counties",
+    counties.map((county) => ({
+      id: county.properties.geography.slice(-5),
+      properties: county.properties,
+      geom: postgis(knex).geomFromGeoJSON(county.geometry),
+    })),
+    500
+  );
+
+  /**
+   * INGEST CROP CODES
+   */
+  const cropCodes = await fs.readFile(CROPS_CSV_PATH, "utf-8");
+
+  // Split CSV into rows
+  const rows = cropCodes.split("\n");
+
+  // Remove header row
+  rows.shift();
+
+  // Batch insert crop codes
+  await knex("crops").insert(
+    rows
+      .map((row) => {
+        const [id, name, category] = row.split(",");
+        return {
+          id,
+          name: name.trim(),
+          category,
+        };
+      })
+      .filter((row) => row.name !== "")
+  );
+
+  /**
+   * INGEST KCAL FLOWS
+   */
   const files = (await fs.readdir(KCAL_FLOWS_DIR)).filter((file) =>
     file.endsWith(".csv")
   );
@@ -12,7 +68,7 @@ exports.seed = async function (knex) {
     // Extract id from filename
     const crop_name = file
       .replace("kcal_produced_", "")
-      .replace("_results_df.csv", "");
+      .replace("_impacted_results_df.csv", "");
 
     const { id: crop_id } = await knex("crops")
       .where("name", crop_name)
@@ -34,10 +90,17 @@ exports.seed = async function (knex) {
 
     // Batch insert kcal flows
     try {
-      await knex("kcal_flows").insert(
+      await knex.batchInsert(
+        "kcal_flows",
         rows
-          .map((row) => {
-            const [origin_id, destination_id, value] = row.split(",");
+          .map((line) => {
+            if (line === "") return;
+
+            const row = line.split(",");
+
+            const origin_id = row[0].padStart(5, "0");
+            const destination_id = row[1].padStart(5, "0");
+            const value = row[2];
 
             if (!origin_id || !destination_id || !value) {
               console.log("Skipping row", row);
@@ -49,9 +112,14 @@ exports.seed = async function (knex) {
               destination_id,
               crop_id,
               value,
+              impact_ratios: {
+                heat: parseFloat(row[3]),
+                drought: parseFloat(row[5]),
+              },
             };
           })
-          .filter((row) => row.origin_id !== "Dade")
+          .filter((row) => row.origin_id !== "0Dade"), // Discard rows with invalid origin_id
+        500
       );
     } catch (error) {
       console.log(error);

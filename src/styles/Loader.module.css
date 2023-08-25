@@ -1,0 +1,38 @@
+.loader {
+  position: absolute;
+  z-index: var(--z-loader);
+  width: 100%;
+  height: 100%;
+  background: var(--background-2);
+  display: flex;
+  margin: auto;
+  transition: opacity var(--transition) ease-out;
+}
+
+.loaderHidden {
+  opacity: 0;
+}
+
+.logoWrapper {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loaderText {
+  margin-top: 3rem;
+  opacity: .5;
+  font-weight: var(--font-weight-bold);
+  animation: alternate infinite 1s ease-in-out loaderText;
+}
+
+/* pulse animation */
+@keyframes loaderText {
+  0% {
+    opacity: .5;
+  }
+  100% {
+    opacity: .2;
+  }
+}
