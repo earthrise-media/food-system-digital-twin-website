@@ -23,7 +23,7 @@ jobs:
           echo "version=$version" >> $GITHUB_ENV
 
       - name: Get Dev Version
-        if: github.ref == 'refs/heads/dev'
+        if: github.ref != 'refs/heads/main'
         run: |
           version=$(cat ./version.txt)
           timestamp=$(date +%s)
