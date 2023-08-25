@@ -19,7 +19,7 @@ COPY *.ts /app/
 
 WORKDIR /app
 ## Build
-RUN npm install yarn && yarn install 
+RUN npm install yarn && yarn install --force
 RUN rm /app/next.config.js
 COPY docker.next.config /app/next.config.js
 RUN yarn build
