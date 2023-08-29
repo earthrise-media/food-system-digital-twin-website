@@ -53,3 +53,11 @@ export const INITIAL_VIEW_STATE = {
   pitch: 30,
   bearing: 0,
 };
+
+export const STRESS_PALETTE = [
+  "rgba(232, 214, 194, 1)",
+  "rgba(221, 192, 175, 1)",
+  "rgba(210, 170, 163, 1)",
+  "rgba(193, 151, 154, 1)",
+  "rgba(172, 133, 144, 1)",
+];
