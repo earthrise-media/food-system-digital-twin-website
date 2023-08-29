@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import { adverseConditionsAtom } from "@/atoms";
 import { useCallback } from "react";
 import Tabs from "../common/_tabs";
-import { ADVERSE_CONDITIONS_OPTIONS } from "@/constants";
+import { ADVERSE_CONDITIONS_OPTIONS, STRESS_PALETTE } from "@/constants";
 import { AdverseConditions } from "@/types";
 import { useHideable } from "@/hooks/useHideable";
 
@@ -24,7 +24,7 @@ export default function StressConditions() {
   const { className, style, stage, shouldMount } = useHideable(
     !!adverseConditions,
     styles.content,
-    styles.contentHidden,
+    styles.contentHidden
   );
 
   return (
@@ -40,13 +40,28 @@ export default function StressConditions() {
 
       <div className={className} style={style}>
         {shouldMount && (
-          <Tabs
-            options={ADVERSE_CONDITIONS_OPTIONS}
-            selectedOption={adverseConditions || undefined}
-            onChange={(value) =>
-              setAdverseConditions(value as AdverseConditions)
-            }
-          />
+          <div>
+            <Tabs
+              options={ADVERSE_CONDITIONS_OPTIONS}
+              selectedOption={adverseConditions || undefined}
+              onChange={(value) =>
+                setAdverseConditions(value as AdverseConditions)
+              }
+            />
+            <div className={styles.legend}>
+              {STRESS_PALETTE.map((color, i) => (
+                <div
+                  key={i}
+                  className={styles.legendItem}
+                  style={{ backgroundColor: color }}
+                ></div>
+              ))}
+            </div>
+              <div className={styles.legendLabels}>
+                <div>Low</div>
+                <div>High</div>
+              </div>
+          </div>
         )}
       </div>
     </div>
