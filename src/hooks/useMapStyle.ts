@@ -13,12 +13,13 @@ export default function useMapStyle(
 ): Style {
   const roads = useAtomValue(roadsAtom);
   const stress = useAtomValue(adverseConditionsAtom);
-  const { color0, color1, color2, color3, color4 } = useControls("stress color scale", {
+  const { color0, color1, color2, color3, color4, stressOpacity } = useControls("stress color scale", {
     color0: STRESS_PALETTE[0],
     color1: STRESS_PALETTE[1],
     color2: STRESS_PALETTE[2],
     color3: STRESS_PALETTE[3],
     color4: STRESS_PALETTE[4],
+    stressOpacity: 1
   });
 
   const sources = {
@@ -64,6 +65,7 @@ export default function useMapStyle(
           ],
           "raster-color-mix": [31, 0, 0, 0],
           "raster-color-range": [0, 31],
+          "raster-opacity": stressOpacity,
         } as any,
       },
     ]
