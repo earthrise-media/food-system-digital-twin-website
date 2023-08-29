@@ -55,9 +55,9 @@ export const INITIAL_VIEW_STATE = {
 };
 
 export const STRESS_PALETTE = [
-  "rgba(232, 214, 194, 1)",
-  "rgba(221, 192, 175, 1)",
-  "rgba(210, 170, 163, 1)",
-  "rgba(193, 151, 154, 1)",
-  "rgba(172, 133, 144, 1)",
+  "#e8d6c2",
+  "#ddc0af",
+  "#d2aaa3",
+  "#c1979a",
+  "#ac8590",
 ];

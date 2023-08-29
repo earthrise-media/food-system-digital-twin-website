@@ -5,6 +5,7 @@ import { featureCollection } from "@turf/helpers";
 import { useAtomValue } from "jotai";
 import { Style } from "mapbox-gl";
 import { feature } from "turf";
+import { useControls } from "leva";
 
 export default function useMapStyle(
   initialMapStyle: Style,
@@ -12,6 +13,13 @@ export default function useMapStyle(
 ): Style {
   const roads = useAtomValue(roadsAtom);
   const stress = useAtomValue(adverseConditionsAtom);
+  const { color0, color1, color2, color3, color4 } = useControls("stress color scale", {
+    color0: STRESS_PALETTE[0],
+    color1: STRESS_PALETTE[1],
+    color2: STRESS_PALETTE[2],
+    color3: STRESS_PALETTE[3],
+    color4: STRESS_PALETTE[4],
+  });
 
   const sources = {
     ...initialMapStyle.sources,
@@ -22,6 +30,8 @@ export default function useMapStyle(
   ]
 
   if (stress !== null) {
+
+
     sources.stress = {
       type: "raster",
       tiles: [
@@ -42,15 +52,15 @@ export default function useMapStyle(
             ["linear"],
             ["raster-value"],
             0,
-            STRESS_PALETTE[0],
+            color0,
             7,
-            STRESS_PALETTE[1],
+            color1,
             15,
-            STRESS_PALETTE[2],
+            color2,
             23,
-            STRESS_PALETTE[3],
+            color3,
             31,
-            STRESS_PALETTE[4],
+            color4,
           ],
           "raster-color-mix": [31, 0, 0, 0],
           "raster-color-range": [0, 31],
