@@ -10,7 +10,6 @@ import {
   MapViewportProp,
 } from "./types";
 import { INITIAL_VIEW_STATE } from "./constants";
-import { deserialize } from "v8";
 import { toDecimalPlaces } from "./utils";
 
 export const countiesAtom = atom<FeatureCollection<Geometry, County> | null>(

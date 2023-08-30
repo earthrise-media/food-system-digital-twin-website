@@ -1,22 +1,36 @@
 .card {
   background: var(--background);
-  margin-top: 16px;
-  border: 1px solid var(--foreground-10);
-  padding: 0 12px 16px;
+  border: 1px solid var(--accent);
   filter: var(--shadow);
 }
 
-.card > h4 {
+.card > .header {
+  padding: 0 12px 16px;
+  color: var(--accent);
+}
+
+.card > .header > h4 {
+  /* color: var(--foreground-50); */
+  pointer-events: none;
   position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  color: var(--foreground-50);
-  padding-left: 28px;
+  padding-left: 26px;
+  font-size: var(--font-size-smallcaps);
+  text-transform: uppercase;
+  letter-spacing: .1rem;
+  font-weight: var(--font-weight-normal);
 }
 
-.card.active > h4 {
-  color: var(--foreground);
+.card.active {
+  border-color: var(--foreground);
+}
+
+.card.active > .header {
+  background: var(--foreground);
+  color: var(--background);
+  cursor: pointer;
 }
 
 .card h4::before {
@@ -35,25 +49,37 @@
 }
 
 .stressConditions h4::before {
-  background-image: url("/icons/stress.svg");
+  background-image: url("/icons/stress-dark.svg");
   top: 12px;
 }
 
 .roads h4::before {
-  background-image: url("/icons/road.svg");
+  background-image: url("/icons/road-dark.svg");
   top: 14px;
+}
+
+.stressConditions.active h4::before {
+  background-image: url("/icons/stress.svg");
+}
+
+.roads.active h4::before {
+  background-image: url("/icons/road.svg");
+}
+
+.card:not(.active) .header:hover {
+  text-decoration: underline;
 }
 
 .content {
   transition: all var(--transition) linear;
   overflow: hidden;
   max-height: 90px;
-  margin-top: 16px;
+  padding: 16px;
 }
 
 .contentHidden {
   max-height: 0;
-  margin-top: 0;
+  padding: 0;
 }
 
 .legend {

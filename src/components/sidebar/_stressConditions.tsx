@@ -33,10 +33,12 @@ export default function StressConditions() {
         [styles.active]: adverseConditions !== null,
       })}
     >
-      <h4>
-        Simulate stress conditions{" "}
-        <Toggle checked={adverseConditions !== null} onChange={onToggle} />
-      </h4>
+      <div className={styles.header} onClick={onToggle}>
+        <h4>
+          Simulate stress conditions{" "}
+          <Toggle checked={adverseConditions !== null} />
+        </h4>
+      </div>
 
       <div className={className} style={style}>
         {shouldMount && (

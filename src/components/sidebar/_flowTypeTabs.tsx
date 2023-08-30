@@ -13,7 +13,7 @@ export default function FlowTypeTabs() {
           [styles.selected]: flowType === "producer",
         })}
       >
-        Producer
+        <span>Producer</span>
       </button>
       <button
         onClick={() => setFlowType("consumer")}
@@ -21,7 +21,7 @@ export default function FlowTypeTabs() {
           [styles.selected]: flowType === "consumer",
         })}
       >
-        Consumer
+        <span>Consumer</span>
       </button>
     </div>
   );

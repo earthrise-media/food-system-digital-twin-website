@@ -1,6 +1,6 @@
 import { useHideable } from "@/hooks/useHideable";
 import styles from "@/styles/Loader.module.css";
-import Logo from "./_logo";
+import LogoIntro from "./_logoIntro";
 import { useEffect, useState } from "react";
 import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 
@@ -28,7 +28,7 @@ export default function Loader() {
   return (
     <div className={className} style={style}>
       <div className={styles.logoWrapper}>
-        <Logo />
+        <LogoIntro />
         <div className={styles.loaderText}>loading...</div>
       </div>
     </div>

@@ -20,8 +20,8 @@
 .rank {
   width: 24px;
   height: 24px;
-  background: var(--background);
-  border: 1px solid var(--background-2);
+  background: var(--accent);
+  color: var(--background);
   border-radius: 100%;
   text-align: center;
   line-height: 1.8rem;
