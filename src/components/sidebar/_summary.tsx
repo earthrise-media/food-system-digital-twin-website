@@ -125,10 +125,20 @@ this county.`
 
       {flowType === "producer" && (
         <dl>
-          <dt>Agriculture sector in GDP</dt>
+          <dt>Cal. produced per capita:</dt>
+          <dd>
+            {isLoading || isCountyLoading ? (
+              <LineLoader height={24} width={120} />
+            ) : (
+              <>
+                <b>~{calPerCapita}</b> Cal
+              </>
+            )}
+          </dd>
+          {/* <dt>Agriculture sector in GDP</dt>
           <dd>
             <b>{countyData?.properties.agriculture_sector_gdp || "?"} %</b>
-          </dd>
+          </dd> */}
         </dl>
       )}
     </div>
