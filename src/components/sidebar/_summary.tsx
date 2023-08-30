@@ -25,7 +25,7 @@ export default function Stats({ stats }: { stats: Stats | null }) {
 
   const totalPopulation = useMemo(() => {
     if (!countyData) return null;
-    const pop = countyData.properties.total_population;
+    const pop = countyData?.properties?.total_population;
     if (pop < 1000000) {
       return {
         pop: new Intl.NumberFormat("en-US").format(pop),
@@ -42,7 +42,7 @@ export default function Stats({ stats }: { stats: Stats | null }) {
 
   const calPerCapita = useMemo(() => {
     if (!countyData || !stats) return null;
-    const pop = countyData.properties.total_population;
+    const pop = countyData?.properties?.total_population;
     const perCapita = stats?.total / pop;
     const perCapitaFormatted = new Intl.NumberFormat("en-US", {
       maximumSignificantDigits: 3,
