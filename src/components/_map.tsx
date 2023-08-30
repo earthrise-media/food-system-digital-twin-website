@@ -127,12 +127,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     return linkedHighlightedCounty;
   }, [highlightedCounty, linkedCountiesWithRank]);
 
-  // Linked counties but only when no linkedHighlightedCounty is selected (Number + name depending on zoom)
-  const linkedCountiesWithoutHighlightedLinked = useMemo(() => {
-    if (!linkedCountiesSliced || linkedHighlightedCounty) return [];
-    return linkedCountiesSliced;
-  }, [linkedCountiesSliced, linkedHighlightedCounty]);
-
   // Highlighted county excluding linked counties --> Simple hover popup
   const simpleHighlightedCounty = useMemo(() => {
     if (!highlightedCounty) return;
@@ -213,16 +207,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
                 {linkedHighlightedCounty && (
                   <HighlightedLinkedPopup county={linkedHighlightedCounty} />
                 )}
-                {/* Linked counties (top or all depending on selection) */}
-                {linkedCountiesWithoutHighlightedLinked.map((county) => {
-                  return (
-                    <LinkedPopup
-                      key={county.properties.geoid}
-                      county={county}
-                      numPopups={linkedCountiesWithoutHighlightedLinked.length}
-                    />
-                  );
-                })}
               </>
             )}
 
