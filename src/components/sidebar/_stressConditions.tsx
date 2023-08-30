@@ -33,10 +33,10 @@ export default function StressConditions() {
         [styles.active]: adverseConditions !== null,
       })}
     >
-      <div className={styles.header}>
+      <div className={styles.header} onClick={onToggle}>
         <h4>
           Simulate stress conditions{" "}
-          <Toggle checked={adverseConditions !== null} onChange={onToggle} />
+          <Toggle checked={adverseConditions !== null} />
         </h4>
       </div>
 

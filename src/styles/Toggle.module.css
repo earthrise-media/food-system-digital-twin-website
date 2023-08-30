@@ -9,7 +9,7 @@
 	text-indent: -9999px;
 	width: 30px;
 	height: 15px;
-	background: var(--background);
+	background: var(--accent);
 	display: block;
 	border-radius: 100px;
 	position: relative;
@@ -23,7 +23,7 @@
 	left: 3px;
 	width: 9px;
 	height: 9px;
-	background: var(--accent);
+	background: var(--background);
 	border-radius: 90px;
 	transition: 0.3s;
 }

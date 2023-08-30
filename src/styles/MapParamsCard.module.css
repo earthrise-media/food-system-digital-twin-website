@@ -6,12 +6,12 @@
 
 .card > .header {
   padding: 0 12px 16px;
-  background: var(--accent);
+  color: var(--accent);
 }
 
 .card > .header > h4 {
-  color: var(--background);
   /* color: var(--foreground-50); */
+  pointer-events: none;
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -23,8 +23,14 @@
   font-weight: var(--font-weight-normal);
 }
 
-.card.active > .header > h4 {
+.card.active {
+  border-color: var(--foreground);
+}
+
+.card.active > .header {
+  background: var(--foreground);
   color: var(--background);
+  cursor: pointer;
 }
 
 .card h4::before {
@@ -43,13 +49,25 @@
 }
 
 .stressConditions h4::before {
-  background-image: url("/icons/stress.svg");
+  background-image: url("/icons/stress-dark.svg");
   top: 12px;
 }
 
 .roads h4::before {
-  background-image: url("/icons/road.svg");
+  background-image: url("/icons/road-dark.svg");
   top: 14px;
+}
+
+.stressConditions.active h4::before {
+  background-image: url("/icons/stress.svg");
+}
+
+.roads.active h4::before {
+  background-image: url("/icons/road.svg");
+}
+
+.card:not(.active) .header:hover {
+  text-decoration: underline;
 }
 
 .content {

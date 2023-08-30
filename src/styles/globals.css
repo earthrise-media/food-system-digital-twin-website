@@ -12,7 +12,7 @@
   --value-negative-rgb: 235, 48, 87;
   --value-equal-rgb: 99, 176, 65;
   --dark-rgb: 41, 41, 41;
-  --accent-rgb: 53, 48, 208;
+  --accent-rgb: 80, 119, 188;
 
   --foreground: rgb(var(--foreground-rgb));
   --foreground-50: rgba(var(--foreground-rgb), 0.5);
