@@ -4,13 +4,24 @@ import styles from "@/styles/Summary.module.css";
 import { Stats } from "@/utils";
 import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 import { useAtomValue } from "jotai";
-import { flowTypeAtom } from "@/atoms";
+import { adverseConditionsAtom, flowTypeAtom } from "@/atoms";
 import LineLoader from "../common/_loader";
+import classNames from "classnames";
 
 export default function Stats({ stats }: { stats: Stats | null }) {
   const flowType = useAtomValue(flowTypeAtom);
   const { data: flowsData, error, isLoading } = useFlowsData();
   const { data: countyData, isLoading: isCountyLoading } = useCountyData();
+  const adverseConditions = useAtomValue(adverseConditionsAtom);
+
+  const varAdverse = adverseConditions
+    ? stats?.[
+        adverseConditions === "drought"
+          ? "total_drought_var"
+          : "total_heat_stress_var"
+      ]
+    : 0;
+  const negative = varAdverse !== undefined && varAdverse < 0;
 
   const totalPopulation = useMemo(() => {
     if (!countyData) return null;
@@ -65,6 +76,17 @@ this county.`
                     {stats?.formattedTotal.unit}
                   </b>{" "}
                   Cal
+                  {adverseConditions !== null && (
+                    <span
+                      className={classNames(styles.variation, {
+                        [styles.negative]: negative,
+                        [styles.equal]: !negative,
+                      })}
+                    >
+                      {negative ? "" : "+"}
+                      {varAdverse}%
+                    </span>
+                  )}
                 </>
               )}
             </>
