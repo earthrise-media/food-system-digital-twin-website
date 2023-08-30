@@ -4,21 +4,21 @@
 
 .logoWrapper {
   position: absolute;
-  top: 25px;
-  right: 20px;
+  top: 20px;
+  left: 20px;
   z-index: var(--z-flow-info);
-  transform: scale(0.5);
-  transform-origin: top right;
 }
-
 
 .mapParamsCards {
   position: absolute;
   z-index: var(--z-flow-info);
   right: 20px;
-  bottom: 40px;
+  top: 20px;
   width: 320px;
   transition: right var(--transition) ease-out;
+}
+.mapParamsCards > *:not(:first-child) {
+  margin-top: 16px;
 }
 
 .mapParamsCardsHidden {

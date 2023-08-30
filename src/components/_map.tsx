@@ -11,7 +11,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { useAtom, useAtomValue } from "jotai";
 import SelectedPopup from "./popups/_selectedPopup";
 import HighlightPopup from "./popups/_highlightPopup";
-import LinkedPopup from "./popups/_linkedPopup";
 import styles from "@/styles/Map.module.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Style } from "mapbox-gl";

@@ -8,9 +8,11 @@ export default function Roads() {
   const [roads, setRoads] = useAtom(roadsAtom);
   return (
     <div className={cx(styles.card, styles.roads, { [styles.active]: roads })}>
-      <h4>
-        Show road network <Toggle checked={roads} onChange={setRoads} />
-      </h4>
+      <div className={styles.header}>
+        <h4>
+          Show road network <Toggle checked={roads} onChange={setRoads} />
+        </h4>
+      </div>
     </div>
   );
 }

@@ -1,22 +1,30 @@
 .card {
   background: var(--background);
-  margin-top: 16px;
-  border: 1px solid var(--foreground-10);
-  padding: 0 12px 16px;
+  border: 1px solid var(--accent);
   filter: var(--shadow);
 }
 
-.card > h4 {
+.card > .header {
+  padding: 0 12px 16px;
+  background: var(--accent);
+}
+
+.card > .header > h4 {
+  color: var(--background);
+  /* color: var(--foreground-50); */
   position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  color: var(--foreground-50);
-  padding-left: 28px;
+  padding-left: 26px;
+  font-size: var(--font-size-smallcaps);
+  text-transform: uppercase;
+  letter-spacing: .1rem;
+  font-weight: var(--font-weight-normal);
 }
 
-.card.active > h4 {
-  color: var(--foreground);
+.card.active > .header > h4 {
+  color: var(--background);
 }
 
 .card h4::before {
@@ -47,12 +55,12 @@
 .content {
   transition: all var(--transition) linear;
   overflow: hidden;
-  max-height: 30px;
-  margin-top: 16px;
+  max-height: 60px;
+  padding: 16px;
 }
 
 .contentHidden {
   max-height: 0;
-  margin-top: 0;
+  padding: 0;
 }
 

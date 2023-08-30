@@ -24,7 +24,7 @@ export default function StressConditions() {
   const { className, style, stage, shouldMount } = useHideable(
     !!adverseConditions,
     styles.content,
-    styles.contentHidden,
+    styles.contentHidden
   );
 
   return (
@@ -33,10 +33,12 @@ export default function StressConditions() {
         [styles.active]: adverseConditions !== null,
       })}
     >
-      <h4>
-        Simulate stress conditions{" "}
-        <Toggle checked={adverseConditions !== null} onChange={onToggle} />
-      </h4>
+      <div className={styles.header}>
+        <h4>
+          Simulate stress conditions{" "}
+          <Toggle checked={adverseConditions !== null} onChange={onToggle} />
+        </h4>
+      </div>
 
       <div className={className} style={style}>
         {shouldMount && (
