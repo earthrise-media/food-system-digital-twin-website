@@ -1,24 +1,22 @@
 .logoWrapper {
-  display: flex;
-  width: var(--width);
-  align-items: flex-start;
-  justify-content: space-between;
+  position: relative;
 }
 
 .logo {
   display: block;
-  padding: 2px 0 0 22px;
-  cursor: pointer;
+  font-size: var(--font-size-logo);
+  font-weight: var(--font-weight-bold);
+  padding: 5px 0 0 80px;
   margin-bottom: 20px;
-  transform-origin: top left;
 }
 
 .logo::before {
   content: ' ';
   position: absolute;
   background-image: url("/logo.svg");
-  background-size: 20%;
+  background-size: 55%;
   background-repeat: no-repeat;
+  background-position: 20px 12px;
   left: 0;
   top: 0;
   width: 85px;
@@ -28,16 +26,4 @@
 
 .logo b {
   font-weight: var(--font-weight-bold);
-}
-
-.logo u {
-  text-decoration: none;
-}
-
-.logo:hover u {
-  text-decoration: underline;
-}
-
-.about  {
-  padding-top: 2px;
 }

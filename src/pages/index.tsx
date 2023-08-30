@@ -18,6 +18,7 @@ import { useHideable } from "@/hooks/useHideable";
 import Logo from "@/components/_logo";
 import Loader from "@/components/_loader";
 import { MapProvider } from "react-map-gl";
+import { ErrorBoundary } from "react-error-boundary";
 
 // https://github.com/visgl/deck.gl/issues/7735
 const DeckMap = dynamic(() => import("@/components/_map"), {
@@ -26,7 +27,21 @@ const DeckMap = dynamic(() => import("@/components/_map"), {
 
 export const kumbhSans = Kumbh_Sans({ subsets: ["latin"] });
 
-export default function Home({
+export default function HomeWithErrorBoundary(props: any) {
+  return (
+    <ErrorBoundary
+      fallback={<div>Something went wrong</div>}
+      onError={() => {
+        if (process.env.NODE_ENV !== "development")
+          window.location.replace(location.href.replace(location.hash, ""));
+      }}
+    >
+      <Home {...props} />
+    </ErrorBoundary>
+  );
+}
+
+function Home({
   counties,
   mapStyle,
 }: {
@@ -53,7 +68,24 @@ export default function Home({
         <title>Food Twin</title>
         <meta name="description" content="A project by Earth Genome" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
       </Head>
 
       <MapProvider>

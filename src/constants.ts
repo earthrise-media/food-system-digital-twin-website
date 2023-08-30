@@ -20,7 +20,7 @@ export const CATEGORIES_PROPS: Record<
   },
   Nuts: {
     name: "Nuts",
-    color: "#4046CA",
+    color: "#E8C600",
   },
   Grain: {
     name: "Grain",

@@ -424,7 +424,7 @@
             "type": "vector"
         }
     },
-    "sprite": "mapbox://sprites/fausto-perez/cljpgc8t200t601qw8rcj4m81/c62zdxg1e8pckyle2rud2bk1v",
+    "sprite": "mapbox://sprites/plotline/cllnvchei000z01r8bomd1kej/2jjykge359i8f1h31pt0wky9i",
     "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
     "layers": [
         {
@@ -2508,7 +2508,7 @@
                 ],
                 "text-halo-color": "hsl(38, 30%, 100%)",
                 "text-halo-width": 1,
-                "icon-opacity": ["step", ["zoom"], 0, 4, 0.5, 7, 0],
+                "icon-opacity": ["step", ["zoom"], 0, 6, 0.5, 7, 0],
                 "text-halo-blur": 1,
                 "text-opacity": ["step", ["zoom"], 0, 7, 1]
             }
