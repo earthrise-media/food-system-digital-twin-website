@@ -73,7 +73,7 @@
 .content {
   transition: all var(--transition) linear;
   overflow: hidden;
-  max-height: 60px;
+  max-height: 90px;
   padding: 16px;
 }
 
@@ -82,3 +82,21 @@
   padding: 0;
 }
 
+.legend {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  display: flex;
+  width: 100%;
+}
+
+.legendItem {
+  height: 10px;
+  flex: 1;
+}
+
+.legendLabels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--foreground-50);
+  font-size: 12px;
+}

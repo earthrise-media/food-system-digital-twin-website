@@ -16,11 +16,11 @@ export const CATEGORIES_PROPS: Record<
 > = {
   Vegetables: {
     name: "Vegetables",
-    color: "#0FB5AE",
+    color: "#5AA155",
   },
   Nuts: {
     name: "Nuts",
-    color: "#E8C600",
+    color: "#EE6BB1",
   },
   Grain: {
     name: "Grain",
@@ -28,22 +28,37 @@ export const CATEGORIES_PROPS: Record<
   },
   Fruits: {
     name: "Fruits",
-    color: "#DE3D82",
+    color: "#D23130",
   },
   Potatoes: {
     name: "Tubers",
-    color: "#7E84FA",
+    color: "#92583A",
   },
 };
+
+export const CATEGORIES_COLORS = Object.fromEntries(Object.entries(CATEGORIES_PROPS).map(
+  ([cat, { color }]) => [cat, color]
+));
 
 export const TOP_COUNTIES_NUMBER = 5;
 
 export const ADVERSE_CONDITIONS_OPTIONS: {
   value: AdverseConditions;
   label: string;
+  tilesUrl: string;
 }[] = [
-  { value: "drought", label: "Drought" },
-  { value: "heatStress", label: "Heat stress" },
+  {
+    value: "drought",
+    label: "Drought",
+    tilesUrl:
+      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/drought-tiles/{z}/{x}/{y}.png",
+  },
+  {
+    value: "heatStress",
+    label: "Heat stress",
+    tilesUrl:
+      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/heat-tiles/{z}/{x}/{y}.png",
+  },
 ];
 
 export const INITIAL_VIEW_STATE = {
@@ -53,3 +68,11 @@ export const INITIAL_VIEW_STATE = {
   pitch: 30,
   bearing: 0,
 };
+
+export const STRESS_PALETTE = [
+  "#f5f2ed",
+  "#f5f2ed",
+  "#ffd8a7",
+  "#f1a484",
+  "#98569d",
+];

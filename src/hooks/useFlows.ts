@@ -12,8 +12,8 @@ import {
 } from "@/types";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { CATEGORIES, CATEGORIES_PROPS, TOP_COUNTIES_NUMBER } from "@/constants";
-import { getDistances, getStats, hexToRgb } from "@/utils";
+import { CATEGORIES, CATEGORIES_COLORS, TOP_COUNTIES_NUMBER } from "@/constants";
+import { getDistances, hexToRgb } from "@/utils";
 import {
   adverseConditionsAtom,
   allLinkedCountiesAtom,
@@ -25,6 +25,7 @@ import {
 import { useControls } from "leva";
 import { along } from "turf";
 import { useLinkedFlows } from "./useLinkedCounties";
+import useCropGroupColors from "./useCropGroupColors";
 
 export default function useFlows(): Flow[] {
   const counties = useAtomValue(countiesAtom);
@@ -267,6 +268,7 @@ const getPathTrips = (
     speedKps = 100, // Speed in km per second
     speedKpsHumanize = 0.5, // Randomize particles trajectory speed (0: stable duration, 1: can be 0 or 2x the speed)
     maxParticles = 500,
+    colors = CATEGORIES_COLORS
   } = {},
   zoomMultiplier: number
 ): Trip[] => {
@@ -325,7 +327,7 @@ const getPathTrips = (
         return acc;
       }, null as number | null) || 0;
     const category = CATEGORIES[categoryIndex];
-    const categoryColor = CATEGORIES_PROPS[category].color;
+    const categoryColor = colors[category];
     const color = hexToRgb(categoryColor);
     // console.log(waypoints)
     trips.push({
@@ -357,6 +359,8 @@ export function useFlowsWithTrips(
   const roads = useAtomValue(roadsAtom);
   const adverseConditions = useAtomValue(adverseConditionsAtom);
 
+  const colors = useCropGroupColors();
+
   return useMemo(() => {
     const flowsWithPaths = roads ? flowsWithRoadPaths : flowsWithCurvedPaths;
     const numParticlesMultiplicator =
@@ -373,6 +377,7 @@ export function useFlowsWithTrips(
             {
               ...params,
               numParticlesMultiplicator,
+              colors,
             },
             zoomMultiplier
           );
@@ -388,5 +393,6 @@ export function useFlowsWithTrips(
     roads,
     zoomMultiplier,
     adverseConditions,
+    colors
   ]);
 }

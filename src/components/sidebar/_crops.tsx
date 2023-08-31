@@ -9,6 +9,7 @@ import { useFlowsData } from "@/hooks/useAPI";
 import classNames from "classnames";
 import { useHideable } from "@/hooks/useHideable";
 import LineLoader from "../common/_loader";
+import useCropGroupColors from "@/hooks/useCropGroupColors";
 
 function Crop({
   category,
@@ -57,6 +58,7 @@ function Crop({
   );
 
   const negative = varAdverse !== undefined && varAdverse < 0;
+  const colors = useCropGroupColors();
 
   return (
     <li
@@ -68,7 +70,7 @@ function Crop({
       style={
         {
           ...style,
-          "--color": CATEGORIES_PROPS[category].color,
+          "--color": colors[category],
           "--widthForeground": `${widthForeground}%`,
           "--widthBackground": `${widthBackground}%`,
         } as React.CSSProperties
