@@ -44,9 +44,10 @@ export default function Stats({ stats }: { stats: Stats | null }) {
     if (!countyData || !stats) return null;
     const pop = countyData?.properties?.total_population;
     const perCapita = stats?.total / pop;
+    const perCapitaPerdDay = perCapita / 365;
     const perCapitaFormatted = new Intl.NumberFormat("en-US", {
       maximumSignificantDigits: 3,
-    }).format(perCapita);
+    }).format(perCapitaPerdDay);
     return perCapitaFormatted;
   }, [countyData, stats]);
 
@@ -72,7 +73,7 @@ this county.`
               ) : (
                 <>
                   <b>
-                    ~{stats?.formattedTotal.value}
+                    {stats?.formattedTotal.value}
                     {stats?.formattedTotal.unit}
                   </b>{" "}
                   Cal
@@ -107,7 +108,7 @@ this county.`
                   <LineLoader height={24} width={120} />
                 ) : (
                   <>
-                    <b>~{calPerCapita}</b> Cal
+                    <b>{calPerCapita}</b> Cal /day
                   </>
                 )}
               </dd>
@@ -125,13 +126,13 @@ this county.`
 
       {flowType === "producer" && (
         <dl>
-          <dt>Cal. produced per capita:</dt>
+          <dt>Calories per capita:</dt>
           <dd>
             {isLoading || isCountyLoading ? (
               <LineLoader height={24} width={120} />
             ) : (
               <>
-                <b>~{calPerCapita}</b> Cal
+                <b>{calPerCapita}</b> Cal /day
               </>
             )}
           </dd>

@@ -13,6 +13,13 @@
   font-weight: var(--font-weight-bold);
 }
 
+.summary b::before {
+  content: "~";
+  display: inline-block;
+  vertical-align: middle;
+  font-size: var(--font-size-body);
+}
+
 .summary > dl:first-child {
   margin-right: 15px;
   width: 50%;
