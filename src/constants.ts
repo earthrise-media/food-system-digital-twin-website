@@ -41,9 +41,20 @@ export const TOP_COUNTIES_NUMBER = 5;
 export const ADVERSE_CONDITIONS_OPTIONS: {
   value: AdverseConditions;
   label: string;
+  tilesUrl: string;
 }[] = [
-  { value: "drought", label: "Drought" },
-  { value: "heatStress", label: "Heat stress" },
+  {
+    value: "drought",
+    label: "Drought",
+    tilesUrl:
+      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/drought-tiles/{z}/{x}/{y}.png",
+  },
+  {
+    value: "heatStress",
+    label: "Heat stress",
+    tilesUrl:
+      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/heat-tiles/{z}/{x}/{y}.png",
+  },
 ];
 
 export const INITIAL_VIEW_STATE = {

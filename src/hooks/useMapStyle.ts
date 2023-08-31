@@ -1,5 +1,5 @@
 import { adverseConditionsAtom, roadsAtom, searchAtom } from "@/atoms";
-import { STRESS_PALETTE } from "@/constants";
+import { ADVERSE_CONDITIONS_OPTIONS, STRESS_PALETTE } from "@/constants";
 import { Flow } from "@/types";
 import { featureCollection } from "@turf/helpers";
 import { useAtomValue } from "jotai";
@@ -31,12 +31,12 @@ export default function useMapStyle(
   ]
 
   if (stress !== null) {
-
-
+    const option = ADVERSE_CONDITIONS_OPTIONS.find((option) => option.value === stress);
+    const tilesUrl = option?.tilesUrl;
     sources.stress = {
       type: "raster",
       tiles: [
-        "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/tiles/{z}/{x}/{y}.png",
+        tilesUrl!,
       ],
       tileSize: 256,
       scheme: "tms"
