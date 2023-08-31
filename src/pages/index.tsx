@@ -10,13 +10,13 @@ import { getLocalData } from "../lib/getLocalData";
 import Sidebar from "@/components/sidebar/_sidebar";
 import { Kumbh_Sans } from "next/font/google";
 import Search from "@/components/_search";
-import { countiesAtom, searchAtom } from "@/atoms";
+import { aboutAtom, countiesAtom, searchAtom } from "@/atoms";
 import { County } from "@/types";
 import Roads from "@/components/sidebar/_roads";
 import AdverseConditions from "@/components/sidebar/_stressConditions";
 import { useHideable } from "@/hooks/useHideable";
 import Logo from "@/components/_logo";
-import Loader from "@/components/_loader";
+import About from "@/components/_about";
 import { MapProvider } from "react-map-gl";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -50,6 +50,7 @@ function Home({
 }) {
   const setCounties = useSetAtom(countiesAtom);
   const search = useAtomValue(searchAtom);
+  const about = useAtomValue(aboutAtom);
 
   useEffect(() => {
     setCounties(counties as FeatureCollection<Geometry, County>);
@@ -60,7 +61,7 @@ function Home({
     shouldMount: shouldMapParamsMount,
     className: mapParamsClassName,
     style,
-  } = useHideable(!search, styles.mapParamsCards, styles.mapParamsCardsHidden);
+  } = useHideable(!search && !about, styles.mapParamsCards, styles.mapParamsCardsHidden);
 
   return (
     <>
@@ -90,9 +91,9 @@ function Home({
 
       <MapProvider>
         <main className={cx(styles.main, kumbhSans.className)}>
-          <Loader />
+          <About />
           <DeckMap initialMapStyle={mapStyle} />
-          {!search && (
+          {(!search && !about) && (
             <div className={styles.logoWrapper}>
               <Logo />
             </div>
