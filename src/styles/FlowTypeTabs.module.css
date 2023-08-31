@@ -1,4 +1,11 @@
+.tabBar {
+  display: flex;
+  display: flex;
+  justify-content: space-between;
+}
 .tabBar > button {
+  flex: 1;
+  text-align: center;
   color: var(--background);
   padding: 8px 20px;
   opacity: 0.5;
@@ -10,6 +17,7 @@
 .tabBar > button > span {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .tabBar > button > span::before {

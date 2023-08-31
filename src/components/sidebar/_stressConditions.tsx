@@ -50,19 +50,21 @@ export default function StressConditions() {
                 setAdverseConditions(value as AdverseConditions)
               }
             />
-            <div className={styles.legend}>
-              {STRESS_PALETTE.map((color, i) => (
-                <div
-                  key={i}
-                  className={styles.legendItem}
-                  style={{ backgroundColor: color }}
-                ></div>
-              ))}
+            <div
+              className={styles.legend}
+              style={{
+                background: `linear-gradient(90deg, ${STRESS_PALETTE[1]} 0%, ${STRESS_PALETTE[2]} 33%, ${STRESS_PALETTE[3]} 66%, ${STRESS_PALETTE[4]} 100%)`,
+              }}
+            >
             </div>
-              <div className={styles.legendLabels}>
-                <div>Low</div>
-                <div>High</div>
+            <div className={styles.legendLabels}>
+              <div>Normal conditions</div>
+              <div>
+                {adverseConditions === "drought"
+                  ? "Exceptional drought"
+                  : "Exceptional heat"}
               </div>
+            </div>
           </div>
         )}
       </div>

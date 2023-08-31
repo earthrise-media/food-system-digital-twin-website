@@ -16,23 +16,23 @@ export const CATEGORIES_PROPS: Record<
 > = {
   Vegetables: {
     name: "Vegetables",
-    color: "#5AA155",
+    color: "#1C9440",
   },
   Nuts: {
     name: "Nuts",
-    color: "#EE6BB1",
+    color: "#414EC8",
   },
   Grain: {
     name: "Grain",
-    color: "#F68511",
+    color: "#F67300",
   },
   Fruits: {
     name: "Fruits",
-    color: "#D23130",
+    color: "#EC59A8",
   },
   Potatoes: {
     name: "Tubers",
-    color: "#92583A",
+    color: "#873912",
   },
 };
 

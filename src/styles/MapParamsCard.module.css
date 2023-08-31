@@ -5,7 +5,7 @@
 }
 
 .card > .header {
-  padding: 0 12px 16px;
+  padding: 6px 12px 20px 12px;
   color: var(--accent);
 }
 
@@ -73,7 +73,7 @@
 .content {
   transition: all var(--transition) linear;
   overflow: hidden;
-  max-height: 90px;
+  max-height: 120px;
   padding: 16px;
 }
 
@@ -83,15 +83,11 @@
 }
 
 .legend {
-  margin-top: 20px;
+  margin-top: 25px;
   margin-bottom: 5px;
   display: flex;
   width: 100%;
-}
-
-.legendItem {
   height: 10px;
-  flex: 1;
 }
 
 .legendLabels {
@@ -99,4 +95,12 @@
   justify-content: space-between;
   color: var(--foreground-50);
   font-size: 12px;
+}
+
+.legendLabels > * {
+  width: 80px;
+}
+
+.legendLabels > *:last-child {
+  text-align: right;
 }
