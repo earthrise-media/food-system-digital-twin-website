@@ -21,6 +21,7 @@
   --background-50: rgba(var(--background-rgb), 0.5);
   --background-80: rgba(var(--background-rgb), 0.85);
   --background-2: rgb(var(--background-2-rgb));
+  --background-2-80: rgba(var(--background-2-rgb), 0.8);
   --background-3: rgb(var(--background-3-rgb));
   --value-negative: rgb(var(--value-negative-rgb));
   --value-equal: rgb(var(--value-equal-rgb));

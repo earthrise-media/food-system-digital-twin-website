@@ -5,8 +5,7 @@
 .logo {
   display: block;
   font-size: var(--font-size-logo);
-  font-weight: var(--font-weight-bold);
-  padding: 5px 0 0 80px;
+  padding: 5px 0 0 60px;
   margin-bottom: 20px;
 }
 
@@ -16,7 +15,7 @@
   background-image: url("/logo.svg");
   background-size: 55%;
   background-repeat: no-repeat;
-  background-position: 20px 12px;
+  background-position: 0px 12px;
   left: 0;
   top: 0;
   width: 85px;

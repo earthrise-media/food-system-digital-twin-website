@@ -1,0 +1,15 @@
+.aboutContent p {
+  font-size: var(--font-size-body);
+  margin: 20px 0 10px;
+  line-height: 1.5rem;
+}
+
+.aboutContent h2 {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  margin: 20px 0 10px;
+}
+
+.aboutContent a {
+  color: var(--accent);
+}

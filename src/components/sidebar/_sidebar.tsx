@@ -3,7 +3,7 @@ import styles from "@/styles/Sidebar.module.css";
 
 import { useAtom, useAtomValue } from "jotai";
 import Logo from "../_logo";
-import { flowTypeAtom, searchAtom, selectedCountyAtom } from "@/atoms";
+import { aboutAtom, flowTypeAtom, searchAtom, selectedCountyAtom } from "@/atoms";
 import { useFlowsData } from "@/hooks/useAPI";
 import { getStats, Stats } from "@/utils";
 import Summary from "./_summary";
@@ -21,8 +21,9 @@ function FlowInfo({}: FlowInfoProps) {
   const { data: flowsData, error, isLoading } = useFlowsData();
 
   const [search, setSearch] = useAtom(searchAtom);
+  const about = useAtomValue(aboutAtom);
   const { className, style, shouldMount } = useHideable(
-    !search,
+    !search && !about,
     styles.flowInfo,
     styles.hidden
   );

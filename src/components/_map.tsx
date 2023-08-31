@@ -21,6 +21,7 @@ import useFlows, {
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
 import {
+  aboutAtom,
   allLinkedCountiesAtom,
   flowTypeAtom,
   highlightedCountyAtom,
@@ -77,6 +78,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
   const search = useAtomValue(searchAtom);
+  const about = useAtomValue(aboutAtom);
   const { className, style } = useHideable(
     !search,
     styles.container,
@@ -195,7 +197,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         maxZoom={MAX_ZOOM}
       >
         <DeckGLOverlay layers={layers} />
-        {!search && (
+        {(!search && !about) && (
           <>
             {/* Fixed selected county */}
             {selectedCounty && <SelectedPopup county={selectedCounty} />}
