@@ -4,9 +4,9 @@ export default function Logo() {
   return (
     <div className={styles.logoWrapper}>
       <span className={styles.logo}>
-        Food Twin
+        <b>Food Twin</b>
         <br />
-        by <b>The Plotline</b>
+        by The Plotline
       </span>
     </div>
   );
