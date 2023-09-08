@@ -55,8 +55,7 @@ export default function StressConditions() {
               style={{
                 background: `linear-gradient(90deg, ${STRESS_PALETTE[1]} 0%, ${STRESS_PALETTE[2]} 33%, ${STRESS_PALETTE[3]} 66%, ${STRESS_PALETTE[4]} 100%)`,
               }}
-            >
-            </div>
+            ></div>
             <div className={styles.legendLabels}>
               <div>Normal conditions</div>
               <div>

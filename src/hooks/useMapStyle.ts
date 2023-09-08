@@ -21,7 +21,7 @@ export default function useMapStyle(
       color2: STRESS_PALETTE[2],
       color3: STRESS_PALETTE[3],
       color4: STRESS_PALETTE[4],
-      stressOpacity: 0.8,
+      stressOpacity: 0.6,
     }
   );
 
