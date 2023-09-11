@@ -18,8 +18,8 @@ COPY *.ts /app/
 
 
 WORKDIR /app
-## Build
-RUN npm install yarn && yarn install --legacy-peer-deps
+## Build 
+RUN yarn install --legacy-peer-deps
 RUN rm /app/next.config.js
 COPY docker.next.config /app/next.config.js
 RUN yarn build
