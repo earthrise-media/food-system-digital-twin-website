@@ -6,7 +6,7 @@ export default function Toggle({
   onChange,
 }: {
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onChange?: (checked: boolean) => void;
 }) {
   const id = useId()
   return (
@@ -15,7 +15,7 @@ export default function Toggle({
         type="checkbox"
         id={id}
         checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
+        onChange={(e) => onChange ? onChange(e.target.checked) : void(0)}
       />
       <label htmlFor={id}>Toggle</label>
     </div>

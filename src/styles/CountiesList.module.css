@@ -37,6 +37,12 @@
   text-decoration: underline;
 }
 
+.countiesList li.highlighted::before {
+  color: var(--background);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
 .center {
   color: var(--dark);
   opacity: .5;
@@ -46,4 +52,7 @@
   padding-left: 16px;
   margin-left: 10px;
   font-weight: normal;
+  font-size: var(--font-size-smallcaps);
+  text-transform: uppercase;
+  letter-spacing: .1rem;
 }

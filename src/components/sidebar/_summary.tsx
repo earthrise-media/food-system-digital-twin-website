@@ -4,17 +4,28 @@ import styles from "@/styles/Summary.module.css";
 import { Stats } from "@/utils";
 import { useCountyData, useFlowsData } from "@/hooks/useAPI";
 import { useAtomValue } from "jotai";
-import { flowTypeAtom } from "@/atoms";
+import { adverseConditionsAtom, flowTypeAtom } from "@/atoms";
 import LineLoader from "../common/_loader";
+import classNames from "classnames";
 
 export default function Stats({ stats }: { stats: Stats | null }) {
   const flowType = useAtomValue(flowTypeAtom);
   const { data: flowsData, error, isLoading } = useFlowsData();
   const { data: countyData, isLoading: isCountyLoading } = useCountyData();
+  const adverseConditions = useAtomValue(adverseConditionsAtom);
+
+  const varAdverse = adverseConditions
+    ? stats?.[
+        adverseConditions === "drought"
+          ? "total_drought_var"
+          : "total_heat_stress_var"
+      ]
+    : 0;
+  const negative = varAdverse !== undefined && varAdverse < 0;
 
   const totalPopulation = useMemo(() => {
     if (!countyData) return null;
-    const pop = countyData.properties.total_population;
+    const pop = countyData?.properties?.total_population;
     if (pop < 1000000) {
       return {
         pop: new Intl.NumberFormat("en-US").format(pop),
@@ -31,11 +42,12 @@ export default function Stats({ stats }: { stats: Stats | null }) {
 
   const calPerCapita = useMemo(() => {
     if (!countyData || !stats) return null;
-    const pop = countyData.properties.total_population;
+    const pop = countyData?.properties?.total_population;
     const perCapita = stats?.total / pop;
+    const perCapitaPerdDay = perCapita / 365;
     const perCapitaFormatted = new Intl.NumberFormat("en-US", {
       maximumSignificantDigits: 3,
-    }).format(perCapita);
+    }).format(perCapitaPerdDay);
     return perCapitaFormatted;
   }, [countyData, stats]);
 
@@ -61,10 +73,21 @@ this county.`
               ) : (
                 <>
                   <b>
-                    ~{stats?.formattedTotal.value}
+                    {stats?.formattedTotal.value}
                     {stats?.formattedTotal.unit}
                   </b>{" "}
                   Cal
+                  {adverseConditions !== null && (
+                    <span
+                      className={classNames(styles.variation, {
+                        [styles.negative]: negative,
+                        [styles.equal]: !negative,
+                      })}
+                    >
+                      {negative ? "" : "+"}
+                      {varAdverse}%
+                    </span>
+                  )}
                 </>
               )}
             </>
@@ -85,7 +108,7 @@ this county.`
                   <LineLoader height={24} width={120} />
                 ) : (
                   <>
-                    <b>~{calPerCapita}</b> Cal
+                    <b>{calPerCapita}</b> Cal /day
                   </>
                 )}
               </dd>
@@ -103,10 +126,20 @@ this county.`
 
       {flowType === "producer" && (
         <dl>
-          <dt>Agriculture sector in GDP</dt>
+          <dt>Calories per capita:</dt>
+          <dd>
+            {isLoading || isCountyLoading ? (
+              <LineLoader height={24} width={120} />
+            ) : (
+              <>
+                <b>{calPerCapita}</b> Cal /day
+              </>
+            )}
+          </dd>
+          {/* <dt>Agriculture sector in GDP</dt>
           <dd>
             <b>{countyData?.properties.agriculture_sector_gdp || "?"} %</b>
-          </dd>
+          </dd> */}
         </dl>
       )}
     </div>

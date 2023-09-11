@@ -4,7 +4,7 @@
   --padding: 24px;
   --padding-v: 32px;
 
-  --foreground-rgb: 0, 0, 0;
+  --foreground-rgb: 28, 35, 59;
   /* --background-rgb: 246, 243, 238; */
   --background-rgb: 255, 255, 255;
   --background-2-rgb: 239, 233, 223;
@@ -12,6 +12,7 @@
   --value-negative-rgb: 235, 48, 87;
   --value-equal-rgb: 99, 176, 65;
   --dark-rgb: 41, 41, 41;
+  --accent-rgb: 71, 117, 197;
 
   --foreground: rgb(var(--foreground-rgb));
   --foreground-50: rgba(var(--foreground-rgb), 0.5);
@@ -20,18 +21,21 @@
   --background-50: rgba(var(--background-rgb), 0.5);
   --background-80: rgba(var(--background-rgb), 0.85);
   --background-2: rgb(var(--background-2-rgb));
+  --background-2-80: rgba(var(--background-2-rgb), 0.8);
   --background-3: rgb(var(--background-3-rgb));
   --value-negative: rgb(var(--value-negative-rgb));
   --value-equal: rgb(var(--value-equal-rgb));
   --dark: rgb(var(--dark-rgb));
+  --accent: rgb(var(--accent-rgb));
 
   --font-weight-normal: 400;
   --font-weight-bold: 600;
 
+  --font-size-smallcaps: 10px;
   --font-size-caption: 12px;
   --font-size-body: 13px;
-  --font-size-subtitle: 20px;
   --font-size-section: 16px;
+  --font-size-subtitle: 20px;
   --font-size-logo: 28px;
   --font-size-title: 36px;
 

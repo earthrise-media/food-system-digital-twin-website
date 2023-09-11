@@ -9,10 +9,11 @@
 	text-indent: -9999px;
 	width: 30px;
 	height: 15px;
-	background: var(--foreground-50);
+	background: var(--accent);
 	display: block;
 	border-radius: 100px;
 	position: relative;
+	opacity: .6;
 }
 
 .toggle > label:after {
@@ -28,7 +29,8 @@
 }
 
 .toggle > input:checked + label {
-	background: var(--foreground);
+	/* background: var(--background); */
+	opacity: 1;
 }
 
 .toggle > input:checked + label:after {

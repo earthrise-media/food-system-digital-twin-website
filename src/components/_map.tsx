@@ -11,7 +11,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { useAtom, useAtomValue } from "jotai";
 import SelectedPopup from "./popups/_selectedPopup";
 import HighlightPopup from "./popups/_highlightPopup";
-import LinkedPopup from "./popups/_linkedPopup";
 import styles from "@/styles/Map.module.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { Style } from "mapbox-gl";
@@ -22,6 +21,7 @@ import useFlows, {
   useFlowsWithTrips,
 } from "@/hooks/useFlows";
 import {
+  aboutAtom,
   allLinkedCountiesAtom,
   flowTypeAtom,
   highlightedCountyAtom,
@@ -78,6 +78,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
   const mapStyle = useMapStyle(initialMapStyle, selectedFlows);
 
   const search = useAtomValue(searchAtom);
+  const about = useAtomValue(aboutAtom);
   const { className, style } = useHideable(
     !search,
     styles.container,
@@ -126,12 +127,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
     if (!linkedHighlightedCounty) return null;
     return linkedHighlightedCounty;
   }, [highlightedCounty, linkedCountiesWithRank]);
-
-  // Linked counties but only when no linkedHighlightedCounty is selected (Number + name depending on zoom)
-  const linkedCountiesWithoutHighlightedLinked = useMemo(() => {
-    if (!linkedCountiesSliced || linkedHighlightedCounty) return [];
-    return linkedCountiesSliced;
-  }, [linkedCountiesSliced, linkedHighlightedCounty]);
 
   // Highlighted county excluding linked counties --> Simple hover popup
   const simpleHighlightedCounty = useMemo(() => {
@@ -202,7 +197,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
         maxZoom={MAX_ZOOM}
       >
         <DeckGLOverlay layers={layers} />
-        {!search && (
+        {(!search && !about) && (
           <>
             {/* Fixed selected county */}
             {selectedCounty && <SelectedPopup county={selectedCounty} />}
@@ -213,16 +208,6 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
                 {linkedHighlightedCounty && (
                   <HighlightedLinkedPopup county={linkedHighlightedCounty} />
                 )}
-                {/* Linked counties (top or all depending on selection) */}
-                {linkedCountiesWithoutHighlightedLinked.map((county) => {
-                  return (
-                    <LinkedPopup
-                      key={county.properties.geoid}
-                      county={county}
-                      numPopups={linkedCountiesWithoutHighlightedLinked.length}
-                    />
-                  );
-                })}
               </>
             )}
 
