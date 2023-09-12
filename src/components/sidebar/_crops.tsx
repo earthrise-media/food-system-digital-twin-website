@@ -3,12 +3,13 @@ import { Stats } from "@/utils";
 import styles from "@/styles/Crops.module.css";
 import { useAtom, useAtomValue } from "jotai";
 import { adverseConditionsAtom, foodGroupAtom } from "@/atoms";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Category } from "@/types";
 import { useFlowsData } from "@/hooks/useAPI";
 import classNames from "classnames";
 import { useHideable } from "@/hooks/useHideable";
 import LineLoader from "../common/_loader";
+import useCropGroupColors from "@/hooks/useCropGroupColors";
 
 function Crop({
   category,
@@ -19,13 +20,23 @@ function Crop({
 }) {
   const { isLoading } = useFlowsData();
   const [foodGroup, setFoodGroup] = useAtom(foodGroupAtom);
+  const [hoverFoodGroup, setHoverFoodGroup] = useState<Category | null>(null);
   const onFoodGroupClick = useCallback(
     (category: Category) => {
       setFoodGroup(foodGroup === category ? null : category);
     },
     [foodGroup, setFoodGroup]
   );
+
+  const onFoodGroupHover = useCallback(
+    (category: Category | null) => {
+      setHoverFoodGroup(category);
+    },
+    [setHoverFoodGroup]
+  );
+
   const adverseConditions = useAtomValue(adverseConditionsAtom);
+
   const pct = stats?.byCropGroup[category]?.pct;
   const relAdverse = adverseConditions
     ? stats?.byCropGroup[category]?.[
@@ -47,6 +58,7 @@ function Crop({
   );
 
   const negative = varAdverse !== undefined && varAdverse < 0;
+  const colors = useCropGroupColors();
 
   return (
     <li
@@ -58,7 +70,7 @@ function Crop({
       style={
         {
           ...style,
-          "--color": CATEGORIES_PROPS[category].color,
+          "--color": colors[category],
           "--widthForeground": `${widthForeground}%`,
           "--widthBackground": `${widthBackground}%`,
         } as React.CSSProperties
@@ -71,17 +83,23 @@ function Crop({
             <LineLoader width={30} height={12} />
           ) : (
             <>
-              {pct}%
-              {adverseConditions && (
+              {adverseConditions && hoverFoodGroup === category && (
                 <span
                   className={classNames(styles.variation, {
                     [styles.negative]: negative,
                     [styles.equal]: !negative,
                   })}
                 >
-                  {negative ? '' : '+'}{varAdverse}%
+                  {negative ? "" : "+"}
+                  {varAdverse}%
                 </span>
               )}
+              <span
+                onMouseOver={() => onFoodGroupHover(category)}
+                onMouseOut={() => onFoodGroupHover(null)}
+              >
+                {pct}%
+              </span>
             </>
           )}{" "}
         </dd>

@@ -21,7 +21,11 @@ export const getStats = (
 ) => {
   const getPct = (v: number) => Math.round(v * 1000) / 10;
   const total = byCropGroupRaw.reduce((acc, curr) => acc + curr.value, 0);
-
+  const total_drought = byCropGroupRaw.reduce((acc, curr) => acc + curr.value_drought, 0);
+  const total_heat_stress = byCropGroupRaw.reduce((acc, curr) => acc + curr.value_heat_stress, 0);
+  const total_drought_var = getPct((total_drought - total) / total);
+  const total_heat_stress_var = getPct((total_heat_stress - total) / total);
+  
   const byCropGroup = Object.fromEntries(
     byCropGroupRaw.map(
       ({ value, value_drought, value_heat_stress, ...rest }) => [
@@ -72,6 +76,8 @@ export const getStats = (
 
   return {
     total,
+    total_drought_var,
+    total_heat_stress_var,
     formattedTotal: {
       unit,
       value: new Intl.NumberFormat("en-US", {
