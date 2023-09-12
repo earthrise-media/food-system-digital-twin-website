@@ -35,12 +35,10 @@ network:
  
 # Optional fields for more advanced use-cases.
 #
-variables:                    # Pass environment variables as key value pairs.
-  DATABASE_URL: postgres://postgres:t8Qze1Q53qhZilNAVvka@food-twin.caxeslk6kjr8.us-east-2.rds.amazonaws.com:5432/postgres
-  NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: pk.eyJ1IjoicGxvdGxpbmUiLCJhIjoiY2xscXNwOTFuMDc4ajNlcGdkbmkzZ2VhNyJ9.EOg-XaXOHe-BRZT7DTUxEg
- 
-#secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
-#  GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.
+
+secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
+ DATABASE_URL: 'food/dev/doppler/DATABASE_URL'  # The key is the name of the environment variable, the value is the name of the SSM parameter.
+ NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: 'food/dev/doppler/MAPBOX_TOKEN'
 
 # You can override any of the values defined above by environment.
 #environments:
