@@ -38,9 +38,9 @@ network:
 
 secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
  DATABASE_URL: 
-  secretsmanger: 'food/dev/doppler:DATABASE_URL::'  # The key is the name of the environment variable, the value is the name of the SSM parameter.
+  secretsmanager: 'food/dev/doppler:DATABASE_URL::'  # The key is the name of the environment variable, the value is the name of the SSM parameter.
  NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:
-  secretsmanger: 'food/dev/doppler:MAPBOX_TOKEN::'
+  secretsmanager: 'food/dev/doppler:MAPBOX_TOKEN::'
 
 # You can override any of the values defined above by environment.
 #environments:
