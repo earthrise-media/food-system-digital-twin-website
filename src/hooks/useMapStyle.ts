@@ -7,23 +7,17 @@ import { Style } from "mapbox-gl";
 import { feature } from "turf";
 import { useControls } from "leva";
 
-export default function useMapStyle(
-  initialMapStyle: Style,
-  flows: Flow[] = []
-): Style {
+export default function useMapStyle(initialMapStyle: Style, flows: Flow[] = []): Style {
   const roads = useAtomValue(roadsAtom);
   const stress = useAtomValue(adverseConditionsAtom);
-  const { color0, color1, color2, color3, color4, stressOpacity } = useControls(
-    "stress color scale",
-    {
-      color0: STRESS_PALETTE[0],
-      color1: STRESS_PALETTE[1],
-      color2: STRESS_PALETTE[2],
-      color3: STRESS_PALETTE[3],
-      color4: STRESS_PALETTE[4],
-      stressOpacity: 0.6,
-    }
-  );
+  const { color0, color1, color2, color3, color4, stressOpacity } = useControls("stress color scale", {
+    color0: STRESS_PALETTE[0],
+    color1: STRESS_PALETTE[1],
+    color2: STRESS_PALETTE[2],
+    color3: STRESS_PALETTE[3],
+    color4: STRESS_PALETTE[4],
+    stressOpacity: 0.6,
+  });
 
   const sources = {
     ...initialMapStyle.sources,
@@ -32,21 +26,30 @@ export default function useMapStyle(
   let layers = [...initialMapStyle.layers];
 
   if (stress !== null) {
-    const option = ADVERSE_CONDITIONS_OPTIONS.find(
-      (option) => option.value === stress
-    );
+    const option = ADVERSE_CONDITIONS_OPTIONS.find((option) => option.value === stress);
     const tilesUrl = option?.tilesUrl;
 
-    const steps =
-      stress === "drought"
-        ? [0, color4, 7, color3, 15, color2, 23, color1, 31, color0]
-        : [0, color0, 7, color1, 15, color2, 23, color3, 31, color4];
+    const steps = stress === "drought" ? [-1, color4, -0.5, color3, 0, color2, 0.5, color1, 1, color0] : [-2.839, color0, -0.398, color1, 2.042, color2, 4.483, color3, 6.923, color4];
+
+    const rasterRange = stress === "drought" 
+    ? 2
+    : 9.762;
+
+    const rasterMin = stress === "drought"
+    ? -1
+    : -2.839;
+
+    const rasterMax = stress === "drought"
+    ? 1
+    : 6.923;
 
     sources.stress = {
       type: "raster",
       tiles: [tilesUrl!],
       tileSize: 256,
       scheme: "tms",
+      bounds: [-125.0, 24.0, -66.5, 49.0],
+      maxzoom: 8,
     };
     layers = [
       ...layers,
@@ -55,14 +58,9 @@ export default function useMapStyle(
         type: "raster",
         source: "stress",
         paint: {
-          "raster-color": [
-            "interpolate",
-            ["linear"],
-            ["raster-value"],
-            ...steps
-          ],
-          "raster-color-mix": [31, 0, 0, 0],
-          "raster-color-range": [0, 31],
+          "raster-color": ["interpolate", ["linear"], ["raster-value"], ...steps],
+          "raster-color-mix": [rasterRange, 0, 0, 0],
+          "raster-color-range": [rasterMin, rasterMax],
           "raster-opacity": stressOpacity,
         } as any,
       },
@@ -70,9 +68,7 @@ export default function useMapStyle(
   }
 
   if (roads) {
-    const routes = flows
-      .filter((flow) => flow.routeGeometry)
-      .map((flow) => feature(flow.routeGeometry));
+    const routes = flows.filter((flow) => flow.routeGeometry).map((flow) => feature(flow.routeGeometry));
 
     sources.routes = {
       type: "geojson",
