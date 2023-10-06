@@ -70,8 +70,7 @@ export const INITIAL_VIEW_STATE = {
 };
 
 export const STRESS_PALETTE = [
-  
-  "#B9CECF",
+  "#e5ebeb",
   "#f5f2ed",
   "#ffd8a7",
   "#f1a484",

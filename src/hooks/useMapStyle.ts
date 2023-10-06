@@ -29,19 +29,15 @@ export default function useMapStyle(initialMapStyle: Style, flows: Flow[] = []):
     const option = ADVERSE_CONDITIONS_OPTIONS.find((option) => option.value === stress);
     const tilesUrl = option?.tilesUrl;
 
-    const steps = stress === "drought" ? [-1, color0, -0.5, color1, 0, color2, 0.5, color3, 1, color4] : [-2.839, color0, -0.398, color1, 2.042, color2, 4.483, color3, 6.923, color4];
+    // const steps = stress === "drought" ? [-1, color0, -0.5, color1, 0, color2, 0.5, color3, 1, color4] : [-2.839, color0, -0.398, color1, 2.042, color2, 4.483, color3, 6.923, color4];
+    const steps = stress === "drought" ? [0, color4, 63.75, color3, 127.5, color2, 191.25, color1, 255, color0] : [0, color0, 63.75, color1, 127.5, color2, 191.25, color3, 255, color4];
 
-    const rasterRange = stress === "drought" 
-    ? 2
-    : 9.762;
+    const rasterRange = 255;
 
-    const rasterMin = stress === "drought"
-    ? -1
-    : -2.839;
+    const rasterMin = 0;
+   
 
-    const rasterMax = stress === "drought"
-    ? 1
-    : 6.923;
+    const rasterMax = 255;
 
     sources.stress = {
       type: "raster",
