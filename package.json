@@ -30,7 +30,7 @@
     "knex-postgis": "^0.14.3",
     "leva": "^0.9.34",
     "mapbox-gl": "3.0.0-beta.1",
-    "next": "13.3.0",
+    "next": "13.5.0",
     "next-swagger-doc": "^0.3.6",
     "pg": "^8.10.0",
     "react": "18.2.0",
