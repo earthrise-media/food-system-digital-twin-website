@@ -57,11 +57,15 @@ export default function StressConditions() {
               }}
             ></div>
             <div className={styles.legendLabels}>
-              <div>Normal conditions</div>
+            <div>
+                {adverseConditions === "drought"
+                  ? "Exceptionally wet"
+                  : "Exceptionally cold"}
+              </div>
               <div>
                 {adverseConditions === "drought"
-                  ? "Exceptional drought"
-                  : "Exceptional heat"}
+                  ? "Exceptionally dry"
+                  : "Exceptionally hot"}
               </div>
             </div>
           </div>

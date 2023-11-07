@@ -51,13 +51,13 @@ export const ADVERSE_CONDITIONS_OPTIONS: {
     value: "drought",
     label: "Drought",
     tilesUrl:
-      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/drought-tiles/{z}/{x}/{y}.png",
+      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/drought-tiles-new/{z}/{x}/{y}.png",
   },
   {
     value: "heatStress",
     label: "Heat stress",
     tilesUrl:
-      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/heat-tiles/{z}/{x}/{y}.png",
+      "https://food-system-digital-twin-public.s3.us-east-2.amazonaws.com/heat-tiles-new/{z}/{x}/{y}.png",
   },
 ];
 
@@ -70,9 +70,11 @@ export const INITIAL_VIEW_STATE = {
 };
 
 export const STRESS_PALETTE = [
-  "#f5f2ed",
+  "#B9CECF",
   "#f5f2ed",
   "#ffd8a7",
   "#f1a484",
   "#98569d",
 ];
+
+
