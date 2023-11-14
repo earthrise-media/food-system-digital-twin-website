@@ -190,7 +190,7 @@ function MapWrapper({ initialMapStyle }: MapWrapperProps) {
           setViewport(evt.viewState);
         }}
         ref={mapRef}
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+        mapboxAccessToken='pk.eyJ1IjoiZWFydGhyaXNlIiwiYSI6ImNsbXFubzkydjA0cGYya2xjbnl3aW41MncifQ.rNdEf5fkVlHlnBHDwx0TMQ'
         mapStyle={mapStyle}
         maxBounds={MAX_BOUNDS as any}
         minZoom={MIN_ZOOM}
