@@ -64,8 +64,8 @@ export default function About() {
               </button>
             </li>
             <li className={classNames({ [styles.selected]: anchor === "how" })}>
-              <button onClick={() => setAnchor("how")}>
-                how to use this tool?
+              <button onClick={() => setAnchor("more")}>
+                more information
               </button>
             </li>
           </ul>

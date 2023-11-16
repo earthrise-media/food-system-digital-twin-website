@@ -60,7 +60,7 @@ export default function StressConditions() {
             <div>
                 {adverseConditions === "drought"
                   ? "Exceptionally wet"
-                  : "Exceptionally cold"}
+                  : "Cooler than average"}
               </div>
               <div>
                 {adverseConditions === "drought"
