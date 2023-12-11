@@ -44,7 +44,7 @@ Migrate the database:
 yarn migrate
 ```
 
-Download the contents of this [Google Drive folder](https://drive.google.com/drive/folders/1uDlDT7NNI7l5WC0A9WsAZTlFWpC0Uo1i?usp=sharing) and add it to a directory called `./app-data` in the cloned repository.
+Download the contents of this [Google Drive folder](https://drive.google.com/drive/folders/1IZunCVMNnA3h6VRBD365DfeUWQt5smzG?usp=drive_link) and add it to a directory called `./app-data` in the cloned repository.
 
 Ingest downloaded data with:
 
