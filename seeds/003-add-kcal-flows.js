@@ -76,7 +76,7 @@ exports.seed = async function (knex) {
     // Extract id from filename
     const crop_name = file
       .replace("kcal_produced_", "")
-      .replace("_results_df.csv", "");
+      .replace("_impacted_results_df.csv", "");
 
     const { id: crop_id } = await knex("crops")
       .where("name", crop_name)
