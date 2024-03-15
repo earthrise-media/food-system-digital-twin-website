@@ -12,6 +12,12 @@ To set up the development environment for this website, you'll need to install t
 - [Yarn](https://yarnpkg.com/) package manager
 - [Docker](https://www.docker.com)
 
+### Initialize `.env.local` File
+
+The project uses environment variables, which are set by default in the [.env](.env) file. To customize these variables (e.g., to use a custom database), create a `.env.local` file at the root of the repository (`cp .env .env.local`) and modify as needed.
+
+Note: `.env.local` is ignored by Git.
+
 ### Install Application Dependencies
 
 If you use [`nvm`](https://github.com/creationix/nvm), activate the desired Node version:
@@ -38,7 +44,7 @@ Migrate the database:
 yarn migrate
 ```
 
-Download the contents of this [Google Drive folder](https://drive.google.com/drive/folders/1uDlDT7NNI7l5WC0A9WsAZTlFWpC0Uo1i?usp=sharing) and add it to a directory called `./app-data` in the cloned repository.
+Download the contents of this [Google Drive folder](https://drive.google.com/drive/folders/1IZunCVMNnA3h6VRBD365DfeUWQt5smzG?usp=drive_link) and add it to a directory called `./app-data` in the cloned repository.
 
 Ingest downloaded data with:
 
@@ -52,7 +58,7 @@ Start development server:
 yarn dev
 ```
 
-✨ You can now login to the app at [http://localhost:3000](http://localhost:3000)
+✨ You can now access the app at [http://localhost:3000](http://localhost:3000)
 
 ### API Docs
 

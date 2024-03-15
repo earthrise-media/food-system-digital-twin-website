@@ -11,9 +11,12 @@ const COUNTIES_FILE_PATH = path.join(
 );
 
 exports.seed = async function (knex) {
+  console.log("Starting database seeding process...");
+
   /**
    * CLEAR FLOWS, CROPS, AND COUNTIES TABLES
    */
+  console.log("Clearing tables: kcal_flows, crops, counties");
   await knex.raw("TRUNCATE TABLE kcal_flows RESTART IDENTITY CASCADE");
   await knex.raw("TRUNCATE TABLE crops RESTART IDENTITY CASCADE");
   await knex.raw("TRUNCATE TABLE counties RESTART IDENTITY CASCADE");
@@ -21,6 +24,7 @@ exports.seed = async function (knex) {
   /**
    * INGEST COUNTIES
    */
+  console.log("Ingesting counties data...");
   const { features: counties } = await fs.readJson(COUNTIES_FILE_PATH);
   await knex.batchInsert(
     "counties",
@@ -31,10 +35,12 @@ exports.seed = async function (knex) {
     })),
     500
   );
+  console.log("Counties data ingestion completed.");
 
   /**
    * INGEST CROP CODES
    */
+  console.log("Ingesting crop codes...");
   const cropCodes = await fs.readFile(CROPS_CSV_PATH, "utf-8");
 
   // Split CSV into rows
@@ -56,10 +62,12 @@ exports.seed = async function (knex) {
       })
       .filter((row) => row.name !== "")
   );
+  console.log("Crop codes ingestion completed.");
 
   /**
    * INGEST KCAL FLOWS
    */
+  console.log("Ingesting kcal flows...");
   const files = (await fs.readdir(KCAL_FLOWS_DIR)).filter((file) =>
     file.endsWith(".csv")
   );
@@ -92,33 +100,31 @@ exports.seed = async function (knex) {
     try {
       await knex.batchInsert(
         "kcal_flows",
-        rows
-          .map((line) => {
-            if (line === "") return;
+        rows.map((line) => {
+          if (line === "") return;
 
-            const row = line.split(",");
+          const row = line.split(",");
 
-            const origin_id = row[0].padStart(5, "0");
-            const destination_id = row[1].padStart(5, "0");
-            const value = row[2];
+          const origin_id = row[0].padStart(5, "0");
+          const destination_id = row[1].padStart(5, "0");
+          const value = row[2];
 
-            if (!origin_id || !destination_id || !value) {
-              console.log("Skipping row", row);
-              return null;
-            }
+          if (!origin_id || !destination_id || !value) {
+            console.log("Skipping row", row);
+            return null;
+          }
 
-            return {
-              origin_id,
-              destination_id,
-              crop_id,
-              value,
-              impact_ratios: {
-                heat: parseFloat(row[3]),
-                drought: parseFloat(row[5]),
-              },
-            };
-          })
-          .filter((row) => row.origin_id !== "0Dade"), // Discard rows with invalid origin_id
+          return {
+            origin_id,
+            destination_id,
+            crop_id,
+            value,
+            impact_ratios: {
+              heat: parseFloat(row[3]),
+              drought: parseFloat(row[5]),
+            },
+          };
+        }),
         500
       );
     } catch (error) {
